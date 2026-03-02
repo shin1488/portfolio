@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-export const getProjects = async () => {
+export const getCardProjects = async () => {
   const { data, error } = await supabase
     .from('projects')
     .select(`
@@ -24,4 +24,29 @@ export const getProjects = async () => {
     // 중첩된 객체 구조를 단순 배열로 펼침
     stacks: project.project_stacks.map((ps: any) => ps.tech_stacks)
   }));
+};
+
+export const getProject = async (slug: string) => {
+  const { data, error } = await supabase
+    .from('projects')
+    .select(`
+      *,
+      project_details (
+        content
+      ),
+      project_stacks (
+        tech_stacks (
+          name
+        )
+      )
+    `)
+    .eq('slug', slug)
+    .single();
+
+  if (error) throw error;
+  return {
+    ...data,
+    content: data.project_details[0]?.content,
+    stacks: data.project_stacks?.map((ps: any) => ps.tech_stacks)
+  };
 };

@@ -5,6 +5,7 @@ import Home from './pages/Home/Home';
 import FooterContainer from './containers/FooterContainer/FooterContainer';
 import PostDetail from './pages/PostDetail/PostDetail';
 import styles from './App.module.css';
+import ProjectDetail from './pages/ProjectDetail/ProjectDetail';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path="/post/:slug" element={<PostDetail />} />
+          <Route path="/project/:slug" element={<ProjectDetail />} />
         </Routes>
         <FooterContainer />
       </BrowserRouter>

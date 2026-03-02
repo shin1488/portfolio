@@ -11,7 +11,7 @@ export const getCardPosts = async () => {
   return data;
 };
 
-export const getPosts = async (slug: string) => {
+export const getPost = async (slug: string) => {
   const { data, error } = await supabase
     .from('posts')
     .select('*')

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getProjects } from '../../api/getProjects';
+import { getCardProjects } from '../../api/getProjects';
 import ProjectItem from '../../components/ProjectItem/ProjectItem';
 import styles from './ProjectContainer.module.css';
 
@@ -7,7 +7,7 @@ const ProjectContainer = () => {
     const [projects, setProjects] = useState<any[]>([]);
 
     useEffect(() => {
-        getProjects().then((data) => {
+        getCardProjects().then((data) => {
             setProjects(data.slice(0, 3));
         });
     }, []);
