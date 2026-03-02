@@ -46,6 +46,28 @@
     }
 
     .profile_image {
+        width: 300px;
+        height: 300px;
         margin: 0;
+    }
+
+    .introduce_section {
+        justify-content: center;
+        align-items: center;
+    }
+
+    .name {
+        font-size: 48px;
+        font-weight: bold;
+    }
+
+    .job {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .info {
+        justify-content: center;
+        align-items: center;
     }
 }
