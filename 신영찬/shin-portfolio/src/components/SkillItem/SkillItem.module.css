@@ -16,3 +16,14 @@
 .name {
     font-size: 16px;
 }
+
+@media (max-width: 768px) {
+    .img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .name {
+        font-size: 14px;
+    }
+}
