@@ -12,18 +12,6 @@
     background-color: var(--color-blue-white);
 }
 
-.back_btn {
-    text-decoration: none;
-    color: var(--color-blue-gray);
-    font-size: 16px;
-    display: inline-block;
-    transition: color 0.2s;
-}
-
-.back_btn:hover {
-    color: var(--color-primary);
-}
-
 .header {
     display: flex;
     flex-direction: column;

@@ -32,8 +32,6 @@ const ProjectDetail = () => {
 
     return (
         <div className={styles.container}>
-            <Link to="/" className={styles.back_btn}>← Back to Home</Link>
-
             <header className={styles.header}>
                 <h1 className={styles.title}>{project.title}</h1>
                 <div className={styles.info_section}>
