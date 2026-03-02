@@ -136,3 +136,40 @@
     background-color: var(--color-blue-light-gray);
     margin: 64px 0;
 }
+
+@media (max-width: 768px) {
+    .back_btn {
+        font-size: 14px;
+    }
+
+    .title {
+        font-size: 32px;
+    }
+
+    .info_section {
+        font-size: 14px;
+    }
+
+    .content {
+        font-size: 16px;
+        padding: 0;
+    }
+
+    .content h2 {
+        font-size: 20px;
+    }
+
+    .content h3 {
+        font-size: 15px;
+    }
+
+    .syntax_custom, 
+    .syntax_custom span,
+    .code_block_wrapper {
+        font-size: 13px !important;
+    }
+
+    .inline_code {
+        font-size: 13px;
+    }
+}

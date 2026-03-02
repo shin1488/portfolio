@@ -11,3 +11,13 @@
     font-size: 16px;
     color: var(--color-blue-gray);
 }
+
+@media (max-width: 768px) {
+    .container {
+        padding: 48px 40px 64px 40px;
+    }
+
+    .copyright {
+        font-size: 12px;
+    }
+}

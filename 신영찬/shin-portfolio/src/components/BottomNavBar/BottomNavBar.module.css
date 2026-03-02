@@ -37,3 +37,28 @@
 .nav_container :global(a:hover) {
     background: var(--color-secondary);
 }
+
+@media (max-width: 1024px) {
+    .nav_container {
+        width: 250px;
+        padding: 6px;
+    }
+
+    .nav_container :global(a) {
+        padding: 12px 8px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav_container {
+        width: 200px;
+        padding: 4px;
+        bottom: 16px;
+    }
+
+    .nav_container :global(a) {
+        padding: 8px 4px;
+        font-size: 12px;
+    }
+}
