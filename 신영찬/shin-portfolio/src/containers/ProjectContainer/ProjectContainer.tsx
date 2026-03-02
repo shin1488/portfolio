@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getProjects } from '../../api/projects';
+import { getProjects } from '../../api/getProjects';
 import ProjectItem from '../../components/ProjectItem/ProjectItem';
 import styles from './ProjectContainer.module.css';
 

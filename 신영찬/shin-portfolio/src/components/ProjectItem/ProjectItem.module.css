@@ -34,7 +34,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: 16px;
+    padding: 24px;
     gap: 8px;
     background-color: var(--color-card-background);
     /* img_section을 제외한 모든 나머지 공간을 차지한다고 함 */

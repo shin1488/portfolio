@@ -1,0 +1,69 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+
+    width: 380px;
+    height: auto;
+    background: var(--color-card-background);
+    padding: 40px;
+    border-radius: 16px;
+    gap: 40px;
+    box-shadow: 15px 15px 50px rgba(0, 0, 0, 0.08);
+}
+
+/* 첫 번째 카드: 왼쪽 위, 왼쪽 회전 */
+.container:nth-child(3n+1) {
+    transform: translateY(-30px) rotate(-4deg);
+}
+
+/* 두 번째 카드: 오른쪽 아래, 오른쪽 회전 */
+.container:nth-child(3n+2) {
+    transform: translateY(50px) rotate(8deg);
+}
+
+/* 세 번째 카드: 왼쪽 아래, 오른쪽 회전 */
+.container:nth-child(3n+3) {
+    transform: translateY(20px) rotate(1.5deg);
+}
+
+/* 살짝 확대하며 정방향으로 돌림 */
+.container:hover {
+    transform: translateY(0) rotate(0) scale(1.1);
+    z-index: 10;
+    box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.container * {
+    background:transparent;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.summary {
+    font-size: 16px;
+    color: var(--color-blue-gray);
+}
+
+.details_btn {
+    font-size: 16px;
+    color: var(--color-primary);
+    border: none;
+    cursor: pointer;
+}
+
+/* 모바일에서는 일렬 배치 */
+@media (max-width: 768px) {
+    .container:nth-child(n) {
+        transform: none;
+        margin: 0;
+        width: 100%;
+        max-width: 320px;
+    }
+}

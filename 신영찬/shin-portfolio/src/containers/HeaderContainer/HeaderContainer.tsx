@@ -4,10 +4,10 @@ import styles from './HeaderContainer.module.css';
 
 const HeaderContainer = () => {
     return (
-        <div className={styles.container}>
+        <header className={styles.container}>
             <Header />
             <DividerPrimary />
-        </div>
+        </header>
     );
 }
 

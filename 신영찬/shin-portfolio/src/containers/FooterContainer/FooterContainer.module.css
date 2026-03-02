@@ -4,6 +4,7 @@
     align-items: center;
     padding: 160px 40px 112px 40px;
     gap: 24px;
+    background-color: var(--color-blue-white);
 }
 
 .copyright {
