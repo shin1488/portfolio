@@ -5,6 +5,10 @@
     line-height: 1.5;
 }
 
+.content img {
+    max-width: 100%;
+}
+
 .content h1,
 .content h2 {
     font-weight: bold;
