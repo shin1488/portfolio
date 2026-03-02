@@ -25,6 +25,14 @@
 }
 
 @media (max-width: 768px) {
+    .container {
+        margin-top: 120px;
+    }
+
+    .title {
+        font-size: 48px;
+    }
+
     .project_section {
         /* 한 줄에 하나, 아이템의 범위는 0~300 */
         grid-template-columns: minmax(0, 300px);

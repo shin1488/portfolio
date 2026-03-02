@@ -30,3 +30,13 @@
     font-size: 32px;
     font-weight: bold;
 }
+
+@media (max-width: 768px) {
+    .container {
+        margin-top: 120px;
+    }
+
+    .title {
+        font-size: 48px;
+    }
+}
