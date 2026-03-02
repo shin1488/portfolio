@@ -12,7 +12,7 @@ const Home = () => {
             <IntroduceContainer />
             <SkillsContainer />
             <CareersContainer />
-            <ProjectContainer />
+            <ProjectContainer limit={3} />
             <PostContainer />
 
             <BottomNavBar />

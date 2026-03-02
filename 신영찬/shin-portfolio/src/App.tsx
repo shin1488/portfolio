@@ -6,6 +6,7 @@ import FooterContainer from './containers/FooterContainer/FooterContainer';
 import PostDetail from './pages/PostDetail/PostDetail';
 import styles from './App.module.css';
 import ProjectDetail from './pages/ProjectDetail/ProjectDetail';
+import Projects from './pages/Projects/Projects';
 
 function App() {
   return (
@@ -14,8 +15,9 @@ function App() {
         <HeaderContainer />
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path="/post/:slug" element={<PostDetail />} />
-          <Route path="/project/:slug" element={<ProjectDetail />} />
+          <Route path='/projects' element={<Projects />} />
+          <Route path="/posts/:slug" element={<PostDetail />} />
+          <Route path="/projects/:slug" element={<ProjectDetail />} />
         </Routes>
         <FooterContainer />
       </BrowserRouter>

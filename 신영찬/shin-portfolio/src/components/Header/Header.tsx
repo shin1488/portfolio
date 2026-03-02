@@ -10,10 +10,10 @@ const Header = () => {
                 <p className={styles.title}>신영찬의 포트폴리오</p>
             </Link>
             <div className={styles.nav_section}>
-                <p>Home</p>
-                <p>Projects</p>
-                <p>Blog</p>
-                <p>GuestBook</p>
+                <Link to="/" className={styles.nav_item}>Home</Link>
+                <Link to="/projects" className={styles.nav_item}>Projects</Link>
+                <Link to="/blog" className={styles.nav_item}>Blog</Link>
+                <Link to="/guestbook" className={styles.nav_item}>GuestBook</Link>
             </div>
         </header>
     );

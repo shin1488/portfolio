@@ -6,7 +6,7 @@ const ProjectItem = ({ project }: any) => {
     if (!project) return null;
 
     return (
-        <Link to={`/project/${project.slug}`} className={styles.link_wrapper}>
+        <Link to={`/projects/${project.slug}`} className={styles.link_wrapper}>
             <div className={styles.container}>
                 <div className={styles.img_section}>
                     <img className={styles.img} src={project.thumbnail_url} alt={project.title} />

@@ -38,6 +38,16 @@
     margin-right: 60px;
 }
 
+.nav_item {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s;
+}
+
+.nav_item:hover {
+    color: var(--color-primary);
+}
+
 @media (max-width: 768px) {
     .header {
         justify-content: center;

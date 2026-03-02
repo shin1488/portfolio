@@ -14,7 +14,7 @@ const PostItem = ({ post, index }: PostItemProps) => {
         >
             <h2 className={styles.title}>{post.title}</h2>
             <p className={styles.summary}>{post.summary}</p>
-            <Link to={`/post/${post.slug}`}>
+            <Link to={`/posts/${post.slug}`}>
                 <button className={styles.details_btn}>→ details</button>
             </Link>
         </div>
