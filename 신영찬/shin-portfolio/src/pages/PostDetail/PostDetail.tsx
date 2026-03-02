@@ -45,13 +45,16 @@ const PostDetail = () => {
                 <h1 className={styles.title}>{post.title}</h1>
                 <div className={styles.info_section}>
                     <div className={styles.info_section}>
-                    <p>{new Date(post.created_at).toLocaleDateString()}</p>
-                    <p>{(post.views || 0) + 1} viewed</p>
-                </div>
+                        <p>{new Date(post.created_at).toLocaleDateString()}</p>
+                        <p>{(post.views || 0) + 1} viewed</p>
+                    </div>
                 </div>
             </header>
 
-            <DividerSecondary />
+            {/* 좀 더 구분감을 주기 위해 2px을 채용함 */}
+            <div style={{ '--divider-height': '2px' } as any}>
+                <DividerSecondary />
+            </div>
 
             <main className={styles.content}>
                 <ReactMarkdown
