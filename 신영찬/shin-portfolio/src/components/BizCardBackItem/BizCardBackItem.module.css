@@ -72,6 +72,7 @@
 .info_item {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 16px;
     width: 100%;
 }
