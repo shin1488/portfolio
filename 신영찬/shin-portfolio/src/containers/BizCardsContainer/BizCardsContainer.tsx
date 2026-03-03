@@ -26,9 +26,12 @@ const BizCardsContainer = () => {
 
     return (
         <div className={styles.container}>
-            {entries.map((entry) => (
-                <BizCardContainer key={entry.id} data={entry} />
-            ))}
+            <h1 className={styles.title}>GuestBook</h1>
+            <div className={styles.card_section}>
+                {entries.map((entry) => (
+                    <BizCardContainer key={entry.id} data={entry} />
+                ))}
+            </div>
         </div>
     );
 };

@@ -1,11 +1,24 @@
 .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 80px;
+    margin-top: 160px;
+    width: 100%;
+}
+
+.title {
+    font-size: 64px;
+    font-weight: bold;
+}
+
+.card_section {
     display: grid;
     /* repeat은 아이템 개수 자동 계산, 786px~남는 자리 다 차지하라는 의미 */
     grid-template-columns: repeat(auto-fit, minmax(786px, 1fr));
     justify-content: center;
     justify-items: center;
     gap: 64px;
-    padding: 64px 0;
     width: 100%;
     margin: 0 auto;
 }
