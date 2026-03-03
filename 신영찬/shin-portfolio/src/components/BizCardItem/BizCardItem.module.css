@@ -1,8 +1,10 @@
 /* 3D 효과를 주기 위한 부모 래퍼 */
 .wrapper {
     perspective: 1000px;
-    width: 360px;
+    width: 90vw;
+    max-width: 360px;
     height: 480px;
+    aspect-ratio: 360 / 480;
     background: transparent;
 }
 
@@ -129,6 +131,7 @@
     width: 100%;
     position: relative;
     z-index: 5;
+    flex-shrink: 0;
 }
 
 .info_section {
@@ -165,4 +168,14 @@
 .info_value {
     font-size: 18px;
     font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        transform: scale(0.8);
+        transform-origin: top center;
+        margin-left: -36px; 
+        margin-right: -36px;
+        margin-bottom: -96px;
+    }
 }
