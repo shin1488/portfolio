@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 import { type Tables } from '../types/supabase';
 
 // 전체 리스트
-export const getGuestbookEntries = async (): Promise<Tables<'guestbook'>[]> => {
+export const getGuestbooks = async (): Promise<Tables<'guestbook'>[]> => {
   const { data, error } = await supabase
     .from('guestbook')
     .select('*')
@@ -13,7 +13,7 @@ export const getGuestbookEntries = async (): Promise<Tables<'guestbook'>[]> => {
 };
 
 // 특정 방명록
-export const getGuestbookEntry = async (id: number): Promise<Tables<'guestbook'>> => {
+export const getGuestbook= async (id: number): Promise<Tables<'guestbook'>> => {
   const { data, error } = await supabase
     .from('guestbook')
     .select('*')
@@ -25,7 +25,7 @@ export const getGuestbookEntry = async (id: number): Promise<Tables<'guestbook'>
 };
 
 // 공개 방명록만
-export const getVisibleGuestbookEntries = async (): Promise<Tables<'guestbook'>[]> => {
+export const getVisibleGuestbooks = async (): Promise<Tables<'guestbook'>[]> => {
   const { data, error } = await supabase
     .from('guestbook')
     .select('*')

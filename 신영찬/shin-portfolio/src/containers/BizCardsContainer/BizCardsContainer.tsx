@@ -1,6 +1,6 @@
 import styles from './BizCardsContainer.module.css';
 import { useEffect, useState } from 'react';
-import { getGuestbookEntries } from '../../api/getGuestbook';
+import { getVisibleGuestbooks } from '../../api/getGuestbook';
 import type { Tables } from '../../types/supabase';
 import BizCardContainer from '../BizCardContainer/BizCardContainer';
 
@@ -11,7 +11,7 @@ const BizCardsContainer = () => {
     useEffect(() => {
         const fetchEntries = async () => {
             try {
-                const data = await getGuestbookEntries();
+                const data = await getVisibleGuestbooks();
                 setEntries(data);
             } catch (err) {
                 console.error('로드 실패:', err);
