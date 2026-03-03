@@ -4,7 +4,7 @@ import ProjectItem from '../../components/ProjectItem/ProjectItem';
 import styles from './ProjectContainer.module.css';
 
 interface ProjectContainerProps {
-    limit?: number; // 선택적 Prop을 통해 ProjectItme의 개수 제어
+    limit?: number; // 선택적 Prop을 통해 ProjectItem의 개수 제어
 }
 
 const ProjectContainer = ({ limit }: ProjectContainerProps) => {

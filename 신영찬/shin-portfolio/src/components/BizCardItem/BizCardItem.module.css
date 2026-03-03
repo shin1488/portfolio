@@ -3,6 +3,7 @@
     perspective: 1000px;
     width: 360px;
     height: 480px;
+    background: transparent;
 }
 
 .container {

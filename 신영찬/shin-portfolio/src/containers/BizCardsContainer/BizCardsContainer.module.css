@@ -1,0 +1,11 @@
+.container {
+    display: grid;
+    /* repeat은 아이템 개수 자동 계산, 800px~남는 자리 다 차지하라는 의미 */
+    grid-template-columns: repeat(auto-fit, minmax(750px, 1fr));
+    justify-content: center;
+    justify-items: center;
+    gap: 64px;
+    padding: 64px 0;
+    width: 100%;
+    margin: 0 auto;
+}
