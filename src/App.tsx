@@ -10,6 +10,19 @@ import Projects from './pages/Projects/Projects';
 import Posts from './pages/Posts/Posts';
 import GuestBook from './pages/GuestBook/GuestBook';
 import GuestBookForm from './pages/GuestBookForm/GuestBookForm';
+import LangLayout from './i18n/LangLayout';
+
+const appRoutes = (
+  <>
+    <Route index element={<Home />} />
+    <Route path="projects" element={<Projects />} />
+    <Route path="projects/:slug" element={<ProjectDetail />} />
+    <Route path="posts" element={<Posts />} />
+    <Route path="posts/:slug" element={<PostDetail />} />
+    <Route path="guestbook" element={<GuestBook />} />
+    <Route path="guestbook/write" element={<GuestBookForm />} />
+  </>
+);
 
 function App() {
   return (
@@ -17,13 +30,12 @@ function App() {
       <BrowserRouter>
         <HeaderContainer />
         <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/projects' element={<Projects />} />
-          <Route path="/projects/:slug" element={<ProjectDetail />} />
-          <Route path='/posts' element={<Posts />} />
-          <Route path="/posts/:slug" element={<PostDetail />} />
-          <Route path="/guestbook" element={<GuestBook />} />
-          <Route path="/guestbook/write" element={<GuestBookForm />} />
+          <Route path="/jp" element={<LangLayout lang="jp" />}>
+            {appRoutes}
+          </Route>
+          <Route path="/" element={<LangLayout lang="ko" />}>
+            {appRoutes}
+          </Route>
         </Routes>
         <FooterContainer />
       </BrowserRouter>
