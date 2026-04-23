@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './PostListContainer.module.css';
 import { getPosts } from '../../api/getPosts';
 import PostListItem from '../../components/PostListItem/PostListItem';
 
 const PostListContainer = () => {
+    const { t } = useTranslation();
     const [posts, setPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -21,7 +23,7 @@ const PostListContainer = () => {
         fetchPosts();
     }, []);
 
-    if (loading) return <div>로딩 중...</div>;
+    if (loading) return <div>{t('common.loading')}</div>;
 
     return (
         <div className={styles.container}>

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "loading": "로딩 중..."
+  },
   "header": {
     "title": "신영찬의 포트폴리오",
     "home": "Home",
@@ -12,6 +15,9 @@
     "birthLabel": "Birth",
     "contactLabel": "Contact",
     "emailLabel": "Email"
+  },
+  "footer": {
+    "copyright": "©2026 신영찬. All rights reserved."
   },
   "introduce": {
     "subtitle": "저는...",

@@ -1,11 +1,15 @@
 import styles from './BizCardsContainer.module.css';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getVisibleGuestbooks } from '../../api/getGuestbook';
 import type { Tables } from '../../types/supabase';
 import BizCardContainer from '../BizCardContainer/BizCardContainer';
 import { Link } from 'react-router-dom';
+import { useLocalizedPath } from '../../i18n/useLang';
 
 const BizCardsContainer = () => {
+    const { t } = useTranslation();
+    const lp = useLocalizedPath();
     const [entries, setEntries] = useState<Tables<'guestbook'>[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -23,7 +27,7 @@ const BizCardsContainer = () => {
         fetchEntries();
     }, []);
 
-    if (loading) return <div>로딩 중...</div>;
+    if (loading) return <div>{t('common.loading')}</div>;
 
     return (
         <div className={styles.container}>
@@ -34,7 +38,7 @@ const BizCardsContainer = () => {
                 ))}
             </div>
 
-            <Link to="/guestbook/write" className={styles.floating_button}>+</Link>
+            <Link to={lp('/guestbook/write')} className={styles.floating_button}>+</Link>
         </div>
     );
 };

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getCardProjects } from '../../api/getProjects';
 import ProjectItem from '../../components/ProjectItem/ProjectItem';
 import styles from './ProjectContainer.module.css';
@@ -8,6 +9,7 @@ interface ProjectContainerProps {
 }
 
 const ProjectContainer = ({ limit }: ProjectContainerProps) => {
+    const { t } = useTranslation();
     const [projects, setProjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -28,7 +30,7 @@ const ProjectContainer = ({ limit }: ProjectContainerProps) => {
         fetchProjects();
     }, [limit]); // limit이 변경될 때마다 다시 실행
 
-    if (loading) return <div className={styles.loading}>로딩 중...</div>;
+    if (loading) return <div className={styles.loading}>{t('common.loading')}</div>;
 
     return (
         <div className={styles.container}>

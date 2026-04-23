@@ -1,4 +1,7 @@
 {
+  "common": {
+    "loading": "読み込み中..."
+  },
   "header": {
     "title": "Shin's ポートフォリオ",
     "home": "Home",
@@ -12,6 +15,9 @@
     "birthLabel": "生年月日",
     "contactLabel": "連絡先",
     "emailLabel": "メール"
+  },
+  "footer": {
+    "copyright": "©2026 Shin Yeongchan. All rights reserved."
   },
   "introduce": {
     "subtitle": "私は...",
