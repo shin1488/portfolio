@@ -19,6 +19,19 @@
   "footer": {
     "copyright": "©2026 Shin Yeongchan. All rights reserved."
   },
+  "postDetail": {
+    "notFound": "記事が見つかりません。"
+  },
+  "projectDetail": {
+    "notFound": "プロジェクトが見つかりません。",
+    "description": "プロジェクト説明",
+    "period": "期間",
+    "inProgress": "進行中",
+    "techStack": "技術スタック",
+    "projectType": "プロジェクト種別",
+    "teamProject": "チームプロジェクト",
+    "soloProject": "個人プロジェクト"
+  },
   "introduce": {
     "subtitle": "私は...",
     "items": [

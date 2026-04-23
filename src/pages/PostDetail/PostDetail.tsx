@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styles from './PostDetail.module.css';
 import { getPost, incrementViews } from '../../api/getPosts';
 import DividerSecondary from '../../components/Divider/DividerSecondary';
 import MarkdownContent from '../../components/Markdown/MarkdownContent';
 
 const PostDetail = () => {
+    const { t } = useTranslation();
     const { slug } = useParams<{ slug: string }>();
     const [post, setPost] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -32,8 +34,8 @@ const PostDetail = () => {
         fetchPost();
     }, [slug]);
 
-    if (loading) return <div className={styles.loading}>로딩 중...</div>;
-    if (!post) return <div className={styles.error}>포스트를 찾을 수 없습니다.</div>;
+    if (loading) return <div className={styles.loading}>{t('common.loading')}</div>;
+    if (!post) return <div className={styles.error}>{t('postDetail.notFound')}</div>;
 
     return (
         <div className={styles.container}>

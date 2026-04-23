@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useLocalizedPath } from '../../i18n/useLang';
 import styles from './PostListItem.module.css';
 
 interface PostListItemProps {
@@ -14,8 +15,9 @@ interface PostListItemProps {
 }
 
 const PostListItem = ({ post }: PostListItemProps) => {
+    const lp = useLocalizedPath();
     return (
-        <Link to={`/posts/${post.slug}`} className={styles.link_wrapper}>
+        <Link to={lp(`/posts/${post.slug}`)} className={styles.link_wrapper}>
             <div className={styles.container}>
                 <h2 className={styles.title}>{post.title}</h2>
                 <p className={styles.summary}>{post.summary}</p>

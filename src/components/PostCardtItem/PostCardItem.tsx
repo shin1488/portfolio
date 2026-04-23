@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useLocalizedPath } from '../../i18n/useLang';
 import styles from './PostCardItem.module.css';
 
 interface PostItemProps {
@@ -7,14 +8,15 @@ interface PostItemProps {
 }
 
 const PostItem = ({ post, index }: PostItemProps) => {
+    const lp = useLocalizedPath();
     return (
-        <div 
+        <div
             className={styles.container}
             style={{ '--index': index } as React.CSSProperties}
         >
             <h2 className={styles.title}>{post.title}</h2>
             <p className={styles.summary}>{post.summary}</p>
-            <Link to={`/posts/${post.slug}`}>
+            <Link to={lp(`/posts/${post.slug}`)}>
                 <button className={styles.details_btn}>→ details</button>
             </Link>
         </div>

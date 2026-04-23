@@ -1,12 +1,17 @@
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import styles from './ProjectItem.module.css';
 import { getIconUrl } from '../../api/getIconUrl';
-import { Link } from 'react-router-dom';
+import { useLocalizedPath } from '../../i18n/useLang';
 
 const ProjectItem = ({ project }: any) => {
+    const { t } = useTranslation();
+    const lp = useLocalizedPath();
+
     if (!project) return null;
 
     return (
-        <Link to={`/projects/${project.slug}`} className={styles.link_wrapper}>
+        <Link to={lp(`/projects/${project.slug}`)} className={styles.link_wrapper}>
             <div className={styles.container}>
                 <div className={styles.img_section}>
                     <img className={styles.img} src={project.thumbnail_url} alt={project.title} />
@@ -16,7 +21,7 @@ const ProjectItem = ({ project }: any) => {
                     <p className={styles.date}>
                         {/* 날짜 파싱 */}
                         {project.start_date?.replace(/-/g, '.').slice(0, 7)} ~
-                        {project.end_date ? project.end_date.replace(/-/g, '.').slice(0, 7) : '진행 중'}
+                        {project.end_date ? project.end_date.replace(/-/g, '.').slice(0, 7) : t('projectDetail.inProgress')}
                     </p>
                     <p className={styles.summary}>{project.summary}</p>
                     <div className={styles.tag_section}>
@@ -32,7 +37,7 @@ const ProjectItem = ({ project }: any) => {
                             ))}
                         </div>
                         <p className={`${styles.project_type} ${project.is_team ? styles.team : styles.personal}`}>
-                            {project.is_team ? "팀 프로젝트" : "개인 프로젝트"}
+                            {project.is_team ? t('projectDetail.teamProject') : t('projectDetail.soloProject')}
                         </p>
                     </div>
                 </div>

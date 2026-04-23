@@ -19,6 +19,19 @@
   "footer": {
     "copyright": "©2026 신영찬. All rights reserved."
   },
+  "postDetail": {
+    "notFound": "포스트를 찾을 수 없습니다."
+  },
+  "projectDetail": {
+    "notFound": "프로젝트를 찾을 수 없습니다.",
+    "description": "프로젝트 설명",
+    "period": "기간",
+    "inProgress": "진행 중",
+    "techStack": "기술 스택",
+    "projectType": "프로젝트 형태",
+    "teamProject": "팀 프로젝트",
+    "soloProject": "개인 프로젝트"
+  },
   "introduce": {
     "subtitle": "저는...",
     "items": [

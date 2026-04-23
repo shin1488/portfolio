@@ -5,9 +5,11 @@ import type { TablesInsert } from '../../types/supabase';
 import { createGuestbook } from '../../api/getGuestbook';
 import BizCardItem from '../../components/BizCardItem/BizCardItem';
 import BizCardBackItem from '../../components/BizCardBackItem/BizCardBackItem';
+import { useLocalizedPath } from '../../i18n/useLang';
 
 const GuestBookForm = () => {
     const navigate = useNavigate();
+    const lp = useLocalizedPath();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState<TablesInsert<'guestbook'>>({
         visitor_name: '',
@@ -46,7 +48,7 @@ const GuestBookForm = () => {
             const result = await createGuestbook(formData);
             console.log("Submit Success:", result);
             alert('방명록이 등록되었습니다!');
-            navigate('/guestbook');
+            navigate(lp('/guestbook'));
         } catch (err) {
             console.error("에러 :", {
                 message: err instanceof Error ? err.message : "Unknown error",
