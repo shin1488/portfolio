@@ -5,5 +5,24 @@
     "projects": "Projects",
     "blog": "Blog",
     "guestbook": "GuestBook"
+  },
+  "profile": {
+    "name": "Shin Yeongchan",
+    "job": "Android Developer",
+    "birthLabel": "生年月日",
+    "contactLabel": "連絡先",
+    "emailLabel": "メール"
+  },
+  "introduce": {
+    "subtitle": "私は...",
+    "items": [
+      "Androidのライフサイクルを考慮し、リソースリークのない安定したコードを書くことができます。",
+      "Androidの4大コンポーネントの特徴を理解しており、SAA（Single Activity Architecture）ベースのアプリ開発が可能です。",
+      "MVVMやMVIといったデザインパターンを適用・実装した経験があり、関心の分離による構造的な設計を志向しています。",
+      "SOLID原則を遵守し、拡張性が高く保守しやすいコードを書くことができます。",
+      "依存性注入（DI）の概念を理解しており、関連ライブラリ（Hilt）を使用した経験があります。",
+      "宣言的UIフレームワークにおける状態管理の仕組みを理解しており、UIレイヤーとデータレイヤー間の状態同期を効率的に処理できます。",
+      "不変性と純粋関数を重視する関数型プログラミングの概念を理解しており、副作用を最小限に抑えた予測可能なコードを書くことができます。"
+    ]
   }
 }
