@@ -10,6 +10,7 @@ import Projects from './pages/Projects/Projects';
 import Posts from './pages/Posts/Posts';
 import GuestBook from './pages/GuestBook/GuestBook';
 import GuestBookForm from './pages/GuestBookForm/GuestBookForm';
+import NotFound from './pages/NotFound/NotFound';
 import LangLayout from './i18n/LangLayout';
 import { useAutoLanguageRedirect } from './i18n/useAutoLanguageRedirect';
 
@@ -22,6 +23,7 @@ const appRoutes = (
     <Route path="posts/:slug" element={<PostDetail />} />
     <Route path="guestbook" element={<GuestBook />} />
     <Route path="guestbook/write" element={<GuestBookForm />} />
+    <Route path="*" element={<NotFound />} />
   </>
 );
 
