@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import './App.module.css';
 import HeaderContainer from './containers/HeaderContainer/HeaderContainer';
 import Home from './pages/Home/Home';
@@ -52,6 +53,7 @@ function App() {
       <BrowserRouter>
         <AppContent />
       </BrowserRouter>
+      <Analytics />
     </div>
   )
 }
