@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLang } from '../../i18n/useLang';
+import { LANG_PREFERENCE_KEY } from '../../i18n/useAutoLanguageRedirect';
 import type { Lang } from '../../i18n';
 import styles from './LanguageSwitcher.module.css';
 
@@ -9,6 +10,9 @@ const LanguageSwitcher = () => {
   const currentLang = useLang();
 
   const switchTo = (lang: Lang) => {
+    // Remember explicit user choice so auto-detect won't override it next visit
+    localStorage.setItem(LANG_PREFERENCE_KEY, lang);
+
     // Strip any existing /jp prefix to get the base path
     const base = pathname.replace(/^\/jp(?=\/|$)/, '') || '/';
     const next = lang === 'jp' ? (base === '/' ? '/jp' : `/jp${base}`) : base;
