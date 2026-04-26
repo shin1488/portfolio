@@ -11,7 +11,7 @@ const BottomNavBar = () => {
         href="https://shin-workspace.notion.site/Shin-s-Workspace-56eb80a72f5641039382f3173ceee1a9"
         target="_blank"
       >
-        Noion
+        Notion
       </a>
     </div>
   );
