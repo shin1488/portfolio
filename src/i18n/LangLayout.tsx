@@ -8,7 +8,7 @@ interface Props {
 }
 
 const LangLayout = ({ lang }: Props) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     if (i18n.language !== lang) {
@@ -17,7 +17,13 @@ const LangLayout = ({ lang }: Props) => {
     document.documentElement.lang = lang;
   }, [lang, i18n]);
 
-  return <Outlet />;
+  return (
+    <>
+      {/* React 19가 <head>로 자동 hoisting */}
+      <title>{t('meta.title')}</title>
+      <Outlet />
+    </>
+  );
 };
 
 export default LangLayout;
