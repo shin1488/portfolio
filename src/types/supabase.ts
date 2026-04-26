@@ -95,18 +95,21 @@ export type Database = {
       project_details: {
         Row: {
           content: string
+          content_jp: string | null
           created_at: string
           id: number
           project_id: number
         }
         Insert: {
           content: string
+          content_jp?: string | null
           created_at?: string
           id?: number
           project_id: number
         }
         Update: {
           content?: string
+          content_jp?: string | null
           created_at?: string
           id?: number
           project_id?: number
@@ -160,8 +163,10 @@ export type Database = {
           slug: string
           start_date: string
           summary: string
+          summary_jp: string | null
           thumbnail_url: string | null
           title: string
+          title_jp: string | null
         }
         Insert: {
           created_at?: string
@@ -171,8 +176,10 @@ export type Database = {
           slug: string
           start_date: string
           summary: string
+          summary_jp?: string | null
           thumbnail_url?: string | null
           title: string
+          title_jp?: string | null
         }
         Update: {
           created_at?: string
@@ -182,8 +189,10 @@ export type Database = {
           slug?: string
           start_date?: string
           summary?: string
+          summary_jp?: string | null
           thumbnail_url?: string | null
           title?: string
+          title_jp?: string | null
         }
         Relationships: []
       }

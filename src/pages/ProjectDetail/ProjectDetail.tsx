@@ -6,12 +6,14 @@ import { getProject } from '../../api/getProjects';
 import { getIconUrl } from '../../api/getIconUrl';
 import DividerSecondary from '../../components/Divider/DividerSecondary';
 import MarkdownContent from '../../components/Markdown/MarkdownContent';
+import { useLocalizedField } from '../../i18n/useLang';
 
 const ProjectDetail = () => {
     const { t } = useTranslation();
     const { slug } = useParams<{ slug: string }>();
     const [project, setProject] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const lf = useLocalizedField();
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -32,14 +34,18 @@ const ProjectDetail = () => {
     if (loading) return <div className={styles.loading}>{t('common.loading')}</div>;
     if (!project) return <div className={styles.error}>{t('projectDetail.notFound')}</div>;
 
+    const title = lf<string>(project, 'title');
+    const summary = lf<string>(project, 'summary');
+    const content = lf<string>(project, 'content') ?? '';
+
     return (
         <div className={styles.container}>
             <header className={styles.header}>
-                <h1 className={styles.title}>{project.title}</h1>
+                <h1 className={styles.title}>{title}</h1>
                 <div className={styles.info_section}>
                     <div className={styles.description_section}>
                         <p className={styles.info_category}>{t('projectDetail.description')}</p>
-                        <p>{project.summary}</p>
+                        <p>{summary}</p>
                     </div>
                     <div className={styles.date_section}>
                         <p className={styles.info_category}>{t('projectDetail.period')}</p>
@@ -72,7 +78,7 @@ const ProjectDetail = () => {
                 <DividerSecondary />
             </div>
 
-            <MarkdownContent content={project.content} />
+            <MarkdownContent content={content} />
         </div >
     );
 };

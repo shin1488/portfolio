@@ -32,7 +32,8 @@ export const getProject = async (slug: string) => {
     .select(`
       *,
       project_details (
-        content
+        content,
+        content_jp
       ),
       project_stacks (
         tech_stacks (
@@ -47,6 +48,7 @@ export const getProject = async (slug: string) => {
   return {
     ...data,
     content: data.project_details[0]?.content,
+    content_jp: data.project_details[0]?.content_jp,
     stacks: data.project_stacks?.map((ps: any) => ps.tech_stacks)
   };
 };
