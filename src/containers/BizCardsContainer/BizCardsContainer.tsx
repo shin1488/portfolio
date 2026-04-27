@@ -1,14 +1,13 @@
 import styles from './BizCardsContainer.module.css';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { getVisibleGuestbooks } from '../../api/getGuestbook';
 import type { Tables } from '../../types/supabase';
 import BizCardContainer from '../BizCardContainer/BizCardContainer';
+import Loading from '../../components/Loading/Loading';
 import { Link } from 'react-router-dom';
 import { useLocalizedPath } from '../../i18n/useLang';
 
 const BizCardsContainer = () => {
-    const { t } = useTranslation();
     const lp = useLocalizedPath();
     const [entries, setEntries] = useState<Tables<'guestbook'>[]>([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +26,7 @@ const BizCardsContainer = () => {
         fetchEntries();
     }, []);
 
-    if (loading) return <div>{t('common.loading')}</div>;
+    if (loading) return <Loading fullScreen={false} />;
 
     return (
         <div className={styles.container}>

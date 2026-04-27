@@ -5,6 +5,7 @@ import styles from './PostDetail.module.css';
 import { getPost, incrementViews } from '../../api/getPosts';
 import DividerSecondary from '../../components/Divider/DividerSecondary';
 import MarkdownContent from '../../components/Markdown/MarkdownContent';
+import Loading from '../../components/Loading/Loading';
 
 const PostDetail = () => {
     const { t } = useTranslation();
@@ -34,7 +35,7 @@ const PostDetail = () => {
         fetchPost();
     }, [slug]);
 
-    if (loading) return <div className={styles.loading}>{t('common.loading')}</div>;
+    if (loading) return <Loading />;
     if (!post) return <div className={styles.error}>{t('postDetail.notFound')}</div>;
 
     return (

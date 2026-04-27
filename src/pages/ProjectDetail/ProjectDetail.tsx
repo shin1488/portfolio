@@ -6,6 +6,7 @@ import { getProject } from '../../api/getProjects';
 import { getIconUrl } from '../../api/getIconUrl';
 import DividerSecondary from '../../components/Divider/DividerSecondary';
 import MarkdownContent from '../../components/Markdown/MarkdownContent';
+import Loading from '../../components/Loading/Loading';
 import { useLocalizedField } from '../../i18n/useLang';
 
 const ProjectDetail = () => {
@@ -31,7 +32,7 @@ const ProjectDetail = () => {
         fetchProject();
     }, [slug]);
 
-    if (loading) return <div className={styles.loading}>{t('common.loading')}</div>;
+    if (loading) return <Loading />;
     if (!project) return <div className={styles.error}>{t('projectDetail.notFound')}</div>;
 
     const title = lf<string>(project, 'title');
