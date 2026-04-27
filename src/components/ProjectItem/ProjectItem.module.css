@@ -1,137 +1,164 @@
 .link_wrapper {
-    text-decoration: none;
-    color: inherit;
+  text-decoration: none;
+  color: inherit;
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    background-color: var(--color-blue-white);
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  overflow: hidden;
+  background-color: var(--color-blue-white);
 
-    width: 300px;
-    height: 430px;
+  width: 300px;
+  /* 내부 콘텐츠(타이틀 + 날짜 + 2줄 summary + 태그 영역)와 24px 패딩이 모두 들어가도 여유롭도록 460px로 확보 */
+  height: 460px;
 }
 
 .container:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  transform: translateY(-10px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 .img_section {
-    width: 100%;
-    height: 250px;
+  width: 100%;
+  height: 250px;
+  /* 카드 내부 콘텐츠 길이와 무관하게 이미지 영역이 절대 줄어들지 않도록 고정 */
+  flex-shrink: 0;
 }
 
 .img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .info_section {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 24px;
-    gap: 8px;
-    background-color: var(--color-card-background);
-    /* img_section을 제외한 모든 나머지 공간을 차지한다고 함 */
-    flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  /* 위에서부터 차곡차곡 쌓이도록 함 (justify-content: center 제거) */
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 8px;
+  background-color: var(--color-card-background);
+  /* img_section을 제외한 모든 나머지 공간을 차지한다고 함 */
+  flex-grow: 1;
 }
 
 .info_section * {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .title {
-    font-size: 24px;
-    font-weight: bold;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.2;
+  /* 제목이 길어도 항상 한 줄로만 표시되도록 ellipsis 처리 */
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .date,
 .summary,
 .project_type {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .date,
 .summary {
-    color: var(--color-blue-gray);
+  color: var(--color-blue-gray);
+}
+
+.date {
+  margin: 0;
+  line-height: 1.2;
 }
 
 .summary {
-    /* 2줄을 초과하는 내용이 들어갔을 때 말줄임표를 사용해 최대 2줄만 표시하도록 함 */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0; 
-    line-height: 1.1;
-    word-break: break-all; 
+  /* 2줄을 초과하는 내용이 들어갔을 때 말줄임표를 사용해 최대 2줄만 표시하도록 함 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  line-height: 1.1;
+  word-break: break-all;
+  width: 100%;
+  /* -webkit-box에서는 min-height가 안정적으로 동작하지 않아, 명시적인 height로 항상 2줄 영역을 차지하도록 고정함 */
+  height: calc(1.1em * 2);
 }
 
 .tag_section {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 8px;
-    gap: 8px;
-    overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  /* 위 콘텐츠 길이와 무관하게 항상 카드 하단에 붙도록 함 */
+  margin-top: auto;
+  padding-top: 8px;
+  gap: 12px;
 }
 
 .stack_section {
-    display: flex;
-    gap: 8px;
-    flex: 1;
-
-    /* 한줄 넘어가도 한줄로 유지되게 한다고 함 */
-    overflow: hidden;
-    flex-shrink: 0;
-    white-space: nowrap;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  /* 남는 공간은 모두 사용하되, project_type 버튼이 침범하지 못하도록 min-width 0으로 셀 사이즈 협상 */
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: center;
+  /* 자리가 부족하면 줄바꿈하지 않고 그대로 잘려 사라지게 처리 */
+  overflow: hidden;
 }
 
 .stack_logo {
-    width: 24px;
-    height: 24px;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
 }
 
 .team,
 .personal {
-    padding: 7px;
-    color: var(--color-blue-white);
-    border-radius: 5px;
-    flex: none;
+  padding: 7px 10px;
+  color: var(--color-blue-white);
+  border-radius: 5px;
+  /* 버튼은 절대 줄어들거나 잘리지 않도록 고정 */
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* 조건부 렌더링 */
 .team {
-    background-color: var(--color-primary);
+  background-color: var(--color-primary);
 }
 
 .personal {
-    background-color: var(--color-green);
+  background-color: var(--color-green);
 }
 
 @media (max-width: 768px) {
-    .container {
-        height: fit-content;
-    }
+  .container {
+    /* 모바일에서도 카드 높이를 통일해 세로 배치 시 시각적 흔들림이 없도록 함 (태그가 세로 정렬이라 데스크톱보다 약간 더 여유) */
+    height: 500px;
+  }
 
-    .tag_section {
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 16px;
-    }
+  .tag_section {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+  }
 }
