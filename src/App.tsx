@@ -1,4 +1,5 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import './App.module.css';
 import HeaderContainer from './containers/HeaderContainer/HeaderContainer';
@@ -30,6 +31,16 @@ const appRoutes = (
 
 const AppContent = () => {
   useAutoLanguageRedirect();
+  const { pathname } = useLocation();
+
+  // 라우트 이동 시 새 페이지의 최상단부터 보이도록 함.
+  // 단, 홈으로 돌아가는 경우엔 Home 컴포넌트의 useLayoutEffect가 저장된 스크롤을 복원해야 하므로 스킵.
+  useLayoutEffect(() => {
+    const isHome = pathname === "/" || pathname === "/jp";
+    if (!isHome) {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname]);
 
   return (
     <>

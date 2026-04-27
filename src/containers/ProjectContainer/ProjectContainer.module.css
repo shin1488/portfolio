@@ -24,6 +24,33 @@
     margin: 0 auto;
 }
 
+.more_btn_link {
+    text-decoration: none;
+}
+
+/* PostCardItem.details_btn과 동일한 톤이지만, 섹션 하단 단독 CTA라 좀 더 큼직하게 표현 */
+.more_btn {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-primary);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 12px 24px;
+    transition: transform 0.15s ease;
+}
+
+.more_btn:hover {
+    transform: translateX(6px);
+}
+
+@media (max-width: 768px) {
+    .more_btn {
+        font-size: 20px;
+        padding: 10px 20px;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         margin-top: 120px;

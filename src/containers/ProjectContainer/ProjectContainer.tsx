@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { getCardProjects } from '../../api/getProjects';
 import ProjectItem from '../../components/ProjectItem/ProjectItem';
 import Loading from '../../components/Loading/Loading';
+import { useLocalizedPath } from '../../i18n/useLang';
 import styles from './ProjectContainer.module.css';
 
 interface ProjectContainerProps {
@@ -9,6 +12,8 @@ interface ProjectContainerProps {
 }
 
 const ProjectContainer = ({ limit }: ProjectContainerProps) => {
+    const { t } = useTranslation();
+    const lp = useLocalizedPath();
     const [projects, setProjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -39,6 +44,12 @@ const ProjectContainer = ({ limit }: ProjectContainerProps) => {
                     <ProjectItem key={project.id} project={project} />
                 ))}
             </div>
+            {/* limit이 지정된 경우(=홈에서 일부만 보여주는 모드)에만 더보기 버튼 노출 */}
+            {limit !== undefined && (
+                <Link to={lp('/projects')} className={styles.more_btn_link}>
+                    <button className={styles.more_btn}>→ {t('common.viewMore')}</button>
+                </Link>
+            )}
         </div>
     );
 }
