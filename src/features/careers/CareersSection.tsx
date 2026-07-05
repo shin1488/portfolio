@@ -35,7 +35,7 @@ export function CareersSection({ categories }: CareersSectionProps) {
   return (
     <section id="careers" aria-label="Careers" className="scroll-mt-14">
       {/* 데스크톱: 핀 고정 스텝스루 */}
-      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 33}vh` }}>
+      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 25}vh` }}>
         <div className="sticky top-0 flex h-screen items-center">
           <div className="mx-auto w-full max-w-5xl px-6">
             <h2 className="mb-11 text-center text-3xl font-bold tracking-tight">Careers</h2>

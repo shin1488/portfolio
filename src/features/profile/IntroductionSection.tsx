@@ -32,7 +32,7 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
   return (
     <section id="about" aria-label="Introduction" className="scroll-mt-14">
       {/* 데스크톱: 핀 고정 read-along (문단당 넉넉한 스크롤 배분) */}
-      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 52}vh` }}>
+      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 44}vh` }}>
         <div className="sticky top-0 flex h-screen items-center">
           <div className="mx-auto w-full max-w-5xl px-6">
             <h2 className="text-center text-3xl font-bold tracking-tight">Introduction</h2>

@@ -51,7 +51,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
   return (
     <section id="projects" aria-label="Projects" className="scroll-mt-14">
       {/* 데스크톱: 핀 고정 크로스페이드 */}
-      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 58}vh` }}>
+      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 50}vh` }}>
         <div className="sticky top-0 flex h-screen items-center">
           <div className="mx-auto w-full max-w-5xl px-6">
             <div className="flex flex-col items-center">
