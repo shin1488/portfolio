@@ -42,10 +42,10 @@ export function TableOfContents({ entries }: TableOfContentsProps) {
               }}
               className="group flex items-baseline gap-3 rounded-lg px-2 py-2 -mx-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
             >
-              <span className="shrink-0 font-mono text-[13px] tabular-nums text-zinc-400 group-hover:bg-linear-to-r group-hover:from-indigo-400 group-hover:to-pink-400 group-hover:bg-clip-text group-hover:text-transparent dark:text-zinc-500">
+              <span className="shrink-0 font-mono text-[13px] tabular-nums text-zinc-400 transition-colors group-hover:text-indigo-500 dark:text-zinc-500">
                 {String(index + 1).padStart(2, '0')}
               </span>
-              <span className="text-[15px] text-zinc-700 group-hover:bg-linear-to-r group-hover:from-indigo-400 group-hover:to-pink-400 group-hover:bg-clip-text group-hover:text-transparent dark:text-zinc-300">
+              <span className="text-[15px] text-zinc-700 group-hover:bg-linear-to-r group-hover:from-indigo-500 group-hover:to-pink-500 group-hover:bg-clip-text group-hover:text-transparent dark:text-zinc-300">
                 {entry.text}
               </span>
             </a>
