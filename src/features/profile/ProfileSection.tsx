@@ -29,8 +29,18 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
         >
           {profile.name}
         </h1>
-        <p className="mx-auto mt-[18px] max-w-[580px] text-xl leading-relaxed text-zinc-300">
-          {profile.tagline}
+        {/* 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */}
+        <p className="mx-auto mt-[18px] max-w-[600px] text-xl leading-relaxed text-zinc-300">
+          {profile.tagline.split(/,\s*/).map((part, i, arr) => (
+            <span key={i}>
+              {part}
+              {i < arr.length - 1 && (
+                <>
+                  ,<br />
+                </>
+              )}
+            </span>
+          ))}
         </p>
         {profile.location && <p className="mt-4 text-sm text-zinc-500">{profile.location}</p>}
       </div>
