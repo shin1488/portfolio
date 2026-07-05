@@ -22,8 +22,9 @@ export function Header() {
         <button
           type="button"
           onClick={() => go('profile')}
-          className="text-sm font-semibold tracking-tight text-zinc-100"
+          className="flex items-center gap-2 text-sm font-semibold tracking-tight text-zinc-100"
         >
+          <img src="/favicon.svg" alt="" aria-hidden="true" className="h-5 w-5" />
           {SITE_NAME}
         </button>
         <nav aria-label="주요 섹션">

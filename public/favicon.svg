@@ -1,10 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Shin Yeongchan">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6366f1"/>
-      <stop offset="1" stop-color="#7c3aed"/>
-    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"></stop><stop offset="1" stop-color="#ec4899"></stop></linearGradient>
+    <linearGradient id="mk" gradientUnits="userSpaceOnUse" x1="150" y1="150" x2="410" y2="360"><stop offset="0" stop-color="#818cf8"></stop><stop offset="1" stop-color="#f472b6"></stop></linearGradient>
   </defs>
-  <rect width="32" height="32" rx="8" fill="url(#g)"/>
-  <text x="16" y="22.5" font-size="17" font-family="system-ui, sans-serif" font-weight="700" fill="#ffffff" text-anchor="middle">P</text>
+  <rect x="16" y="16" width="480" height="480" rx="118" fill="#0e0e12"></rect>
+  <rect x="26" y="26" width="460" height="460" rx="108" fill="none" stroke="url(#ring)" stroke-width="14"></rect>
+  <g fill="none" stroke="url(#mk)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M156 156 L268 256 L156 356"></path>
+    <path d="M300 356 L404 356"></path>
+  </g>
 </svg>
