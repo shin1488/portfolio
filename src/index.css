@@ -96,24 +96,26 @@ body {
   scroll-margin-top: 5rem;
 }
 
-/* 마크다운 섹션 구분 — h1(최상위 제목) 아래에 밝은 디바이더, 섹션 사이 넉넉한 간격 */
+/* 마크다운 섹션 제목 — 제목 '텍스트 폭'에 딱 맞춘 인디고→핑크 밑줄(하단 배경 3px), 섹션 사이 넉넉한 간격.
+   width:fit-content로 박스를 글자에 맞춰 줄여, 밑줄이 헤더 텍스트 길이에 정확히 맞는다. */
 .prose :where(h1) {
-  margin-bottom: 0;
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 2.4rem;
+  padding-bottom: 0.5rem;
+  background-image: linear-gradient(to right, #818cf8, #f472b6);
+  background-repeat: no-repeat;
+  background-size: 100% 3px;
+  background-position: left bottom;
 }
 
 .prose :where(h1):not(:first-child) {
   margin-top: 4rem;
 }
 
-/* 섹션 제목 아래 악센트 — 흰 디바이더 대신 짧은 인디고→핑크 그라데이션 바로 브랜드 컬러를 준다 */
+/* 디바이더(---)는 위 h1 밑줄로 대체하므로 숨긴다 */
 .prose :where(hr) {
-  border: 0;
-  height: 3px;
-  width: 3.5rem;
-  border-radius: 9999px;
-  background-image: linear-gradient(to right, #818cf8, #f472b6);
-  margin-top: 0.9rem;
-  margin-bottom: 2.5rem;
+  display: none;
 }
 
 .prose :where(h2) {

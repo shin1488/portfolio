@@ -162,7 +162,7 @@ function ProjectBlock({
           <p className="mt-4 text-sm leading-[1.7] text-zinc-500">{project.techStack.join(' · ')}</p>
 
           <div className="relative z-[2] mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-300 transition-colors group-hover:text-indigo-200">
+            <span className="inline-flex items-center gap-1 bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-sm font-semibold text-indigo-300 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent">
               상세 페이지 보기
               <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
                 →
