@@ -56,7 +56,7 @@ function Avatar({ profile }: { profile: Profile }) {
         src={profile.avatarImageUrl}
         alt={`${profile.name} 프로필 사진`}
         onError={() => setImageFailed(true)}
-        className="mx-auto size-[150px] shrink-0 rounded-full object-cover shadow-[0_10px_40px_-12px_rgba(99,102,241,0.6)]"
+        className="mx-auto size-[150px] shrink-0 rounded-full object-cover shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)]"
       />
     );
   }
@@ -64,7 +64,7 @@ function Avatar({ profile }: { profile: Profile }) {
     <div
       role="img"
       aria-label={`${profile.name} 프로필 사진 자리`}
-      className="mx-auto flex size-[150px] shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-[38px] font-bold text-white shadow-[0_10px_40px_-12px_rgba(99,102,241,0.6)]"
+      className="mx-auto flex size-[150px] shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-[38px] font-bold text-white shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)]"
     >
       {profile.avatarInitials}
     </div>
