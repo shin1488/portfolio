@@ -19,7 +19,7 @@ export default function App() {
       <ScrollManager />
       <AmbientBackground />
       <div className="flex min-h-screen flex-col">
-        <Header name={content.profile.name} />
+        <Header />
         <AppRoutes />
         <Footer />
         <ContactDock links={content.profile.links} />

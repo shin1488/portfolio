@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Markdown } from '@/components/ui/Markdown';
 import { NotFoundView } from '@/components/layout/NotFoundView';
 import { content } from '@/data';
+import { SITE_NAME } from '@/lib/site';
 import { extractToc } from '@/lib/toc';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
 import { useRouteFocus } from '@/lib/useRouteFocus';
@@ -26,7 +27,7 @@ export default function ProjectDetailPage() {
 }
 
 function ProjectDetailView({ project }: { project: Project }) {
-  useDocumentTitle(`${project.title} — ${content.profile.name}`);
+  useDocumentTitle(`${SITE_NAME} - ${project.title}`);
   const headingRef = useRouteFocus();
   // 목차는 마크다운 본문에서 매번 파생 — 본문이 바뀌면 목차·미니목차·진행바가 자동 갱신된다.
   const toc = useMemo(() => extractToc(project.body), [project.body]);

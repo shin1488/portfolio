@@ -5,6 +5,7 @@ import { IntroductionSection } from '@/features/profile/IntroductionSection';
 import { ProfileSection } from '@/features/profile/ProfileSection';
 import { ProjectsSection } from '@/features/projects/ProjectsSection';
 import { SkillsSection } from '@/features/skills/SkillsSection';
+import { SITE_NAME } from '@/lib/site';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
 import { useRouteFocus } from '@/lib/useRouteFocus';
 import { useSectionPager } from '@/lib/useSectionPager';
@@ -13,7 +14,7 @@ import { useSectionPager } from '@/lib/useSectionPager';
 const SECTION_IDS = ['profile', 'about', 'skills', 'projects', 'careers'];
 
 export function HomePage() {
-  useDocumentTitle(`${content.profile.name} — ${content.profile.role}`);
+  useDocumentTitle(SITE_NAME);
   const headingRef = useRouteFocus();
   useSectionPager(SECTION_IDS);
   return (

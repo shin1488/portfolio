@@ -2,12 +2,9 @@ import { useLocation, useNavigate } from 'react-router';
 import { cn } from '@/lib/cn';
 import { NAV_ITEMS } from '@/lib/nav';
 import { scrollToSection, useActiveSection } from '@/lib/section';
+import { SITE_NAME } from '@/lib/site';
 
-interface HeaderProps {
-  name: string;
-}
-
-export function Header({ name }: HeaderProps) {
+export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const onHome = location.pathname === '/';
@@ -27,7 +24,7 @@ export function Header({ name }: HeaderProps) {
           onClick={() => go('profile')}
           className="text-sm font-semibold tracking-tight text-zinc-100"
         >
-          {name}
+          {SITE_NAME}
         </button>
         <nav aria-label="주요 섹션">
           <ul className="flex items-center gap-[22px] text-sm">
