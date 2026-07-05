@@ -10,10 +10,12 @@ interface ProfileSectionProps {
 /** Hero — 한 화면 꽉 채운 중앙 정렬 인트로 + 하단 스크롤 힌트. 자기소개는 Introduction 섹션. */
 export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
   return (
+    // -mt-14: 흐름을 차지하는 sticky 헤더(h-14, 56px)만큼 위로 끌어올려, 최상단(scroll=0)에서도
+    // 히어로가 뷰포트 정중앙에 오게 한다(로고 클릭 시 착지 지점과도 일치 → 위치 튐 없음).
     <section
       id="profile"
       aria-label="소개"
-      className="relative flex min-h-screen scroll-mt-14 flex-col items-center justify-center px-6 text-center"
+      className="relative -mt-14 flex min-h-screen scroll-mt-14 flex-col items-center justify-center px-6 text-center"
     >
       <div className="mx-auto max-w-xl">
         <Avatar profile={profile} />
