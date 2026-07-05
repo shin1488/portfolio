@@ -50,7 +50,7 @@ order: 4
 ![앱 메인 화면과 홈 화면에 배치된 위젯](/content/projects/dnfauc/preview1.png)
 
 
-# 위젯 갱신 — 이 앱의 핵심
+# 위젯 갱신
 
 ---
 
