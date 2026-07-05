@@ -1,9 +1,9 @@
 /**
- * 사이트 전역 앰비언트 배경 — 어두운 베이스(body bg-zinc-950) 위에 파랑 글로우를
- * 흐릿하게 얹어 깊이감을 준다. fixed로 뷰포트에 고정하고 -z-10으로 본문 뒤에 두며,
+ * 사이트 전역 앰비언트 배경 — 어두운 베이스(body bg-zinc-950) 위에 브랜드 인디고→핑크
+ * 글로우를 아주 옅게 얹어 깊이감을 준다. fixed로 뷰포트에 고정하고 -z-10으로 본문 뒤에 두며,
  * pointer-events-none이라 상호작용을 가로채지 않는다.
- * 액센트(인디고·핑크)와 겹치지 않도록 배경은 일부러 다른 계열인 파랑으로 둔다 —
- * 배경까지 인디고-핑크면 액센트가 배경에 묻혀 안 도드라지기 때문.
+ * 액센트(진행바·활성 nav·로고·차트)와 같은 계열이지만 alpha를 매우 낮추고(0.10~0.22)
+ * 크게 blur해, 선명한 액센트와 경쟁하지 않는 은은한 워시로만 깔린다.
  *
  * 오브는 정지 상태고, 컨테이너(.ambient-hue)에 건 hue-rotate로 전체 색만 천천히 옮긴다.
  *
@@ -15,26 +15,26 @@
 export function AmbientBackground() {
   return (
     <div aria-hidden="true" className="ambient-hue pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      {/* 좌상단 파랑 글로우 — 헤더 근처에서 은은하게 번진다 */}
+      {/* 좌상단 인디고 글로우 — 헤더·로고 근처에서 은은하게 번진다(브랜드 그라데이션 시작색) */}
       <div
         className="absolute -left-40 -top-48 size-[42rem] rounded-full blur-[120px]"
-        style={{ background: 'radial-gradient(circle, rgba(56,150,230,0.22), rgba(24,66,132,0.06))' }}
+        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.22), rgba(49,46,120,0.06))' }}
       />
-      {/* 우측 시안-블루 글로우 — 화면 중단 오른쪽에서 대각선으로 대비를 준다 */}
+      {/* 우측 핑크 글로우 — 화면 중단 오른쪽에서 대각선으로 브랜드 그라데이션 끝색을 준다 */}
       <div
         className="absolute -right-32 top-[22%] size-[38rem] rounded-full blur-[130px]"
-        style={{ background: 'radial-gradient(circle, rgba(22,140,200,0.18), rgba(12,66,116,0.05))' }}
+        style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.16), rgba(110,28,74,0.05))' }}
       />
-      {/* 화면 정중앙 파랑 톤 — 넓고 옅게 깔아 중앙 허전함을 채운다.
+      {/* 화면 정중앙 바이올렛 톤 — 넓고 옅게 깔아 중앙 허전함을 채운다.
          본문이 얹히는 자리라 alpha를 낮춰 가독성을 지킨다. */}
       <div
         className="absolute left-1/2 top-1/2 size-[46rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
-        style={{ background: 'radial-gradient(circle, rgba(48,120,210,0.11), rgba(24,60,120,0.04))' }}
+        style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.10), rgba(52,40,104,0.04))' }}
       />
-      {/* 하단 좌측 딥블루 톤 — 아래쪽 여백을 채우고 좌측에 파랑을 퍼뜨려 대각선 균형을 준다 */}
+      {/* 하단 좌측 인디고-바이올렛 톤 — 아래쪽 여백을 채우고 좌측에 인디고를 퍼뜨려 대각선 균형을 준다 */}
       <div
         className="absolute -bottom-52 left-1/3 size-[40rem] -translate-x-1/2 rounded-full blur-[140px]"
-        style={{ background: 'radial-gradient(circle, rgba(37,110,220,0.18), rgba(18,56,120,0.05))' }}
+        style={{ background: 'radial-gradient(circle, rgba(120,90,240,0.16), rgba(46,40,110,0.05))' }}
       />
     </div>
   );
