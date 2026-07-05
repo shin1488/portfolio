@@ -215,8 +215,6 @@ Axios 인터셉터로 토큰 자동 재발급과 401 처리를 짜면서, 안드
 
 ---
 
-프로젝트 최종 발표에 사용한 슬라이드입니다.
-
 [발표 슬라이드](/files/monimentoom-presentation.pdf)
 
 [시연 영상](https://youtu.be/pbEECx4b8i8)

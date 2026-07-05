@@ -1,4 +1,4 @@
-import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
@@ -21,18 +21,32 @@ function getYouTubeId(href: string | undefined): string | null {
   return m ? m[1] : null;
 }
 
-/** 시연 영상 — 썸네일 파사드를 먼저 보여주고, 클릭 시에만 iframe을 로드한다(초기 로딩 성능). */
-function YouTubeEmbed({ id, title }: { id: string; title?: ReactNode }) {
+/**
+ * 시연 영상 — PDF 뷰어와 같은 모양(상단 제목 헤더 + aspect-video 본문, 같은 테두리).
+ * 썸네일 파사드를 먼저 보여주고, 클릭 시에만 iframe을 로드한다(초기 로딩 성능).
+ */
+function YouTubeEmbed({ id, title }: { id: string; title?: string }) {
   const [playing, setPlaying] = useState(false);
-  const label = typeof title === 'string' ? title : undefined;
+  const label = title?.trim() || '영상';
   return (
-    <span className="my-5 block">
-      <span className="relative block aspect-video w-full overflow-hidden rounded-xl border border-zinc-200 bg-black dark:border-zinc-800">
+    <div className="not-prose my-6 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-center justify-between gap-3 border-b border-zinc-200 px-3.5 py-2 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+        <span className="truncate">{label}</span>
+        <a
+          href={`https://youtu.be/${id}`}
+          target="_blank"
+          rel="noreferrer"
+          className="shrink-0 no-underline hover:text-zinc-700 dark:hover:text-zinc-200"
+        >
+          YouTube ↗
+        </a>
+      </div>
+      <div className="relative aspect-video w-full bg-black">
         {playing ? (
           <iframe
             className="absolute inset-0 h-full w-full"
             src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`}
-            title={label ?? 'YouTube 영상'}
+            title={label}
             loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
@@ -41,14 +55,14 @@ function YouTubeEmbed({ id, title }: { id: string; title?: ReactNode }) {
           <button
             type="button"
             onClick={() => setPlaying(true)}
-            aria-label={label ? `영상 재생: ${label}` : '영상 재생'}
+            aria-label={`영상 재생: ${label}`}
             className="group absolute inset-0 h-full w-full cursor-pointer"
           >
             <img
               src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
               alt=""
               loading="lazy"
-              className="!m-0 h-full w-full !rounded-none !border-0 object-cover opacity-80 transition group-hover:opacity-100"
+              className="h-full w-full object-cover opacity-80 transition group-hover:opacity-100"
             />
             <span className="absolute inset-0 flex items-center justify-center">
               <span className="flex h-16 w-16 items-center justify-center rounded-full bg-red-600 shadow-lg transition group-hover:scale-105">
@@ -59,11 +73,8 @@ function YouTubeEmbed({ id, title }: { id: string; title?: ReactNode }) {
             </span>
           </button>
         )}
-      </span>
-      {label && (
-        <span className="mt-2 block text-sm text-zinc-500 dark:text-zinc-400">{label}</span>
-      )}
-    </span>
+      </div>
+    </div>
   );
 }
 
@@ -169,19 +180,19 @@ export function Markdown({ children }: MarkdownProps) {
             );
             const only = kids[0];
             if (kids.length === 1 && only.type === 'element' && only.tagName === 'a') {
-              const href = only.properties?.href;
-              const pdf = typeof href === 'string' ? getFilePdf(href) : null;
-              if (pdf && !getYouTubeId(pdf)) {
+              const href = typeof only.properties?.href === 'string' ? only.properties.href : undefined;
+              const videoId = getYouTubeId(href);
+              if (videoId) {
+                return <YouTubeEmbed id={videoId} title={hastText(only)} />;
+              }
+              const pdf = getFilePdf(href);
+              if (pdf) {
                 return <PdfEmbed href={pdf} title={hastText(only)} />;
               }
             }
             return <p {...props}>{children}</p>;
           },
           a({ node: _node, href, children: linkChildren, ...props }) {
-            const videoId = getYouTubeId(href);
-            if (videoId) {
-              return <YouTubeEmbed id={videoId} title={linkChildren} />;
-            }
             const external = /^https?:/i.test(href ?? '');
             return (
               <a

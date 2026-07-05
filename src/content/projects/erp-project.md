@@ -371,8 +371,6 @@ API/MQ 호출을 DB 트랜잭션 안에서 하면 외부 지연이 커넥션 풀
 
 ---
 
-프로젝트 최종 발표에 사용한 슬라이드 전체입니다. (PDF · 약 31MB)
-
 [전체 발표 슬라이드](/files/erp-project-presentation.pdf)
 
 [웹 시연](https://youtu.be/tXZphdlfiLU)
