@@ -17,7 +17,7 @@ export function ProjectLinks({ project }: ProjectLinksProps) {
           href={link.href}
           target="_blank"
           rel="noreferrer"
-          className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+          className="text-sm font-medium text-indigo-600 hover:bg-linear-to-r hover:from-indigo-400 hover:to-pink-400 hover:bg-clip-text hover:text-transparent dark:text-indigo-400"
         >
           {link.label} <span aria-hidden="true">↗</span>
           <span className="sr-only"> — {project.title} (새 탭에서 열림)</span>

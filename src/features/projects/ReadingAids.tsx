@@ -52,21 +52,33 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                     select(entry.id); // 클릭한 항목을 고정 강조 — 바닥 근처 섹션도 마지막으로 안 튀게
                     scrollToHeading(entry.id);
                   }}
-                  className={cn(
-                    'flex items-center gap-2.5 rounded-md py-1 pl-3 pr-2 text-xs transition-colors',
-                    active
-                      ? 'font-medium text-indigo-600 dark:text-indigo-300'
-                      : 'text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200',
-                  )}
+                  className="group flex items-center gap-2.5 rounded-md py-1 pl-3 pr-2 text-xs"
                 >
                   <span
                     aria-hidden="true"
                     className={cn(
                       'h-px shrink-0 transition-all',
-                      active ? 'w-5 bg-indigo-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
+                      active
+                        ? 'w-5 bg-linear-to-r from-indigo-500 to-pink-500'
+                        : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
                     )}
                   />
-                  <span className="line-clamp-1 max-w-[10.5rem]">{entry.text}</span>
+                  {/* 회색 라벨과 그라데이션 라벨을 겹쳐 두고 활성 시 그라데이션만 opacity로 페이드한다
+                      (bg-clip-text를 껐다 켜지 않아 섹션 전환 때 깜빡임이 없다 — 홈 nav와 동일 방식) */}
+                  <span className="grid">
+                    <span className="col-start-1 row-start-1 line-clamp-1 max-w-[10.5rem] text-zinc-400 transition-colors group-hover:text-zinc-700 dark:text-zinc-500 dark:group-hover:text-zinc-200">
+                      {entry.text}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'col-start-1 row-start-1 line-clamp-1 max-w-[10.5rem] bg-linear-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent transition-opacity',
+                        active ? 'opacity-100' : 'opacity-0',
+                      )}
+                    >
+                      {entry.text}
+                    </span>
+                  </span>
                 </a>
               </li>
             );

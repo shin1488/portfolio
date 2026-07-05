@@ -41,7 +41,7 @@ function ProjectDetailView({ project }: { project: Project }) {
       <Link
         to="/#projects"
         state={{ focusProjectIndex: projectIndex }}
-        className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+        className="text-sm font-medium text-indigo-600 hover:bg-linear-to-r hover:from-indigo-400 hover:to-pink-400 hover:bg-clip-text hover:text-transparent dark:text-indigo-400"
       >
         <span aria-hidden="true">← </span>프로젝트 목록
       </Link>

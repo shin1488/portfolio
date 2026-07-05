@@ -105,9 +105,14 @@ body {
   margin-top: 4rem;
 }
 
+/* 섹션 제목 아래 악센트 — 흰 디바이더 대신 짧은 인디고→핑크 그라데이션 바로 브랜드 컬러를 준다 */
 .prose :where(hr) {
-  border-top-color: rgba(255, 255, 255, 0.22);
-  margin-top: 0.85rem;
+  border: 0;
+  height: 3px;
+  width: 3.5rem;
+  border-radius: 9999px;
+  background-image: linear-gradient(to right, #818cf8, #f472b6);
+  margin-top: 0.9rem;
   margin-bottom: 2.5rem;
 }
 

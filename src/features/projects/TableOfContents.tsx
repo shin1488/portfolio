@@ -18,8 +18,18 @@ export function TableOfContents({ entries }: TableOfContentsProps) {
       className="rounded-2xl border border-zinc-200 bg-linear-to-b from-zinc-50 to-white p-5 shadow-sm sm:p-6 dark:border-white/10 dark:from-white/[0.05] dark:to-white/[0.02] dark:shadow-xl dark:shadow-black/20 dark:backdrop-blur-xl"
     >
       <div className="flex items-center gap-2">
-        <svg viewBox="0 0 24 24" className="size-4 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" strokeLinecap="round" />
+        <svg viewBox="0 0 24 24" className="size-4" fill="none" strokeWidth="2" aria-hidden="true">
+          <defs>
+            <linearGradient id="toc-icon-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#818cf8" />
+              <stop offset="1" stopColor="#f472b6" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
+            stroke="url(#toc-icon-grad)"
+            strokeLinecap="round"
+          />
         </svg>
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           목차
@@ -42,10 +52,10 @@ export function TableOfContents({ entries }: TableOfContentsProps) {
               }}
               className="group flex items-baseline gap-3 rounded-lg px-2 py-2 -mx-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
             >
-              <span className="shrink-0 font-mono text-xs tabular-nums text-zinc-400 group-hover:text-indigo-500 dark:text-zinc-500">
+              <span className="shrink-0 font-mono text-xs tabular-nums text-zinc-400 group-hover:bg-linear-to-r group-hover:from-indigo-400 group-hover:to-pink-400 group-hover:bg-clip-text group-hover:text-transparent dark:text-zinc-500">
                 {String(index + 1).padStart(2, '0')}
               </span>
-              <span className="text-sm text-zinc-700 group-hover:text-indigo-600 dark:text-zinc-300 dark:group-hover:text-indigo-300">
+              <span className="text-sm text-zinc-700 group-hover:bg-linear-to-r group-hover:from-indigo-400 group-hover:to-pink-400 group-hover:bg-clip-text group-hover:text-transparent dark:text-zinc-300">
                 {entry.text}
               </span>
             </a>
