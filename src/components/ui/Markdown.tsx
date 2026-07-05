@@ -201,7 +201,26 @@ export function Markdown({ children }: MarkdownProps) {
                 {...props}
               >
                 {linkChildren}
-                {external && <span className="sr-only"> (새 탭에서 열림)</span>}
+                {external && (
+                  <>
+                    {/* 네모+대각선 화살표 = 외부(새 탭) 링크 표시. currentColor·0.85em로 글자와 어울림 */}
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="ml-0.5 inline-block size-[0.85em] align-[-0.125em]"
+                    >
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <path d="M15 3h6v6" />
+                      <path d="M10 14 21 3" />
+                    </svg>
+                    <span className="sr-only"> (새 탭에서 열림)</span>
+                  </>
+                )}
               </a>
             );
           },

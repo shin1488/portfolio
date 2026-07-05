@@ -66,10 +66,10 @@ order: 1
 
 실제 팀 컨벤션 문서 일부입니다 (Notion 공개) — 주제별로:
 
-- **API · 에러 표준** — [API 응답 / 에러 표준](https://shin-workspace.notion.site/API-36efded21c4080d6b620d1390f8aac4e) · [에러 응답 표준 — 설계 선택 타임라인](https://shin-workspace.notion.site/381fded21c4080cea434cf1263426349)
-- **서비스 간 통신** — [MSA 외부 도메인 통신 컨벤션 (v1.2)](https://shin-workspace.notion.site/MSA-v1-2-369fded21c40804780f0c7a900b3596e) · [외부 도메인 Mock Client 작성 가이드 (v1.1)](https://shin-workspace.notion.site/Mock-Client-v1-1-375fded21c4080398c30c3a7292c530e)
-- **인증 · 인가** — [Keycloak JWT 검증 팀 컨벤션 (v2.8)](https://shin-workspace.notion.site/Keycloak-JWT-v2-8-372fded21c40803d8d23dd4cf53961f0)
-- **데이터 · 상태** — [멱등키 호출 규약 (전 서비스 공통)](https://shin-workspace.notion.site/37ffded21c408058a552ddc64eb3bb74) · [시간(Time) 처리 컨벤션](https://shin-workspace.notion.site/Time-36ffded21c4080cea934d6d55e46e218) · [Redis(ElastiCache) 사용 컨벤션 (v1.2)](https://shin-workspace.notion.site/Redis-ElastiCache-v1-2-373fded21c4080d8a820e66ed6ca90c7)
+- **API · 에러 표준** — 📄 [API 응답 / 에러 표준](https://shin-workspace.notion.site/API-36efded21c4080d6b620d1390f8aac4e) · 📄 [에러 응답 표준 — 설계 선택 타임라인](https://shin-workspace.notion.site/381fded21c4080cea434cf1263426349)
+- **서비스 간 통신** — 📄 [MSA 외부 도메인 통신 컨벤션 (v1.2)](https://shin-workspace.notion.site/MSA-v1-2-369fded21c40804780f0c7a900b3596e) · 📄 [외부 도메인 Mock Client 작성 가이드 (v1.1)](https://shin-workspace.notion.site/Mock-Client-v1-1-375fded21c4080398c30c3a7292c530e)
+- **인증 · 인가** — 📄 [Keycloak JWT 검증 팀 컨벤션 (v2.8)](https://shin-workspace.notion.site/Keycloak-JWT-v2-8-372fded21c40803d8d23dd4cf53961f0)
+- **데이터 · 상태** — 📄 [멱등키 호출 규약 (전 서비스 공통)](https://shin-workspace.notion.site/37ffded21c408058a552ddc64eb3bb74) · 📄 [시간(Time) 처리 컨벤션](https://shin-workspace.notion.site/Time-36ffded21c4080cea934d6d55e46e218) · 📄 [Redis(ElastiCache) 사용 컨벤션 (v1.2)](https://shin-workspace.notion.site/Redis-ElastiCache-v1-2-373fded21c4080d8a820e66ed6ca90c7)
 
 가장 공을 들인 건 에러 응답 표준입니다. MSA에선 서비스마다 에러 포맷이 난립하기 쉬운데, 문제는 스프링·서블릿 구조상 예외가 **세 갈래로 흩어진다**는 것이었습니다 — MVC 밖으로 빠진 에러는 서블릿 컨테이너가, 인증·인가 실패는 시큐리티 필터가, 도메인·검증 예외는 디스패처 안 `@RestControllerAdvice`가 받습니다. 이 세 길목을 모두 막아 어디서 발생하든 같은 `ProblemDetail`(RFC 9457) 포맷으로 수렴시켰고, 클라이언트와 서비스 간 통신 모두 분기 없이 에러 코드 하나로 일관되게 처리할 수 있게 됐습니다.
 
