@@ -37,7 +37,7 @@ export function SectionRail() {
               aria-hidden="true"
               className={cn(
                 'h-0.5 rounded-full transition-all duration-[250ms]',
-                isActive ? 'w-[26px] bg-indigo-400' : 'w-[14px] bg-zinc-700',
+                isActive ? 'w-[26px] bg-linear-to-r from-indigo-400 to-pink-400' : 'w-[14px] bg-zinc-700',
               )}
             />
           </button>

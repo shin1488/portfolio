@@ -52,7 +52,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
                 <div className="relative w-full pl-[22px]">
                   <div
                     aria-hidden="true"
-                    className="absolute left-0 top-[15px] h-[22px] w-[3px] rounded-sm bg-indigo-400"
+                    className="absolute left-0 top-[15px] h-[22px] w-[3px] rounded-sm bg-linear-to-b from-indigo-400 to-pink-400"
                     style={{
                       transform: `translateY(${active * ROW_H}px)`,
                       transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',

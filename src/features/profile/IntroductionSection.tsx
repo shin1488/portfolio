@@ -47,7 +47,7 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
                   onClick={() => scrollToTrackStep(trackRef.current, i, n)}
                   className={cn(
                     'h-1.5 rounded-full transition-all duration-[250ms]',
-                    i === active ? 'w-[26px] bg-indigo-400' : 'w-1.5 bg-zinc-700',
+                    i === active ? 'w-[26px] bg-linear-to-r from-indigo-400 to-pink-400' : 'w-1.5 bg-zinc-700',
                   )}
                 />
               ))}
@@ -68,7 +68,7 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
                     aria-hidden="true"
                     className={cn(
                       'w-[3px] shrink-0 rounded-sm transition-colors duration-[350ms]',
-                      i === active ? 'bg-indigo-400' : 'bg-zinc-800',
+                      i === active ? 'bg-linear-to-b from-indigo-400 to-pink-400' : 'bg-zinc-800',
                     )}
                   />
                   <p

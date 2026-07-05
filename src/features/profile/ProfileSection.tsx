@@ -19,7 +19,9 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     >
       <div className="mx-auto max-w-xl">
         <Avatar profile={profile} />
-        <p className="mt-[26px] text-[15px] font-semibold text-indigo-400">{profile.role}</p>
+        <p className="mt-[26px] inline-block bg-linear-to-r from-indigo-400 to-pink-400 bg-clip-text text-[15px] font-semibold text-transparent">
+          {profile.role}
+        </p>
         <h1
           ref={headingRef}
           tabIndex={-1}
