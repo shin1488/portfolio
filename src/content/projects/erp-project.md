@@ -35,7 +35,7 @@ order: 1
 
 ## 담당 역할
 
-- **PM** — 일정·범위 관리와 팀 컨벤션 주도. Spring Boot 4·Spring AI 2.0 같은 갓 릴리스된 스택을 쓰기로 한 만큼 사소한 것까지 팀 컨벤션으로 정하였습니다. API 응답 / 에러 표준, JWT 검증, 시간 처리 등 8개 항목을 문서화하고 6개 서비스에 일관 적용했습니다.
+- **PM** — 일정·범위 관리와 팀 컨벤션 주도. Spring Boot 4·Spring AI 2.0 같은 갓 릴리스된 스택을 쓰기로 한 만큼 사소한 것까지 팀 컨벤션으로 정하였습니다. API 응답 / 에러 표준, JWT 검증, 시간 처리 등 7개 항목을 문서화하고 6개 서비스에 일관 적용했습니다.
 - **Inventory(재고·창고 서비스)** — 재고 5종 변동, 동시성·멱등성·정합성 설계, 소속(tenancy) 데이터 격리.
 - **AiChat(챗봇 서비스)** — Spring AI 2.0 + MCP 기반 ERP 어시스턴트. 5개 서비스의 도구를 수집해 조회·안내를 수행합니다.
 - **Infra** — Docker Compose 12컨테이너 오케스트레이션(6서비스 + Gateway + Frontend + PostgreSQL/Redis/Keycloak/Adminer), AWS ECS Fargate 배포, Keycloak 인증 인프라.
@@ -66,7 +66,7 @@ order: 1
 
 실제 팀 컨벤션 문서 일부입니다 (Notion 공개) — 주제별로:
 
-- **API · 에러 표준** — 📄 [API 응답 / 에러 표준](https://shin-workspace.notion.site/API-36efded21c4080d6b620d1390f8aac4e) · 📄 [에러 응답 표준 — 설계 선택 타임라인](https://shin-workspace.notion.site/381fded21c4080cea434cf1263426349)
+- **API · 에러 표준** — 📄 [API 응답 / 에러 표준](https://shin-workspace.notion.site/API-36efded21c4080d6b620d1390f8aac4e)
 - **서비스 간 통신** — 📄 [MSA 외부 도메인 통신 컨벤션 (v1.2)](https://shin-workspace.notion.site/MSA-v1-2-369fded21c40804780f0c7a900b3596e) · 📄 [외부 도메인 Mock Client 작성 가이드 (v1.1)](https://shin-workspace.notion.site/Mock-Client-v1-1-375fded21c4080398c30c3a7292c530e)
 - **인증 · 인가** — 📄 [Keycloak JWT 검증 팀 컨벤션 (v2.8)](https://shin-workspace.notion.site/Keycloak-JWT-v2-8-372fded21c40803d8d23dd4cf53961f0)
 - **데이터 · 상태** — 📄 [멱등키 호출 규약 (전 서비스 공통)](https://shin-workspace.notion.site/37ffded21c408058a552ddc64eb3bb74) · 📄 [시간(Time) 처리 컨벤션](https://shin-workspace.notion.site/Time-36ffded21c4080cea934d6d55e46e218) · 📄 [Redis(ElastiCache) 사용 컨벤션 (v1.2)](https://shin-workspace.notion.site/Redis-ElastiCache-v1-2-373fded21c4080d8a820e66ed6ca90c7)
