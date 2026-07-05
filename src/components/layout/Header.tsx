@@ -25,8 +25,8 @@ export function Header() {
           className="group flex cursor-pointer items-center gap-2 text-sm font-semibold tracking-tight"
         >
           <img src="/favicon.svg" alt="" aria-hidden="true" className="h-5 w-5" />
-          {/* 평소엔 흰 글자, 호버 시 글자색이 투명해지며 200% 폭 그라데이션이 좌우로 일렁인다 */}
-          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-zinc-100 transition-colors duration-200 group-hover:animate-[logo-breathe_3s_ease-in-out_infinite] group-hover:text-transparent">
+          {/* 평소엔 흰 글자, 호버 시 글자색이 투명해지며 200% 폭 그라데이션이 한 방향으로 계속 흐른다 */}
+          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-zinc-100 transition-colors duration-200 group-hover:animate-[logo-flow_3s_linear_infinite] group-hover:text-transparent">
             {SITE_NAME}
           </span>
         </button>
