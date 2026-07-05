@@ -9,8 +9,8 @@ period:
 techStack: [Flutter, Dart, Firebase Auth, SQLite, Django REST]
 highlights:
   - '영양제를 성분·가격으로 비교하고 구독·섭취 이력까지 관리하는 크로스플랫폼(Flutter) 앱 — 3인 팀 프로젝트'
-  - '담당한 장바구니 화면 — 수량 +/− 에 따라 총 결제액을 setState로 실시간 재계산, Django REST를 http로 연동'
-  - '담당한 결제 화면 — Navigator로 넘어온 주문 목록·배송지 폼·결제수단 선택 UI 구현'
+  - '장바구니 화면 — 수량 +/− 에 따라 총 결제액을 setState로 실시간 재계산, Django REST를 http로 연동'
+  - '결제 화면 — Navigator로 넘어온 주문 목록·배송지 폼·결제수단 선택 UI 구현'
   - '교내 두드림학기제 공모전 장려상 수상'
 links:
   - label: GitHub

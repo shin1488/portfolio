@@ -9,8 +9,8 @@ period:
 techStack: [Android, Java, Firebase, Google Maps, Lottie, Picasso]
 highlights:
   - '팝업 다이닝을 지도·목록으로 찾아 예약·평가하는 안드로이드 앱 — 3인 팀 프로젝트'
-  - '담당한 다이닝 등록 — Daum/Kakao 우편번호 검색을 WebView + JavascriptInterface로 연동, Geocoder로 좌표화해 Firebase에 저장'
-  - '담당한 상세 화면 — Firebase Realtime DB·Storage 연동, Google 지도에 다이닝 위치를 Marker로 표시'
+  - '다이닝 등록 — Daum/Kakao 우편번호 검색을 WebView + JavascriptInterface로 연동, Geocoder로 좌표화해 Firebase에 저장'
+  - '상세 화면 — Firebase Realtime DB·Storage 연동, Google 지도에 다이닝 위치를 Marker로 표시'
   - "교내 '사용자인터페이스및실습' 과목에서 유일한 최고 점수 수상"
 links:
   - label: GitHub
