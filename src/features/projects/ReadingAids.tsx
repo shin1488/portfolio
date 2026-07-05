@@ -33,7 +33,55 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
         />
       </div>
 
-      {/* 오른쪽 미니 목차 — 본문 오른쪽 바깥 약 1.5rem 지점에서 오른쪽으로 펼침 */}
+      {/* 미니 목차(좁은 화면 lg~2xl) — 본문 옆에 펼칠 공간이 없을 때. 평소엔 우측 끝에 틱만,
+         마우스를 대면 라벨이 왼쪽으로 펼쳐져 클릭할 수 있다(감지 영역은 pl로 조금 넉넉히).
+         큰 화면(2xl+)에선 아래의 펼쳐진 미니 목차가 대신 뜬다. */}
+      <nav
+        aria-label="섹션 바로가기"
+        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto rounded-l-2xl border border-transparent py-3 pl-8 pr-3 transition-colors group-hover:border-zinc-200 group-hover:bg-white/80 group-hover:shadow-xl group-hover:backdrop-blur-md lg:flex 2xl:hidden dark:group-hover:border-zinc-800 dark:group-hover:bg-zinc-950/80"
+      >
+        {entries.map((entry) => {
+          const active = entry.id === activeId;
+          return (
+            <a
+              key={entry.id}
+              href={`#${entry.id}`}
+              onClick={(event) => {
+                // 히스토리에 해시를 쌓지 않고 스크롤만 — 뒤로가기가 섹션 순회가 아니라 페이지 이탈이 되도록.
+                event.preventDefault();
+                select(entry.id); // 클릭한 항목을 고정 강조 — 바닥 근처 섹션도 마지막으로 안 튀게
+                scrollToHeading(entry.id);
+              }}
+              aria-current={active ? 'true' : undefined}
+              className="flex w-full items-center justify-end rounded-md py-1 pr-0.5 hover:bg-zinc-500/10"
+            >
+              {/* 라벨 — 평소 max-w-0(숨김), rail hover 시 왼쪽으로 펼침. 활성은 좌측 인디고 시작 그라데이션 */}
+              <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-w-[15rem] group-hover:opacity-100">
+                <span
+                  className={cn(
+                    'block truncate pr-2.5 text-[13px]',
+                    active
+                      ? 'bg-linear-to-r from-indigo-500 to-pink-500 bg-clip-text font-medium text-transparent'
+                      : 'text-zinc-500 dark:text-zinc-400',
+                  )}
+                >
+                  {entry.text}
+                </span>
+              </span>
+              {/* 틱 — 우측 끝. 활성은 인디고 통색으로 넓게 */}
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'h-0.5 shrink-0 rounded-full transition-all',
+                  active ? 'w-5 bg-indigo-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
+                )}
+              />
+            </a>
+          );
+        })}
+      </nav>
+
+      {/* 미니 목차(넓은 화면 2xl+) — 본문 오른쪽 바깥 여백에 라벨까지 상시 펼쳐 노출 */}
       <nav
         aria-label="섹션 바로가기"
         style={{ left: 'calc(50% + 28rem)' }}
@@ -47,12 +95,12 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                 <a
                   href={`#${entry.id}`}
                   onClick={(event) => {
-                    // 히스토리에 해시를 쌓지 않고 스크롤만 — 뒤로가기가 섹션 순회가 아니라 페이지 이탈이 되도록.
                     event.preventDefault();
-                    select(entry.id); // 클릭한 항목을 고정 강조 — 바닥 근처 섹션도 마지막으로 안 튀게
+                    select(entry.id);
                     scrollToHeading(entry.id);
                   }}
-                  className="group flex items-center gap-2.5 rounded-md py-1 pl-3 pr-2 text-[13px]"
+                  aria-current={active ? 'true' : undefined}
+                  className="group/item flex items-center gap-2.5 rounded-md py-1 pl-3 pr-2 text-[13px]"
                 >
                   <span
                     aria-hidden="true"
@@ -61,10 +109,9 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                       active ? 'w-5 bg-indigo-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
                     )}
                   />
-                  {/* 회색 라벨과 그라데이션 라벨을 겹쳐 두고 활성 시 그라데이션만 opacity로 페이드한다
-                      (bg-clip-text를 껐다 켜지 않아 섹션 전환 때 깜빡임이 없다 — 홈 nav와 동일 방식) */}
+                  {/* 회색 라벨과 그라데이션 라벨을 겹쳐 두고 활성 시 그라데이션만 opacity로 페이드(깜빡임 없음) */}
                   <span className="grid">
-                    <span className="col-start-1 row-start-1 line-clamp-1 max-w-[10.5rem] text-zinc-400 transition-colors group-hover:text-zinc-700 dark:text-zinc-500 dark:group-hover:text-zinc-200">
+                    <span className="col-start-1 row-start-1 line-clamp-1 max-w-[10.5rem] text-zinc-400 transition-colors group-hover/item:text-zinc-700 dark:text-zinc-500 dark:group-hover/item:text-zinc-200">
                       {entry.text}
                     </span>
                     <span
