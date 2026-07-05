@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router';
+import { Analytics } from '@vercel/analytics/react';
 import { AmbientBackground } from '@/components/layout/AmbientBackground';
 import { ContactDock } from '@/components/layout/ContactDock';
 import { Footer } from '@/components/layout/Footer';
@@ -24,6 +25,7 @@ export default function App() {
         <Footer />
         <ContactDock links={content.profile.links} />
       </div>
+      <Analytics />
     </BrowserRouter>
   );
 }
