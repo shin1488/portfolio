@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="포트폴리오 사이트 썸네일">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0f1a"/>
+      <stop offset="1" stop-color="#09090b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.28" cy="0.22" r="0.6">
+      <stop offset="0" stop-color="#3b82f6" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="avatar" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect width="800" height="600" fill="url(#glow)"/>
+
+  <!-- browser chrome -->
+  <rect x="120" y="96" width="560" height="408" rx="18" fill="#0e0e12" stroke="#27272a" stroke-width="1.5"/>
+  <rect x="120" y="96" width="560" height="46" rx="18" fill="#141418"/>
+  <rect x="120" y="128" width="560" height="14" fill="#141418"/>
+  <circle cx="150" cy="119" r="6" fill="#3f3f46"/>
+  <circle cx="172" cy="119" r="6" fill="#3f3f46"/>
+  <circle cx="194" cy="119" r="6" fill="#3f3f46"/>
+
+  <!-- hero mock -->
+  <circle cx="400" cy="242" r="46" fill="url(#avatar)"/>
+  <text x="400" y="252" font-family="Pretendard, -apple-system, system-ui, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">SYC</text>
+
+  <text x="400" y="322" font-family="Pretendard, -apple-system, system-ui, sans-serif" font-size="15" font-weight="600" fill="#818cf8" text-anchor="middle" letter-spacing="0.5">AI-Native Engineer</text>
+  <text x="400" y="360" font-family="Pretendard, -apple-system, system-ui, sans-serif" font-size="34" font-weight="800" fill="#f4f4f5" text-anchor="middle">신영찬</text>
+
+  <rect x="300" y="392" width="200" height="9" rx="4.5" fill="#3f3f46"/>
+  <rect x="330" y="412" width="140" height="9" rx="4.5" fill="#27272a"/>
+
+  <!-- pinned rail ticks -->
+  <rect x="612" y="288" width="26" height="3" rx="1.5" fill="#818cf8"/>
+  <rect x="624" y="306" width="14" height="3" rx="1.5" fill="#3f3f46"/>
+  <rect x="624" y="324" width="14" height="3" rx="1.5" fill="#3f3f46"/>
+</svg>

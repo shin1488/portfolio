@@ -1,0 +1,136 @@
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+@import 'tailwindcss';
+@import 'highlight.js/styles/github-dark.css';
+@plugin "@tailwindcss/typography";
+
+/* 테마는 상시 다크 — OS 설정 대신 html.dark 클래스로 고정한다(index.html).
+   라이트 스타일은 코드에 남겨 두어, 토글 도입 시 클래스 제어만 추가하면 된다. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, Roboto, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR',
+    sans-serif;
+
+  /* 호버 등 상태 전환이 뚝 끊기지 않도록 기본 트랜지션을 길고 완만하게(easeOutQuint) */
+  --default-transition-duration: 250ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  color-scheme: dark;
+  /* 앵커 이동 시 헤더(56px) 높이만큼 여백 */
+  scroll-padding-top: 56px;
+  /* 네이티브 스크롤바 전역 숨김 — 스크롤 기능은 유지, 위치 안내는 우측 rail이 대신한다 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* 구 Edge */
+}
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chrome/Safari */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Hero 스크롤 힌트 화살표 — 아래로 살짝 바운스 */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-hint-arrow {
+    animation: scroll-bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes scroll-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(7px);
+    }
+  }
+}
+
+body {
+  @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+}
+
+/* 코드블록은 라이트/다크 모두 어두운 배경 위에서 렌더링 —
+   토큰 색은 github-dark 테마가, 배경·테두리는 여기서 담당한다. */
+.hljs {
+  background: transparent;
+}
+
+.prose pre {
+  @apply border border-zinc-700/60 bg-zinc-900;
+}
+
+/* 인라인 코드: 백틱 문자 대신 배경 칩으로 코드임을 드러낸다 */
+.prose :not(pre) > code {
+  @apply rounded-md bg-zinc-200/70 px-1.5 py-0.5 font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200;
+}
+
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none;
+}
+
+/* 목차 앵커로 이동 시 sticky 헤더에 가리지 않도록 여백 확보 */
+.prose :where(h1, h2, h3) {
+  scroll-margin-top: 5rem;
+}
+
+/* 마크다운 섹션 구분 — h1(최상위 제목) 아래에 밝은 디바이더, 섹션 사이 넉넉한 간격 */
+.prose :where(h1) {
+  margin-bottom: 0;
+}
+
+.prose :where(h1):not(:first-child) {
+  margin-top: 4rem;
+}
+
+.prose :where(hr) {
+  border-top-color: rgba(255, 255, 255, 0.22);
+  margin-top: 0.85rem;
+  margin-bottom: 2.5rem;
+}
+
+.prose :where(h2) {
+  margin-top: 2.75rem;
+}
+
+/* 이미지는 원본 비율 그대로 렌더. 크기 제한은 없고, 로드 전에도 inline aspect-ratio로
+   자리만 예약해 lazy 로드 시 문서 높이가 변하지 않게(진행바 튐 방지) 한다. */
+.prose :where(img) {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* 스크롤 앵커로 프로그램적으로 포커스되는 컨테이너(섹션 등, tabindex=-1)는
+   포커스 링을 감춘다 — 사용자가 Tab으로 도달하는 대상이 아니라 앵커 이동 시
+   낭독기 포커스만 옮기는 용도라, 새로고침 후 남는 파란 아웃라인 박스를 없앤다. */
+[tabindex='-1']:focus {
+  outline: none;
+}
+
+/* 앰비언트 배경 — 위치 이동(드리프트)은 없앴다. 움직이면 8비트 밴딩(계단)이 같이
+   기어다녀 훨씬 도드라지기 때문. 대신 컨테이너 hue-rotate로 전체 색만 천천히 옮긴다.
+   자식 오브의 blur 필터는 그대로 유지된다(부모 필터는 합성 결과에 적용).
+   모션 민감 사용자(prefers-reduced-motion)에겐 색 순환도 걸지 않아 완전 정지. */
+@media (prefers-reduced-motion: no-preference) {
+  .ambient-hue {
+    animation: ambient-hue 10s ease-in-out infinite alternate;
+  }
+  @keyframes ambient-hue {
+    from {
+      filter: hue-rotate(-14deg);
+    }
+    to {
+      filter: hue-rotate(16deg);
+    }
+  }
+}

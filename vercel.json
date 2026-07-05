@@ -1,0 +1,10 @@
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "images": {
+    "sizes": [640, 768, 1024, 1536, 2048],
+    "domains": [],
+    "formats": ["image/avif", "image/webp"],
+    "minimumCacheTTL": 2678400,
+    "localPatterns": [{ "pathname": "^/content/.*$", "search": "" }]
+  }
+}
