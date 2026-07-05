@@ -52,15 +52,13 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                     select(entry.id); // 클릭한 항목을 고정 강조 — 바닥 근처 섹션도 마지막으로 안 튀게
                     scrollToHeading(entry.id);
                   }}
-                  className="group flex items-center gap-2.5 rounded-md py-1 pl-3 pr-2 text-xs"
+                  className="group flex items-center gap-2.5 rounded-md py-1 pl-3 pr-2 text-[13px]"
                 >
                   <span
                     aria-hidden="true"
                     className={cn(
                       'h-px shrink-0 transition-all',
-                      active
-                        ? 'w-5 bg-linear-to-r from-indigo-500 to-pink-500'
-                        : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
+                      active ? 'w-5 bg-indigo-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
                     )}
                   />
                   {/* 회색 라벨과 그라데이션 라벨을 겹쳐 두고 활성 시 그라데이션만 opacity로 페이드한다

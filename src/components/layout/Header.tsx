@@ -8,7 +8,13 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const onHome = location.pathname === '/';
-  const active = useActiveSection(onHome ? NAV_ITEMS.map((item) => item.id) : []);
+  const homeActive = useActiveSection(onHome ? NAV_ITEMS.map((item) => item.id) : []);
+  // 홈에선 현재 섹션, 상세(/projects/:id)에선 'projects'를 활성으로 켠다 — 헤더 Projects에 불이 들어온다.
+  const active = onHome
+    ? homeActive
+    : location.pathname.startsWith('/projects/')
+      ? 'projects'
+      : '';
 
   // 홈에선 rail과 동일한 JS 스크롤(오프셋 0), 상세 등 다른 페이지에선 홈으로 이동하며 앵커 지정
   const go = (id: string) => {
@@ -33,7 +39,7 @@ export function Header() {
         <nav aria-label="주요 섹션">
           <ul className="flex items-center gap-[22px] text-sm">
             {NAV_ITEMS.map((item) => {
-              const isActive = onHome && item.id === active;
+              const isActive = item.id === active;
               return (
                 <li key={item.id}>
                   {/* grid로 회색 라벨과 그라데이션 라벨을 정확히 겹쳐 두고, 활성 시 그라데이션만
