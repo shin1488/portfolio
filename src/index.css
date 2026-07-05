@@ -54,6 +54,19 @@ html::-webkit-scrollbar {
   }
 }
 
+/* 헤더 로고 호버 — 그라데이션(200% 폭)이 좌우로 천천히 흘러 색이 일렁이는(breathing) 효과 */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes logo-breathe {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+}
+
 body {
   @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
 }
