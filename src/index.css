@@ -67,6 +67,27 @@ html::-webkit-scrollbar {
   }
 }
 
+/* 프로필 아바타 halo — 인디고↔핑크가 자리를 바꾸며 빠르게 숨쉬는(breathing) 글로우.
+   reduced-motion에선 애니메이션 없이 클래스의 정적 shadow가 그대로 남는다. */
+@media (prefers-reduced-motion: no-preference) {
+  .avatar-breathe {
+    animation: avatar-breathe 2s ease-in-out infinite;
+  }
+  @keyframes avatar-breathe {
+    0%,
+    100% {
+      box-shadow:
+        0 0 35px -8px rgba(99, 102, 241, 0.6),
+        0 0 64px -12px rgba(236, 72, 153, 0.35);
+    }
+    50% {
+      box-shadow:
+        0 0 35px -8px rgba(236, 72, 153, 0.6),
+        0 0 64px -12px rgba(99, 102, 241, 0.35);
+    }
+  }
+}
+
 /* 플리커 스피너 — 7×7 점 격자가 켜졌다 꺼졌다 한다. steps(1)로 부드러운 페이드 없이
    딱딱 끊기는 on/off. 점마다 음수 delay를 흩뿌려 무작위로 깜빡이는 느낌을 낸다. */
 @media (prefers-reduced-motion: no-preference) {
