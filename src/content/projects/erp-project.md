@@ -66,7 +66,7 @@ order: 1
 
 주제별로 정리한 실제 팀 컨벤션 노션 문서 일부입니다.
 
-- **API · 에러 표준**
+- **⭐️API · 에러 표준⭐️**
   - 📄 [API 응답 / 에러 표준](https://shin-workspace.notion.site/API-36efded21c4080d6b620d1390f8aac4e)
 - **서비스 간 통신**
   - 📄 [MSA 외부 도메인 통신 컨벤션 (v1.2)](https://shin-workspace.notion.site/MSA-v1-2-369fded21c40804780f0c7a900b3596e)
