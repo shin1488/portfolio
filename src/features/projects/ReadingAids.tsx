@@ -68,12 +68,13 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                   {entry.text}
                 </span>
               </span>
-              {/* 틱 — 우측 끝. 활성은 인디고 통색으로 넓게 */}
+              {/* 틱 — 우측 끝. 라벨(인디고→핑크)의 오른쪽에 붙는 배치라, 그라데이션 끝색인
+                  핑크 통색으로 둬야 색이 이어진다(2xl+ 목차는 틱이 왼쪽이라 반대로 인디고). */}
               <span
                 aria-hidden="true"
                 className={cn(
                   'h-0.5 shrink-0 rounded-full transition-all',
-                  active ? 'w-5 bg-indigo-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
+                  active ? 'w-5 bg-pink-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
                 )}
               />
             </a>
