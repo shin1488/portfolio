@@ -75,11 +75,11 @@ function ProjectDetailView({ project }: { project: Project }) {
         </div>
       </header>
 
-      <div className="mt-8">
+      <div className="mt-5">
         <TableOfContents entries={toc} />
       </div>
 
-      <div className="mt-10 border-t border-zinc-200 pt-8 dark:border-zinc-800">
+      <div className="mt-5 border-t border-zinc-200 pt-5 dark:border-zinc-800">
         <Markdown>{project.body}</Markdown>
       </div>
       </article>

@@ -33,7 +33,7 @@ export function TableOfContents({ entries, defaultOpen = false }: TableOfContent
         aria-expanded={open}
         aria-controls="toc-list"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full cursor-pointer items-center justify-between gap-3 py-3"
+        className="flex w-full cursor-pointer items-center justify-between gap-3 py-1.5"
       >
         <span className="flex items-center gap-2.5">
           <svg
