@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { highResSrc } from '@/lib/image';
+import { FlickerSpinner } from './FlickerSpinner';
 
 interface LightboxProps {
   src: string;
@@ -13,19 +14,24 @@ const MAX_SCALE = 5;
  * 이미지 확대 보기 오버레이.
  * 닫기: ESC · 바깥(백드롭) 클릭 · 우상단 X.
  * 확대: 이미지/돋보기 버튼 클릭 · 휠 · (확대 상태에서) 드래그로 이동.
+ * 고해상 원본이 뜨기 전에는 중앙에 플리커 스피너를 보여준다.
  */
 export function Lightbox({ src, alt, onClose }: LightboxProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; tx: number; ty: number } | null>(null);
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const reset = () => {
     setScale(1);
     setOffset({ x: 0, y: 0 });
   };
   const zoomed = scale > 1;
+
+  const clamp = (value: number) => Math.min(MAX_SCALE, Math.max(1, value));
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -34,23 +40,34 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
     document.addEventListener('keydown', onKey);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    closeRef.current?.focus();
+    closeRef.current?.focus({ preventScroll: true });
+    const savedScrollY = window.scrollY;
+
+    // 휠 줌 — React onWheel은 passive로 붙어 preventDefault가 무시되므로(스크롤을 못 막음),
+    // 네이티브 non-passive 리스너로 다이얼로그 위의 휠을 전부 소비하며 줌으로 변환한다.
+    const root = rootRef.current;
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      setScale((current) => {
+        const next = clamp(current - event.deltaY * 0.0015 * current);
+        if (next === 1) setOffset({ x: 0, y: 0 });
+        return next;
+      });
+    };
+    root?.addEventListener('wheel', onWheel, { passive: false });
+
     return () => {
       document.removeEventListener('keydown', onKey);
+      root?.removeEventListener('wheel', onWheel);
       document.body.style.overflow = previousOverflow;
+      // 닫힌 직후: 열려 있는 동안의 어떤 드리프트도 원위치로 되돌리고,
+      // 줌 휠의 트랙패드 잔여 관성이 잠금 풀린 페이지를 밀어내지 않게 잠깐 흡수한다.
+      window.scrollTo({ top: savedScrollY, behavior: 'instant' });
+      const absorb = (event: WheelEvent) => event.preventDefault();
+      window.addEventListener('wheel', absorb, { passive: false });
+      window.setTimeout(() => window.removeEventListener('wheel', absorb), 300);
     };
   }, [onClose]);
-
-  const clamp = (value: number) => Math.min(MAX_SCALE, Math.max(1, value));
-
-  const handleWheel = (event: React.WheelEvent) => {
-    event.preventDefault();
-    setScale((current) => {
-      const next = clamp(current - event.deltaY * 0.0015 * current);
-      if (next === 1) setOffset({ x: 0, y: 0 });
-      return next;
-    });
-  };
 
   // 이미지 클릭: 원본 크기면 확대만(1→2), 이미 확대 상태면 클릭으로 리셋하지 않는다(드래그 이동 방해 방지).
   const handleImageClick = (event: React.MouseEvent) => {
@@ -84,6 +101,7 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
 
   return (
     <div
+      ref={rootRef}
       role="dialog"
       aria-modal="true"
       aria-label={alt || '이미지 확대 보기'}
@@ -104,12 +122,22 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
           </svg>
         </button>
       </div>
+      {!loaded && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-zinc-300">
+          <FlickerSpinner className="size-11" />
+        </div>
+      )}
       <img
         src={highResSrc(src)}
         alt={alt}
         draggable={false}
+        // 캐시된 이미지는 onLoad가 안 뜰 수 있어 마운트 시 complete로 보정한다
+        ref={(el) => {
+          if (el?.complete && el.naturalWidth > 0) setLoaded(true);
+        }}
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
         onClick={handleImageClick}
-        onWheel={handleWheel}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -119,6 +147,7 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
           transition: dragging ? 'none' : 'transform 0.15s ease-out',
           cursor: !zoomed ? 'zoom-in' : dragging ? 'grabbing' : 'grab',
           touchAction: 'none',
+          opacity: loaded ? 1 : 0,
         }}
         className="max-h-full max-w-full rounded-lg object-contain shadow-2xl select-none"
       />

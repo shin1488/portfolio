@@ -67,6 +67,23 @@ html::-webkit-scrollbar {
   }
 }
 
+/* 플리커 스피너 — 7×7 점 격자가 켜졌다 꺼졌다 한다. steps(1)로 부드러운 페이드 없이
+   딱딱 끊기는 on/off. 점마다 음수 delay를 흩뿌려 무작위로 깜빡이는 느낌을 낸다. */
+@media (prefers-reduced-motion: no-preference) {
+  .flicker-dot {
+    animation: dot-flicker 1.05s steps(1) infinite;
+  }
+  @keyframes dot-flicker {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.15;
+    }
+  }
+}
+
 body {
   @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
 }

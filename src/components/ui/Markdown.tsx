@@ -1,11 +1,12 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
 import { imageDimensions } from 'virtual:image-dimensions';
 import { buildSrcSet } from '@/lib/image';
+import { FlickerSpinner } from './FlickerSpinner';
 import { Lightbox } from './Lightbox';
 
 interface MarkdownProps {
@@ -157,21 +158,80 @@ function PdfSkeleton({ label }: { label: string }) {
   );
 }
 
+/**
+ * 본문 이미지 — 지연 로딩 + 클릭 시 확대. 로드 전에는 aspect-ratio로 예약된 자리에
+ * 플리커 스피너를 겹쳐 로딩 중임을 보여준다(로드 완료 시 제거).
+ */
+function MdImage({
+  src,
+  label,
+  onZoom,
+  ...props
+}: {
+  src?: string;
+  label: string;
+  onZoom: () => void;
+}) {
+  const [loaded, setLoaded] = useState(false);
+
+  // 실측 비율을 aspect-ratio로 박아 로드 전에도 공간만 예약한다(레이아웃 시프트 방지).
+  // 이미지 자체엔 어떤 크기 제한도 걸지 않는다 — 원본 비율 그대로 렌더.
+  // maxWidth=원본폭은 원본보다 크게 확대(업스케일)만 막을 뿐 비율은 안 건드린다.
+  const dims = src ? imageDimensions[src] : undefined;
+  const imgStyle = dims
+    ? { aspectRatio: `${dims[0]} / ${dims[1]}`, maxWidth: `${dims[0]}px` }
+    : undefined;
+
+  return (
+    // 스피너를 이미지 자리 위에 겹치기 위한 기준 컨테이너(p 안이라 span, 렌더는 block)
+    <span className="relative block">
+      <img
+        src={src}
+        srcSet={src ? buildSrcSet(src) : undefined}
+        sizes="(min-width: 768px) 768px, 100vw"
+        width={dims?.[0]}
+        height={dims?.[1]}
+        style={imgStyle}
+        loading="lazy"
+        decoding="async"
+        alt={label}
+        role="button"
+        tabIndex={0}
+        aria-label={label ? `${label} — 확대해서 보기` : '이미지 확대해서 보기'}
+        onClick={onZoom}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onZoom();
+          }
+        }}
+        // 캐시된 이미지는 onLoad가 안 뜰 수 있어 마운트 시 complete로 보정한다
+        ref={(el) => {
+          if (el?.complete && el.naturalWidth > 0) setLoaded(true);
+        }}
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
+        className="cursor-zoom-in transition-opacity hover:opacity-90"
+        {...props}
+      />
+      {!loaded && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-zinc-500">
+          <FlickerSpinner />
+        </span>
+      )}
+    </span>
+  );
+}
+
 /** markdown 본문 렌더러 — 외부 링크는 새 탭, 이미지는 지연 로딩 + 클릭 시 확대 보기 */
 export function Markdown({ children }: MarkdownProps) {
   const [zoomed, setZoomed] = useState<{ src: string; alt: string } | null>(null);
 
-  return (
-    <div className="prose prose-zinc max-w-none dark:prose-invert prose-img:rounded-xl prose-img:border prose-img:border-zinc-200 dark:prose-img:border-zinc-800">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkCjkFriendly]}
-        rehypePlugins={[
-          // 헤딩에 id를 달아 목차(TOC) 앵커가 동작하게 한다
-          rehypeSlug,
-          // 챗봇 action 블록 같은 커스텀 언어는 JSON 문법으로 하이라이트
-          [rehypeHighlight, { aliases: { json: ['action'] } }],
-        ]}
-        components={{
+  // 렌더러 정체성 고정 — 인라인 객체로 넘기면 렌더마다 새 함수 타입이 되어 React가 본문
+  // 서브트리 전체를 리마운트한다(라이트박스만 여닫아도 이미지·PDF 뷰어가 전부 리셋되고,
+  // 그 과정에서 높이가 변해 스크롤이 어긋나던 원인). setZoomed는 정체성이 고정이라 deps 없음.
+  const components = useMemo<Components>(
+    () => ({
           // 문단이 오직 로컬 PDF 링크 하나로만 이뤄졌으면(발표자료 등) 다운로드 링크 대신
           // 인라인 뷰어로 바꾼다. 문장 속에 섞인 링크(예: 보고서 1차·2차)는 그대로 링크로 둔다.
           p({ node, children, ...props }) {
@@ -226,43 +286,32 @@ export function Markdown({ children }: MarkdownProps) {
           },
           img({ node: _node, alt, src, ...props }) {
             const label = alt ?? '';
-            const open = () => {
-              if (typeof src === 'string') setZoomed({ src, alt: label });
-            };
-            // 실측 비율을 aspect-ratio로 박아 로드 전에도 공간만 예약한다(레이아웃 시프트 방지).
-            // 이미지 자체엔 어떤 크기 제한도 걸지 않는다 — 원본 비율 그대로 렌더.
-            // maxWidth=원본폭은 원본보다 크게 확대(업스케일)만 막을 뿐 비율은 안 건드린다.
-            const dims = typeof src === 'string' ? imageDimensions[src] : undefined;
-            const imgStyle = dims
-              ? { aspectRatio: `${dims[0]} / ${dims[1]}`, maxWidth: `${dims[0]}px` }
-              : undefined;
             return (
-              <img
-                src={src}
-                srcSet={typeof src === 'string' ? buildSrcSet(src) : undefined}
-                sizes="(min-width: 768px) 768px, 100vw"
-                width={dims?.[0]}
-                height={dims?.[1]}
-                style={imgStyle}
-                loading="lazy"
-                decoding="async"
-                alt={label}
-                role="button"
-                tabIndex={0}
-                aria-label={label ? `${label} — 확대해서 보기` : '이미지 확대해서 보기'}
-                onClick={open}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    open();
-                  }
+              <MdImage
+                src={typeof src === 'string' ? src : undefined}
+                label={label}
+                onZoom={() => {
+                  if (typeof src === 'string') setZoomed({ src, alt: label });
                 }}
-                className="cursor-zoom-in transition-opacity hover:opacity-90"
                 {...props}
               />
             );
           },
-        }}
+    }),
+    [],
+  );
+
+  return (
+    <div className="prose prose-zinc max-w-none dark:prose-invert prose-img:rounded-xl prose-img:border prose-img:border-zinc-200 dark:prose-img:border-zinc-800">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkCjkFriendly]}
+        rehypePlugins={[
+          // 헤딩에 id를 달아 목차(TOC) 앵커가 동작하게 한다
+          rehypeSlug,
+          // 챗봇 action 블록 같은 커스텀 언어는 JSON 문법으로 하이라이트
+          [rehypeHighlight, { aliases: { json: ['action'] } }],
+        ]}
+        components={components}
       >
         {children}
       </ReactMarkdown>
