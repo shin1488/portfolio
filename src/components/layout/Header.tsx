@@ -170,8 +170,10 @@ function MobileDrawer({
   return (
     // 클리핑 래퍼 — 헤더 바로 아래(top-14)만 차지한다. 패널이 이 안에서 내려오므로
     // 새 레이어가 화면을 덮는 게 아니라 '헤더가 아래로 확장'되는 것처럼 보인다.
+    // aria-hidden 대신 inert: 닫히는 순간 방금 클릭한 항목이 아직 포커스를 쥐고 있어도
+    // inert가 포커스를 자동으로 걷어내 "aria-hidden on focused element" 경고가 없다.
     <div
-      aria-hidden={!open}
+      inert={!open}
       className="pointer-events-none fixed inset-x-0 bottom-0 top-14 z-40 overflow-hidden sm:hidden"
     >
       <div
