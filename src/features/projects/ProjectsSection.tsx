@@ -53,9 +53,11 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
       const track = trackRef.current;
       if (!track || track.offsetParent === null) return; // 모바일(트랙 숨김)에선 무시
-      // 핀 상태 판정: 트랙이 뷰포트를 완전히 덮고 있을 때(sticky 활성 구간)
+      // 핀 상태 판정: 트랙이 뷰포트를 완전히 덮고 있을 때(sticky 활성 구간).
+      // 헤더 클릭 등 smooth 스크롤은 DPR 화면에서 서브픽셀(0.x px)로 착지하곤 하므로
+      // 경계에 2px 여유를 둔다 — 엄격 비교(top > 0)면 그 미세 오차로 판정이 탈락한다.
       const rect = track.getBoundingClientRect();
-      if (rect.top > 0 || rect.bottom < window.innerHeight) return;
+      if (rect.top > 2 || rect.bottom < window.innerHeight - 2) return;
       const target = event.target as HTMLElement | null;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
       const next = activeP + (event.key === 'ArrowRight' ? 1 : -1);

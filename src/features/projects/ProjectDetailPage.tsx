@@ -57,9 +57,13 @@ function ProjectDetailView({ project }: { project: Project }) {
 
       <header className="mt-6">
         <div className="flex items-start justify-between gap-3">
-          <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold tracking-tight outline-none">
-            {project.title}
-          </h1>
+          {/* 제목 바로 옆에 코드 바로가기 링크(GitLab 등) — 베이스라인 정렬 */}
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold tracking-tight outline-none">
+              {project.title}
+            </h1>
+            <ProjectLinks project={project} />
+          </div>
           <ProjectKindChip kind={project.kind} className="mt-1.5 shrink-0" />
         </div>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
@@ -69,9 +73,6 @@ function ProjectDetailView({ project }: { project: Project }) {
           {project.techStack.map((tech) => (
             <Badge key={tech}>{tech}</Badge>
           ))}
-        </div>
-        <div className="mt-5">
-          <ProjectLinks project={project} />
         </div>
       </header>
 
