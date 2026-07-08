@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import { cn } from '@/lib/cn';
 import { scrollToSection, scrollToTrackStep } from '@/lib/section';
@@ -46,12 +46,33 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key]);
 
+  // 핀 고정 상태(sticky가 화면을 차지하는 동안)에서는 ←/→ 방향키로도 프로젝트를 넘긴다.
+  // 스크롤은 위아래인데 항목은 좌우로 표시되므로, 좌우 키가 직관에 맞는 입력이 된다.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      const track = trackRef.current;
+      if (!track || track.offsetParent === null) return; // 모바일(트랙 숨김)에선 무시
+      // 핀 상태 판정: 트랙이 뷰포트를 완전히 덮고 있을 때(sticky 활성 구간)
+      const rect = track.getBoundingClientRect();
+      if (rect.top > 0 || rect.bottom < window.innerHeight) return;
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+      const next = activeP + (event.key === 'ArrowRight' ? 1 : -1);
+      if (next < 0 || next >= n) return;
+      event.preventDefault(); // 방향키 기본 수평 스크롤/포커스 이동 방지
+      scrollToTrackStep(track, next, n);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [activeP, n]);
+
   if (!n) return null;
 
   return (
     <section id="projects" aria-label="Projects" className="scroll-mt-14">
       {/* 데스크톱: 핀 고정 크로스페이드 */}
-      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 50}vh` }}>
+      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 24}vh` }}>
         <div className="sticky top-0 flex h-screen items-center">
           <div className="mx-auto w-full max-w-5xl px-6">
             <div className="flex flex-col items-center">
