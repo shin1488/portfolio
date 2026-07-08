@@ -19,7 +19,7 @@
  */
 export function AmbientBackground() {
   return (
-    <div aria-hidden="true" className="ambient-hue pointer-events-none fixed inset-x-0 top-0 -z-10 h-[calc(100lvh+env(safe-area-inset-bottom))] overflow-hidden bg-[#0d0b14]">
+    <div aria-hidden="true" className="ambient-hue pointer-events-none fixed inset-x-0 top-0 z-0 h-[calc(100lvh+env(safe-area-inset-bottom))] overflow-hidden bg-[#0d0b14]">
       {/* 좌상단 인디고 글로우 — 헤더·로고 근처에서 은은하게 번진다(브랜드 그라데이션 시작색) */}
       <div
         className="absolute -left-40 -top-48 size-[42rem] rounded-full blur-[120px]"

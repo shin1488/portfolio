@@ -19,7 +19,7 @@ export default function App() {
     <BrowserRouter>
       <ScrollManager />
       <AmbientBackground />
-      <div className="flex min-h-dvh flex-col">
+      <div className="relative z-10 flex min-h-dvh flex-col">
         <Header />
         <AppRoutes />
         <Footer />

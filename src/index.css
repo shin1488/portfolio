@@ -122,6 +122,11 @@ html::-webkit-scrollbar {
    sticky 헤더는 그대로 동작하고, 가로 오버플로우 팬 차단 효과는 동일하다. */
 body {
   @apply text-zinc-900 antialiased dark:text-zinc-100;
+  /* Safari 26은 하단/상단 바 색을 페이지에서 샘플링한다(theme-color 무시). 하단에 걸친
+     fixed 요소가 없거나 투명하면 body 배경으로 폴백하는데, 투명이면 다크모드에서 검정으로
+     떨어져 바에 검은 띠가 생긴다. 그래서 body에 캔버스색을 명시한다. 앰비언트(fixed z-0)는
+     이 배경 위에 그려지고 콘텐츠(z-10)가 그 위라 글로우는 그대로 보인다. */
+  background-color: #0d0b14;
   overflow-x: clip;
 }
 
