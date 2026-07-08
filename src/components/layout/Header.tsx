@@ -53,7 +53,7 @@ export function Header() {
 
   return (
     // transform-gpu: backdrop-filter 있는 sticky가 iOS 스크롤 중 밀려 보이는 WebKit 이슈 완화(자체 레이어 승격)
-    <header className="sticky top-0 z-30 h-14 transform-gpu border-b border-white/[0.06] bg-zinc-950/55 backdrop-blur-lg backdrop-saturate-[1.4]">
+    <header className="sticky top-0 z-30 transform-gpu border-b border-white/[0.06] bg-zinc-950/55 pt-[env(safe-area-inset-top)] backdrop-blur-lg backdrop-saturate-[1.4]">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         <button
           type="button"
@@ -176,7 +176,7 @@ function MobileDrawer({
     // inert가 포커스를 자동으로 걷어내 "aria-hidden on focused element" 경고가 없다.
     <div
       inert={!open}
-      className="pointer-events-none fixed inset-x-0 bottom-0 top-14 z-40 overflow-hidden sm:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-40 overflow-hidden sm:hidden"
     >
       <div
         className={cn(

@@ -15,7 +15,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     <section
       id="profile"
       aria-label="소개"
-      className="relative -mt-14 flex min-h-screen scroll-mt-14 flex-col items-center justify-center px-6 text-center"
+      className="relative -mt-[calc(3.5rem+env(safe-area-inset-top))] flex min-h-screen scroll-mt-14 flex-col items-center justify-center px-6 text-center"
     >
       <div className="mx-auto max-w-xl">
         <Avatar profile={profile} />

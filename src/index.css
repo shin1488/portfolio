@@ -25,7 +25,7 @@ html {
      position: sticky(헤더)를 깨지만 clip은 잘라내기만 한다. */
   overflow-x: clip;
   /* 앵커 이동 시 헤더(56px) 높이만큼 여백 */
-  scroll-padding-top: 56px;
+  scroll-padding-top: calc(56px + env(safe-area-inset-top));
   /* 네이티브 스크롤바 전역 숨김 — 스크롤 기능은 유지, 위치 안내는 우측 rail이 대신한다 */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* 구 Edge */
