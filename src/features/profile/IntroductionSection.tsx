@@ -89,9 +89,9 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
       {/* 모바일: 핀 없이 전 문단 펼침 */}
       <div className="mx-auto max-w-2xl px-6 py-14 sm:hidden">
         <h2 className="text-center text-2xl font-bold tracking-tight">Introduction</h2>
-        <div className="mt-8 space-y-5">
+        <div className="mt-8 space-y-7">
           {bio.map((paragraph, i) => (
-            <p key={i} className="leading-relaxed text-zinc-300">
+            <p key={i} className="leading-[1.8] text-zinc-300">
               {paragraph}
             </p>
           ))}

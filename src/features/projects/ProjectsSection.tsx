@@ -123,12 +123,40 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
         </div>
       </div>
 
-      {/* 모바일: 핀 없이 세로 나열 */}
+      {/* 모바일: 핀 없이 세로 나열 — 썸네일을 위로 올린 카드, 카드 전체가 상세 링크 */}
       <div className="mx-auto max-w-2xl px-6 py-14 sm:hidden">
         <h2 className="text-center text-2xl font-bold tracking-tight">Projects</h2>
-        <div className="mt-8 flex flex-col gap-12">
+        <div className="mt-8 flex flex-col gap-5">
           {projects.map((project) => (
-            <ProjectBlock key={project.id} project={project} active mobile />
+            <Link
+              key={project.id}
+              to={`/projects/${project.id}`}
+              className="group overflow-hidden rounded-2xl border border-white/10 bg-linear-to-b from-white/[0.05] to-white/[0.02] shadow-xl shadow-black/20 backdrop-blur-xl"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <img
+                  src={project.thumbnail}
+                  alt=""
+                  loading="lazy"
+                  className="size-full object-cover"
+                />
+                <ProjectKindChip kind={project.kind} className="absolute left-3 top-3 backdrop-blur-sm" />
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-bold tracking-tight text-zinc-100">{project.title}</h3>
+                <p className="mt-1.5 font-mono text-[12px] text-zinc-500">{formatPeriod(project.period)}</p>
+                <p className="mt-3 text-sm leading-[1.65] text-zinc-300">{project.summary}</p>
+                <p className="mt-3 text-[12.5px] leading-[1.7] text-zinc-500">{project.techStack.join(' · ')}</p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
+                  <span className="bg-linear-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">
+                    상세 페이지 보기
+                  </span>
+                  <span aria-hidden="true" className="text-indigo-300 transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </span>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

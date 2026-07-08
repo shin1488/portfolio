@@ -38,31 +38,40 @@ function ProjectDetailView({ project }: { project: Project }) {
     <>
       <ReadingAids entries={toc} />
       <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
-      <Link
-        to="/#projects"
-        state={{ focusProjectIndex: projectIndex }}
-        className="group inline-flex items-center text-sm font-medium"
-      >
-        {/* 화살표는 클립 밖 솔리드 색 — transform 이동 시 사라지지 않게. 텍스트만 breathing. */}
-        <span
-          aria-hidden="true"
-          className="mr-1 text-indigo-600 transition-transform group-hover:-translate-x-1 dark:text-indigo-400"
+      {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 코드 바로가기를 둔다(제목 줄이 빽빽해지지 않게) */}
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          to="/#projects"
+          state={{ focusProjectIndex: projectIndex }}
+          className="group inline-flex items-center text-sm font-medium"
         >
-          ←
-        </span>
-        <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-indigo-600 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-indigo-400">
-          프로젝트 목록
-        </span>
-      </Link>
+          {/* 화살표는 클립 밖 솔리드 색 — transform 이동 시 사라지지 않게. 텍스트만 breathing. */}
+          <span
+            aria-hidden="true"
+            className="mr-1 text-indigo-600 transition-transform group-hover:-translate-x-1 dark:text-indigo-400"
+          >
+            ←
+          </span>
+          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-indigo-600 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-indigo-400">
+            프로젝트 목록
+          </span>
+        </Link>
+        {/* 모바일(<sm)만: 코드 바로가기(GitLab 등)를 뒤로가기 줄 우측에 */}
+        <div className="sm:hidden">
+          <ProjectLinks project={project} />
+        </div>
+      </div>
 
       <header className="mt-6">
         <div className="flex items-start justify-between gap-3">
-          {/* 제목 바로 옆에 코드 바로가기 링크(GitLab 등) — 베이스라인 정렬 */}
+          {/* 제목 + 코드 바로가기 — 데스크톱(sm+)만 제목 옆 베이스라인 정렬(모바일은 위 뒤로가기 줄에 있음) */}
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold tracking-tight outline-none">
               {project.title}
             </h1>
-            <ProjectLinks project={project} />
+            <div className="hidden sm:block">
+              <ProjectLinks project={project} />
+            </div>
           </div>
           <ProjectKindChip kind={project.kind} className="mt-1.5 shrink-0" />
         </div>

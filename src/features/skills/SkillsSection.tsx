@@ -120,7 +120,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
         <div className="mt-8 space-y-9">
           {categories.map((category) => (
             <div key={category.id}>
-              <h3 className="border-b border-zinc-800 pb-2 text-base font-bold text-zinc-100">
+              <h3 className="border-b border-zinc-600 pb-2 text-base font-bold text-zinc-100">
                 {category.title}
               </h3>
               <ul className="mt-3 columns-2 [column-gap:1.5rem]">

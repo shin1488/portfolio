@@ -25,7 +25,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="mt-1.5 text-[46px] font-bold leading-tight tracking-[-0.02em] text-zinc-100 outline-none"
+          className="mt-1.5 text-[38px] sm:text-[46px] font-bold leading-tight tracking-[-0.02em] text-zinc-100 outline-none"
         >
           {profile.name}
         </h1>
@@ -66,7 +66,7 @@ function Avatar({ profile }: { profile: Profile }) {
         src={profile.avatarImageUrl}
         alt={`${profile.name} 프로필 사진`}
         onError={() => setImageFailed(true)}
-        className="mx-auto size-[150px] shrink-0 rounded-full object-cover shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
+        className="mx-auto size-[118px] sm:size-[150px] shrink-0 rounded-full object-cover shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
       />
     );
   }
@@ -74,7 +74,7 @@ function Avatar({ profile }: { profile: Profile }) {
     <div
       role="img"
       aria-label={`${profile.name} 프로필 사진 자리`}
-      className="mx-auto flex size-[150px] shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-[38px] font-bold text-white shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
+      className="mx-auto flex size-[118px] sm:size-[150px] shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-[38px] font-bold text-white shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
     >
       {profile.avatarInitials}
     </div>
