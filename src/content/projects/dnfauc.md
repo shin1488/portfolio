@@ -2,16 +2,16 @@
 title: 던옥 (DNFAUC)
 summary: >-
   던전앤파이터 경매장 시세를 게임 접속 없이 홈 화면 위젯으로 확인하는 안드로이드 앱.
-  출시 이튿날 넥슨 공식 '오늘의 던파'에 소개되며 실사용자 트래픽을 얻은 1인 프로젝트입니다.
+  기획부터 개발·Google Play 출시까지 1인이 진행해 실사용자에게 서비스했습니다.
 period:
   from: "2023.06"
   to: "2023.06"
 techStack: [Android, Java, Volley, Glide, Google AdMob, Nexon Open API]
 highlights:
-  - '게임 접속 없이 홈 화면 위젯으로 경매장 최저가·평균가 확인 — AppWidgetProvider + PendingIntent 브로드캐스트로 위젯 갱신 구현'
-  - "출시 이튿날 넥슨 공식 '오늘의 던파' 소개, 커뮤니티 추천 1위(추천 72 · 비추천 0 · 댓글 77)"
-  - "'오늘의 던파' 소개 당일 API 호출 5,439건(첫날 896건), 출시 2일간 설치 214건"
-  - '기획·개발·배포를 1인이 수행 — 개인정보처리방침 작성부터 Google Play 등록까지'
+  - "성과 — 출시 이튿날 던전앤파이터 공식 홈페이지 '오늘의 던파' 소개 · 커뮤니티 추천 1위 · 소개 당일 API 5,439건 호출 · 이틀간 설치 214건"
+  - '홈 화면 위젯 — 게임 접속 없이 경매장 최저가·평균가 확인, AppWidgetProvider + PendingIntent 브로드캐스트 갱신'
+  - '데이터 흐름 — 검색(RecyclerView) → SharedPreferences → 위젯 조회 단일 경로, Neople Open API 시세 연동'
+  - '1인 개발 — 기획·개발·배포 전 과정, 개인정보처리방침 작성부터 Google Play 등록까지'
 links:
   - label: GitHub
     href: https://github.com/shin1488/DNFAuctionWidget
@@ -30,7 +30,11 @@ order: 4
 
 - 넥슨 던전앤파이터의 Open API를 활용한 **안드로이드 홈 화면 위젯 앱**입니다. 인게임 재화·아이템은 가격 변동이 잦고 그 폭도 적지 않아, 게임에 접속하지 않고도 경매장 시세를 확인하고 싶다는 필요에서 출발했습니다.
 - 사용자가 지정한 아이템의 **경매장 최저가와 평균가를 홈 화면 위젯에서 바로** 확인하고, 새로고침 버튼으로 즉시 갱신합니다.
-- 기획부터 개발, Google Play 배포까지 **1인이 단독으로** 진행했습니다.
+
+
+## 담당 역할 — 1인 개발
+
+기획부터 개발, Google Play 배포까지 전 과정을 **1인이 단독으로** 진행했습니다.
 
 
 # 주요 기능
@@ -50,7 +54,7 @@ order: 4
 ![앱 메인 화면과 홈 화면에 배치된 위젯](/content/projects/dnfauc/preview1.png)
 
 
-# 위젯 갱신
+# 위젯 갱신 — PendingIntent 브로드캐스트 배선
 
 ---
 

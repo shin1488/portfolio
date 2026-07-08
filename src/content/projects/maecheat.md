@@ -2,16 +2,16 @@
 title: 메치트 (MaeCheat)
 summary: >-
   메이플스토리에서 거래 분쟁·비매너가 보고된 캐릭터를 검색하면, 커뮤니티에 흩어진 제보 글을
-  한곳에 모아 AI가 한 줄로 요약해 주는 평판 검색 서비스. 기획·프론트·백엔드·인프라를 1인 풀스택으로 진행했습니다.
+  한곳에 모아 AI가 한 줄로 요약해 주는 평판 검색 서비스. 기획부터 프론트·백엔드·인프라까지 1인 풀스택으로 진행했습니다.
 period:
   from: "2026.04"
   to: "2026.05"
 techStack: [Java 25, Spring Boot 4, Spring AI, MySQL, React 19, Docker, Caddy, AWS EC2]
 highlights:
-  - '실서비스 운영 — 이틀 만에 누적 방문자 약 1만·페이지뷰 약 8.5만, 이탈률 7%로 실제 사용자 트래픽 확보'
-  - 'Spring AI(Gemini) 한 줄 요약 — @Async + ConcurrentHashMap로 동일 캐릭터 중복 생성을 막고, 마지막 요청까지 재실행 큐로 반영'
-  - 'AWS EC2에 Docker Compose(App·MySQL·Caddy) 배포 + GitHub Actions 무중단 CI/CD, Caddy 자동 HTTPS'
-  - '커뮤니티 스크래퍼를 인터페이스 + Resolver로 추상화(전략 패턴·DIP) — 사이트 추가 시 구현체만 늘리면 되도록 확장점 분리'
+  - '운영 성과 — 오픈 이틀 만에 누적 방문 약 1만 · 페이지뷰 약 8.5만 · 이탈률 7%, 실사용자 트래픽 확보'
+  - 'AI 한 줄 요약 — Spring AI(Gemini) 비동기 생성, @Async + ConcurrentHashMap로 중복 생성 차단·마지막 요청 재실행 큐 반영'
+  - '스크래퍼 설계 — 인터페이스 + Resolver 추상화(전략 패턴·DIP)로 커뮤니티 사이트 추가 시 구현체만 확장'
+  - '인프라 — AWS EC2 Docker Compose(App·MySQL·Caddy) + GitHub Actions 무중단 CI/CD, Caddy 자동 HTTPS'
 links:
   - label: GitHub
     href: https://github.com/MaeCheat
@@ -33,7 +33,7 @@ order: 2
 ![메치트](/content/projects/maecheat/logo.png)
 
 
-## 담당 범위 — 1인 풀스택
+## 담당 역할 — 1인 풀스택
 
 기획 단계의 결정이 그대로 백엔드 스키마 → API 스펙 → 프론트 화면 → 배포 파이프라인까지 한 줄기로 흘러가도록 전 과정을 직접 통제했습니다.
 
@@ -94,7 +94,7 @@ public class NexonApiConfig {
 넥슨 API는 일일 호출 한도가 있어, OCID를 DB에 캐싱해 재검색 시 호출을 건너뛰고, 외부 호출이 일어날 때마다 일자별 호출 수를 누적 기록해 한도를 관제하도록 했습니다.
 
 
-# AI 요약의 동시성 제어
+# AI 요약 — 비동기 동시성 제어
 
 ---
 
@@ -124,7 +124,7 @@ public void generateSummaryAsync(Long characterId) {
 한 가지 더 신경 쓴 건 **외부 호출을 트랜잭션 밖에 두는 것**이었습니다. 긴 AI 호출을 DB 트랜잭션 안에서 하면 커넥션이 그 시간만큼 붙잡혀 풀 고갈로 번지기 때문에, 제보 조회와 요약 반영만 `TransactionTemplate`으로 짧게 감싸고 실제 LLM 호출은 그 밖에서 처리했습니다.
 
 
-# 확장을 염두에 둔 스크래퍼 설계
+# 스크래퍼 — 확장을 염두에 둔 설계
 
 ---
 
@@ -157,6 +157,15 @@ public class CommunityScraperResolver {
 서비스 계층은 `InvenScraper`라는 구체 클래스를 전혀 모른 채 오직 인터페이스에만 의존하도록 했습니다. 의존성 역전 원칙(DIP)이 단순한 이론이 아니라 향후 기능 추가 비용을 실제로 낮추는 도구라는 걸, 확장점을 명시적으로 분리해 보며 체감했습니다.
 
 
+# 인프라 — EC2 · Docker Compose · 무중단 CI/CD
+
+---
+
+- AWS EC2에 **Docker Compose 3-컨테이너**(Spring Boot 앱 · MySQL · Caddy)로 배포했습니다. Caddy가 HTTPS 리버스 프록시를 맡아 `maecheat.duckdns.org`로 자동 인증서를 발급하도록 구성했습니다.
+- **GitHub Actions 무중단 CI/CD** — main 브랜치 push 시 DockerHub 이미지를 빌드·푸시하고, EC2에 SSH로 접속해 `docker compose up -d --no-deps app`으로 앱 컨테이너만 무중단 교체하도록 자동화했습니다.
+- 프론트엔드는 Vercel에 배포하고 `maecheat.com` 도메인·환경 변수를 연결했습니다.
+
+
 # 사용된 기술
 
 ---
@@ -164,15 +173,6 @@ public class CommunityScraperResolver {
 - **Backend** — Java 25 · Spring Boot 4 · Spring Web MVC · Spring Data JPA · Spring AI(Gemini) · jsoup(스크래핑) · MySQL
 - **Frontend** — React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · React Router · Axios · galmuri(픽셀 폰트) · Vercel Analytics / Speed Insights
 - **Infra** — AWS EC2 · Docker / Docker Compose / DockerHub · Caddy(HTTPS · 리버스 프록시) · GitHub Actions · Vercel · DuckDNS
-
-
-# 인프라 · 배포
-
----
-
-- AWS EC2에 **Docker Compose 3-컨테이너**(Spring Boot 앱 · MySQL · Caddy)로 배포했습니다. Caddy가 HTTPS 리버스 프록시를 맡아 `maecheat.duckdns.org`로 자동 인증서를 발급하도록 구성했습니다.
-- **GitHub Actions 무중단 CI/CD** — main 브랜치 push 시 DockerHub 이미지를 빌드·푸시하고, EC2에 SSH로 접속해 `docker compose up -d --no-deps app`으로 앱 컨테이너만 무중단 교체하도록 자동화했습니다.
-- 프론트엔드는 Vercel에 배포하고 `maecheat.com` 도메인·환경 변수를 연결했습니다.
 
 
 # 성과

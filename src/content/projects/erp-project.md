@@ -1,17 +1,17 @@
 ---
 title: 통합 부품 관리 ERP
 summary: >-
-  본사·지점·현장(모바일) 3채널의 자동차 부품 관리 ERP를 5인 팀이 MSA로 구축.
-  PM을 겸하며 재고 서비스(Inventory), AI 챗봇(AiChat), 인프라를 담당했습니다.
+  자동차 부품사의 재고·발주·판매를 본사 웹 · 지점 웹 · 현장 모바일 3채널로 관리하는 MSA 기반 통합 ERP.
+  5인 팀에서 PM을 겸하며 재고 서비스(Inventory)·AI 챗봇(AiChat)·인프라를 담당했습니다.
 period:
   from: "2026.05"
   to: "2026.06"
 techStack: [Java 25, Spring Boot 4, Spring AI 2.0, MCP, PostgreSQL, Keycloak, Docker, AWS ECS]
 highlights:
-  - '재고 정확성 3종 — 조건부 원자적 UPDATE(동시성), Idempotency-Key 2겹 방어(멱등성), REPEATABLE READ 원장 재생 검증(정합성)'
   - 'Spring AI 2.0 + MCP 챗봇 — RFC 8693 토큰 교환(OBO)으로 사용자 권한 위임, 쓰기는 딥링크+prefill 핸드오프'
-  - 'Docker Compose 12컨테이너 오케스트레이션과 AWS ECS Fargate 배포, Keycloak 인증 인프라'
-  - 'PM으로서 에러 응답(RFC 9457)·멱등키·API 응답 등 팀 컨벤션 표준 주도'
+  - '재고 정확성 3종 — 조건부 원자적 UPDATE(동시성), Idempotency-Key 2겹 방어(멱등성), REPEATABLE READ 원장 재생 검증(정합성)'
+  - '인프라 — Docker Compose 12컨테이너 오케스트레이션, AWS ECS Fargate 배포, Keycloak 인증'
+  - 'PM — 에러 응답(RFC 9457)·멱등키·API 응답 등 팀 컨벤션 표준 주도'
 links:
   - label: GitLab
     href: https://gitlab.com/shin1488-group
@@ -56,9 +56,13 @@ order: 1
 ![ECS 클러스터에 배포된 서비스 목록](/content/projects/erp-project/ecs-services.png)
 
 
-# "신기술, 그러므로 강력한 컨벤션."
+# 컨벤션 — "신기술, 그러므로 강력한 컨벤션."
 
 ---
+
+- **문제** — Spring Boot 4·Spring AI 2.0처럼 갓 나온 스택은 정립된 표준이 없어, 같은 기능도 팀원마다 제각각 구현되기 쉬웠습니다.
+- **해결** — 외부 통신·JWT 검증·에러 응답·멱등키·시간 처리까지 7개 컨벤션 문서로 못 박아 6개 서비스에 일관 적용했습니다.
+- **결과** — 어디서 발생하든 같은 ProblemDetail(RFC 9457) 응답 — 클라이언트·서비스 간 에러 처리가 분기 없이 통일됐습니다.
 
 팀의 기술 캐치프레이즈입니다. Spring AI 2.0 · Spring Boot 4 · Java 25처럼 갓 나온 스택은 강력하지만, 정립된 표준도 정형화된 패턴도 없어 같은 기능도 팀원마다 제각각 구현되기 쉽습니다. 그래서 도입한 기술 하나하나의 디테일 — 외부 도메인 통신 · JWT 검증 · 에러 응답 · 멱등키 · 시간 처리까지 — 을 팀 컨벤션으로 못 박았습니다.
 
@@ -81,9 +85,13 @@ order: 1
 가장 공을 들인 건 에러 응답 표준입니다. MSA에선 서비스마다 에러 포맷이 난립하기 쉬운데, 문제는 스프링·서블릿 구조상 예외가 **세 갈래로 흩어진다**는 것이었습니다 — MVC 밖으로 빠진 에러는 서블릿 컨테이너가, 인증·인가 실패는 시큐리티 필터가, 도메인·검증 예외는 디스패처 안 `@RestControllerAdvice`가 받습니다. 이 세 길목을 모두 막아 어디서 발생하든 같은 `ProblemDetail`(RFC 9457) 포맷으로 수렴시켰고, 클라이언트와 서비스 간 통신 모두 분기 없이 에러 코드 하나로 일관되게 처리할 수 있게 됐습니다.
 
 
-# "AI를 통해 UX를 개선하고, 나아가 AX를 꾀하다"
+# AiChat — "AI를 통해 UX를 개선하고, 나아가 AX를 꾀하다"
 
 ---
+
+- **문제** — 챗봇이 업무를 돕게 하되, 잘못된 쓰기와 권한·소속(tenancy) 누수의 여지는 원천적으로 없어야 했습니다.
+- **해결** — 쓰기 도구는 아예 노출하지 않고 딥링크+prefill로 화면에 안내, 도구 호출에만 RFC 8693 토큰 교환으로 사용자 권한을 위임했습니다.
+- **결과** — 조회 → 표·차트 → 업무 화면 이동까지 이어지는 ERP 어시스턴트 — 권한 규칙은 REST와 동일하게 적용됩니다.
 
 팀의 서비스 캐치프레이즈이고, 이를 **AiChat**으로 구현했습니다. 사용자가 모든 기능과 화면 위치를 숙지하지 않아도, 챗봇에게 질의하면 데이터를 조회해 주고 실제 업무 화면까지 데려다줍니다.
 
@@ -150,6 +158,10 @@ public void customize(HttpRequest.Builder builder, String method, URI endpoint, 
 # Inventory — 정확성이 전부인 도메인
 
 ---
+
+- **문제** — 현재고는 이동 원장(stock_movement)의 파생값 — 동시성·재시도·장애 어디서도 틀리면 안 됩니다.
+- **해결** — 조건부 원자적 UPDATE(동시성), Idempotency-Key 2겹 방어(멱등성), REPEATABLE READ 원장 재생 검증(정합성)의 3겹으로 지켰습니다.
+- **결과** — TOCTOU·이중 반영을 구조적으로 차단하고, 매일 자정 원장 대조로 정합성을 상시 검증합니다.
 
 ![Inventory ERD](/content/projects/erp-project/erd-inventory.png)
 
@@ -302,10 +314,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 API/MQ 호출을 DB 트랜잭션 안에서 하면 외부 지연이 커넥션 풀 고갈로 전파됩니다. 서비스 간 동기 호출(RestClient + @HttpExchange)은 전부 트랜잭션 밖으로 배치하는 것을 팀 규칙으로 삼았고, 향후 outbox/saga·서킷브레이커(Resilience4j) 도입을 개선 방향으로 정리했습니다.
 
-
-# PM으로서
-
----
+## PM으로서
 
 역할·소속·화면이 여러 갈래로 나뉘는 시스템을 5명이 서비스 단위로 나눠 개발하다 보니, 에러 포맷·멱등·인증 및 인가 같은 규칙이 서비스마다 어긋나기 쉬웠습니다. 게다가 앞서 말했듯 정립된 표준이 없는 신기술을 쓰는 만큼, 이 규칙들을 팀 차원에서 하나로 못 박아 줄 '컨벤션'이 반드시 필요했습니다.
 
@@ -379,7 +388,7 @@ API/MQ 호출을 DB 트랜잭션 안에서 하면 외부 지연이 커넥션 풀
 ![모바일 · 작업 이력](/content/projects/erp-project/mobile-worklog.jpg)
 
 
-# 발표 자료 · 영상
+# 관련 자료
 
 ---
 

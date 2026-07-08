@@ -9,6 +9,7 @@ import { extractToc } from '@/lib/toc';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
 import { useRouteFocus } from '@/lib/useRouteFocus';
 import { formatPeriod } from './period';
+import { HighlightText } from './HighlightText';
 import { ProjectKindChip } from './ProjectKindChip';
 import { ProjectLinks } from './ProjectLinks';
 import { ReadingAids } from './ReadingAids';
@@ -83,6 +84,19 @@ function ProjectDetailView({ project }: { project: Project }) {
             <Badge key={tech}>{tech}</Badge>
           ))}
         </div>
+        {/* 핵심 요약(highlights) — 홈 카드를 거치지 않고 직링크로 온 독자를 위한 프로젝트 급 요약 */}
+        {project.highlights.length > 0 && (
+          <ul className="mt-5 flex flex-col gap-2">
+            {project.highlights.map((highlight, i) => (
+              <li key={i} className="flex gap-2.5 text-sm leading-[1.65] text-zinc-600 dark:text-zinc-400">
+                <span aria-hidden="true" className="mt-[7px] size-[5px] shrink-0 bg-indigo-400" />
+                <span>
+                  <HighlightText text={highlight} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </header>
 
       <div className="mt-5">

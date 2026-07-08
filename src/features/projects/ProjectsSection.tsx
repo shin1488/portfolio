@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn';
 import { scrollToSection, scrollToTrackStep } from '@/lib/section';
 import { useStickyProgress } from '@/lib/useStickyProgress';
 import { formatPeriod } from './period';
+import { HighlightText } from './HighlightText';
 import { ProjectKindChip } from './ProjectKindChip';
 import { ProjectLinks } from './ProjectLinks';
 import type { Project } from '@/types/content';
@@ -206,7 +207,9 @@ function ProjectBlock({
             {project.highlights.map((highlight, i) => (
               <li key={i} className="flex gap-2.5 text-sm leading-[1.6] text-zinc-400">
                 <span aria-hidden="true" className="mt-[7px] size-[5px] shrink-0 bg-indigo-400" />
-                <span>{highlight}</span>
+                <span>
+                  <HighlightText text={highlight} />
+                </span>
               </li>
             ))}
           </ul>
