@@ -1,6 +1,6 @@
 /**
- * 사이트 전역 앰비언트 배경 — 어두운 베이스(body bg-zinc-950) 위에 브랜드 인디고→핑크
- * 글로우를 아주 옅게 얹어 깊이감을 준다. fixed로 뷰포트에 고정하고 -z-10으로 본문 뒤에 두며,
+ * 사이트 전역 앰비언트 배경 — 어두운 캔버스(html #0d0b14) 위에 브랜드 인디고→핑크
+ * 글로우를 아주 옅게 얹어 깊이감을 준다. -z-10으로 본문 뒤에 두며,
  * pointer-events-none이라 상호작용을 가로채지 않는다.
  * 액센트(진행바·활성 nav·로고·차트)와 같은 계열이지만 alpha를 매우 낮추고(0.10~0.22)
  * 크게 blur해, 선명한 액센트와 경쟁하지 않는 은은한 워시로만 깔린다.
@@ -14,7 +14,16 @@
  */
 export function AmbientBackground() {
   return (
-    <div aria-hidden="true" className="ambient-hue pointer-events-none fixed inset-x-0 top-0 -z-10 h-lvh overflow-hidden">
+    /* fixed가 아니라 문서 앵커(absolute) + 내부 sticky 2겹 구조인 이유 — iOS Safari는
+       하단 주소창·툴바 뒤/아래 영역에 '문서 흐름 안 콘텐츠'만 그려 주고, fixed 레이어는
+       레이아웃 뷰포트 바닥에서 끊는다. 오브를 fixed로 그리면 바가 펼쳐질 때 그 경계 아래로
+       캔버스색만 남아 페이지가 일자로 잘린 검은 띠처럼 보인다. sticky(top-0, h-lvh)는
+       문서 콘텐츠라 바 영역까지 렌더되면서도 스크롤을 따라와, fixed와 동일한
+       '뷰포트에 붙은 오브' 시각을 유지한다. 바깥 absolute는 문서 전체 높이를 덮는
+       트랙이고 오브 bleed는 overflow-clip으로 차단 — hidden이면 스크롤 컨테이너가 생겨
+       sticky가 뷰포트 대신 이 컨테이너에 붙어 버린다(clip은 스크롤 컨테이너를 안 만듦). */
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-clip">
+      <div className="ambient-hue sticky top-0 h-lvh overflow-hidden">
       {/* 좌상단 인디고 글로우 — 헤더·로고 근처에서 은은하게 번진다(브랜드 그라데이션 시작색) */}
       <div
         className="absolute -left-40 -top-48 size-[42rem] rounded-full blur-[120px]"
@@ -36,6 +45,7 @@ export function AmbientBackground() {
         className="absolute -bottom-52 left-1/3 size-[40rem] -translate-x-1/2 rounded-full blur-[140px]"
         style={{ background: 'radial-gradient(circle, rgba(120,90,240,0.16), rgba(46,40,110,0.05))' }}
       />
+      </div>
     </div>
   );
 }
