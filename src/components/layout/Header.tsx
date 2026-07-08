@@ -113,10 +113,12 @@ export function Header() {
               menuOpen && 'translate-y-[7px] rotate-45',
             )}
           />
+          {/* 가운데 막대 — opacity만으로는 iOS WebKit(backdrop-filter 레이어 안 리페인트 버그)에서
+              사라지지 않을 수 있어, 컴포지터가 처리하는 scale-x-0을 함께 걸어 확실히 접는다 */}
           <span
             className={cn(
-              'h-0.5 w-5 rounded-full bg-zinc-300 transition-opacity duration-300',
-              menuOpen && 'opacity-0',
+              'h-0.5 w-5 rounded-full bg-zinc-300 transition-all duration-300',
+              menuOpen && 'scale-x-0 opacity-0',
             )}
           />
           <span
