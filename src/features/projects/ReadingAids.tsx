@@ -132,7 +132,8 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
         </ul>
       </nav>
 
-      {/* 우하단 맨 위로 버튼 */}
+      {/* 우하단 맨 위로 버튼 — 배경은 fixed 요소 자체가 아닌 absolute 자식에
+          (iOS 26 Safari가 하단 fixed 요소의 배경색으로 하단 바를 칠하는 것 회피) */}
       <button
         type="button"
         aria-label="맨 위로"
@@ -141,11 +142,15 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className={cn(
-          'fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-6 z-30 flex size-11 items-center justify-center rounded-full border border-zinc-200 bg-white/80 text-zinc-700 shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-200 dark:hover:bg-zinc-800',
+          'group fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-6 z-30 flex size-11 items-center justify-center text-zinc-700 transition-all duration-300 dark:text-zinc-200',
           scrolled ? 'visible translate-y-0 opacity-100' : 'pointer-events-none invisible translate-y-3 opacity-0',
         )}
       >
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 rounded-full border border-zinc-200 bg-white/80 shadow-lg backdrop-blur-md transition-colors group-hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900/80 dark:group-hover:bg-zinc-800"
+        />
+        <svg viewBox="0 0 24 24" className="relative size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M12 19V5M5 12l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>

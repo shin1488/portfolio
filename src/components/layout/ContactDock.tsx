@@ -9,7 +9,13 @@ interface ContactDockProps {
 export function ContactDock({ links }: ContactDockProps) {
   return (
     <nav aria-label="연락처" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
-      <ul className="flex items-center gap-1 rounded-full border border-zinc-200/70 bg-white/80 p-1.5 shadow-lg backdrop-blur-md dark:border-zinc-700/60 dark:bg-zinc-900/80">
+      {/* 필 배경은 fixed 요소 자체가 아닌 absolute 자식에 — iOS 26 Safari는 하단에 보이는
+          fixed 요소의 배경색으로 하단 바를 칠하는데, absolute 자식은 샘플링에서 무시된다 */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 rounded-full border border-zinc-200/70 bg-white/80 shadow-lg backdrop-blur-md dark:border-zinc-700/60 dark:bg-zinc-900/80"
+      />
+      <ul className="relative flex items-center gap-1 p-1.5">
         {links.map((link, index) => {
           const opensNewTab = /^https?:/i.test(link.href);
           return (
