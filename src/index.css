@@ -21,16 +21,13 @@
 html {
   color-scheme: dark;
   /* 배경은 html(캔버스)이 소유한다 — iOS Safari가 툴바·홈 인디케이터 뒤와 오버스크롤
-     영역에 칠하는 것은 fixed 요소가 아니라 캔버스뿐이므로, 앰비언트 베이스 톤을 여기서
-     깔아야 화면 물리 영역 전체가 이어진다(메치트에서 검증한 방식). 블러 오브(-z-10)는
-     이 위에 얹히는 장식이고, body 배경은 오브를 가리지 않게 투명으로 둔다. */
+     영역에 칠하는 것은 fixed 요소가 아니라 캔버스이고, Safari는 뷰포트 상·하단 가장자리
+     픽셀을 샘플링해 자기 바를 칠한다. 그라데이션을 쓰면 iOS가 background-attachment:
+     fixed를 무시해 문서 전체 크기로 깔리는 바람에 스크롤 위치마다 샘플색이 달라지므로,
+     어디를 읽어도 같은 색이 나오는 '균일한 퍼플-블랙 단색'으로 둔다. 퍼플 무드는
+     뷰포트 고정 오브(-z-10)가 담당하고, body 배경은 오브를 가리지 않게 투명. */
   min-height: 100%;
-  background:
-    radial-gradient(circle at 15% 5%, rgba(99, 102, 241, 0.14), transparent 45%),
-    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 45%),
-    radial-gradient(circle at 40% 95%, rgba(120, 90, 240, 0.1), transparent 50%),
-    #09090b;
-  background-attachment: fixed;
+  background-color: #0d0b14;
   /* 가로 오버플로우 차단 — 어떤 요소가 뷰포트보다 넓어져도 가로 팬(헤더 옆 빈 공간)이
      생기지 않게 한다. hidden이 아닌 clip인 이유: hidden은 스크롤 컨테이너를 만들어
      position: sticky(헤더)를 깨지만 clip은 잘라내기만 한다. */
