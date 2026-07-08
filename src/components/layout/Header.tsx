@@ -7,6 +7,7 @@ import { cn } from '@/lib/cn';
 import { NAV_ITEMS } from '@/lib/nav';
 import { scrollToSection, useActiveSection } from '@/lib/section';
 import { SITE_NAME } from '@/lib/site';
+import { useScrollProgress } from '@/lib/useScroll';
 
 /**
  * 반응형 헤더.
@@ -124,6 +125,10 @@ export function Header() {
         </button>
       </div>
 
+      {/* 상세 페이지 읽기 진행 바(lg 미만) — fixed가 아닌 헤더의 absolute 자식으로 붙여,
+          iOS 러버밴드로 헤더가 딸려 움직일 때도 바가 헤더와 한 몸으로 따라간다. */}
+      {location.pathname.startsWith('/projects/') && <ReadingProgressBar />}
+
       {/* 메뉴 패널은 body 포털로 렌더 — 헤더의 backdrop-filter가 fixed 자손의 containing block이
           되어 위치가 헤더 기준으로 좁혀지는 것을 피한다. 헤더 아래(top-14)에서 펼쳐진다. */}
       {createPortal(
@@ -131,6 +136,22 @@ export function Header() {
         document.body,
       )}
     </header>
+  );
+}
+
+/** 모바일·태블릿 읽기 진행 바 — 헤더 바로 아래에서 좌→우로 찬다(데스크톱은 좌측 세로 바가 담당) */
+function ReadingProgressBar() {
+  const { progress } = useScrollProgress();
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute inset-x-0 top-full h-[3px] overflow-hidden bg-zinc-200/50 lg:hidden dark:bg-zinc-800/60"
+    >
+      <div
+        className="h-full rounded-r-full bg-linear-to-r from-indigo-500 to-pink-500"
+        style={{ width: `${progress * 100}%` }}
+      />
+    </div>
   );
 }
 
