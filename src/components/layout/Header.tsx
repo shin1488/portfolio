@@ -33,17 +33,20 @@ export function Header() {
     else navigate(`/#${id}`);
   };
 
-  // 드로어가 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기
+  // 드로어가 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기.
+  // 잠금은 body가 아닌 html(overflowY)에 건다 — html에 overflow-x: clip이 있어 body의
+  // overflow가 뷰포트로 승격되지 않으므로, body에 걸면 body가 클리핑 컨테이너가 되어
+  // sticky 헤더가 문서 최상단으로 튀어 버린다(잠금도 무력화).
   useEffect(() => {
     if (!menuOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const prevOverflowY = document.documentElement.style.overflowY;
+    document.documentElement.style.overflowY = 'hidden';
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMenuOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = prevOverflow;
+      document.documentElement.style.overflowY = prevOverflowY;
       window.removeEventListener('keydown', onKey);
     };
   }, [menuOpen]);

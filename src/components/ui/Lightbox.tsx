@@ -38,8 +38,10 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
       if (event.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // 잠금은 body가 아닌 html(overflowY)에 — html의 overflow-x: clip 때문에 body에 걸면
+    // body가 클리핑 컨테이너가 되어 sticky 헤더가 문서 최상단으로 튄다(잠금도 무력화).
+    const previousOverflowY = document.documentElement.style.overflowY;
+    document.documentElement.style.overflowY = 'hidden';
     closeRef.current?.focus({ preventScroll: true });
     const savedScrollY = window.scrollY;
 
@@ -59,7 +61,7 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
     return () => {
       document.removeEventListener('keydown', onKey);
       root?.removeEventListener('wheel', onWheel);
-      document.body.style.overflow = previousOverflow;
+      document.documentElement.style.overflowY = previousOverflowY;
       // 닫힌 직후: 열려 있는 동안의 어떤 드리프트도 원위치로 되돌리고,
       // 줌 휠의 트랙패드 잔여 관성이 잠금 풀린 페이지를 밀어내지 않게 잠깐 흡수한다.
       window.scrollTo({ top: savedScrollY, behavior: 'instant' });
