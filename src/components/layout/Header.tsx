@@ -53,7 +53,10 @@ export function Header() {
 
   return (
     // transform-gpu: backdrop-filter 있는 sticky가 iOS 스크롤 중 밀려 보이는 WebKit 이슈 완화(자체 레이어 승격)
-    <header className="sticky top-0 z-30 transform-gpu border-b border-white/[0.06] bg-zinc-950/55 pt-[env(safe-area-inset-top)] backdrop-blur-lg backdrop-saturate-[1.4]">
+    <header className="sticky top-0 z-30 transform-gpu border-b border-white/[0.06] pt-[env(safe-area-inset-top)]">
+      {/* 배경·블러는 sticky 자체가 아닌 absolute 자식에 — iOS 26 Safari가 뷰포트 상단을
+          샘플링해 툴바를 칠할 때 sticky 요소 자체의 bg/backdrop-filter를 읽는 것을 피한다 */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-zinc-950/55 backdrop-blur-lg backdrop-saturate-[1.4]" />
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         <button
           type="button"
