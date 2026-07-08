@@ -172,6 +172,25 @@ function MobileDrawer({
   active: string;
   onGo: (id: string) => void;
 }) {
+  // 닫힘 상태에선 렌더 트리에서 완전히 제거한다 — iOS 26 Safari는 opacity/visibility로
+  // 숨긴 fixed 오버레이의 배경색도 샘플링해 툴바를 어둡게 칠하므로(display:none 필수),
+  // 마운트를 2단계로 나눠 여닫이 애니메이션은 유지한다: 열 때 마운트 → 다음 프레임에
+  // shown(트랜지션 발동), 닫을 때 shown 해제(슬라이드 업) → 전환 시간 뒤 언마운트.
+  const [mounted, setMounted] = useState(open);
+  const [shown, setShown] = useState(open);
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const raf = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
+      return () => cancelAnimationFrame(raf);
+    }
+    setShown(false);
+    const timer = window.setTimeout(() => setMounted(false), 350);
+    return () => window.clearTimeout(timer);
+  }, [open]);
+
+  if (!mounted) return null;
+
   return (
     // 클리핑 래퍼 — 헤더 바로 아래(top-14)만 차지한다. 패널이 이 안에서 내려오므로
     // 새 레이어가 화면을 덮는 게 아니라 '헤더가 아래로 확장'되는 것처럼 보인다.
@@ -183,13 +202,11 @@ function MobileDrawer({
     >
       <div
         className={cn(
-          // visibility는 전환이 끝난 뒤 바뀌므로 닫힘 애니메이션이 살아있고, 닫힌 상태에선
-          // invisible이라 포커스/클릭 대상에서 빠진다.
           // v4의 translate-y-*는 transform이 아닌 translate 속성을 쓰므로 transition 대상도 translate.
           // 배경: 검은 판 대신 프로스트 글래스 — 투명도를 낮추되 블러를 세게 걸어
           // 뒤 콘텐츠는 읽히지 않는 색 번짐만 남긴다(비침 없이 유리 질감).
-          'relative flex h-full flex-col bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-[1.4] transition-[translate,visibility] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
-          open ? 'pointer-events-auto visible translate-y-0' : 'invisible -translate-y-full',
+          'relative flex h-full flex-col bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-[1.4] transition-[translate] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          shown && open ? 'pointer-events-auto translate-y-0' : '-translate-y-full',
         )}
       >
       {/* 패널 안쪽 브랜드 글로우 — 자체 생기를 주는 은은한 인디고/핑크 광 (비침과 무관한 장식) */}
