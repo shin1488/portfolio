@@ -120,6 +120,13 @@ html::-webkit-scrollbar {
    overflow-x: clip은 루트(html)가 아닌 body에 — 루트에 걸면 Safari의 edge-to-edge
    렌더(바 뒤 페이지 확장)에 간섭할 수 있다. clip은 스크롤 컨테이너를 만들지 않아
    sticky 헤더는 그대로 동작하고, 가로 오버플로우 팬 차단 효과는 동일하다. */
+/* 모바일 앰비언트가 position:absolute로 문서 높이만큼 늘어나 하단 툴바 뒤까지 닿게 하려면
+   기준 컨테이너가 필요하다. #root는 콘텐츠 전체를 감싸 문서 높이와 같으므로 여기에 relative를
+   건다. 데스크톱(앰비언트 fixed)에는 영향 없다. */
+#root {
+  position: relative;
+}
+
 body {
   @apply text-zinc-900 antialiased dark:text-zinc-100;
   /* Safari 26은 하단/상단 바 색을 페이지에서 샘플링한다(theme-color 무시). 하단에 걸친
