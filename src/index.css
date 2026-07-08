@@ -72,8 +72,9 @@ html::-webkit-scrollbar {
 }
 
 /* 프로필 아바타 halo — 인디고↔핑크가 자리를 바꾸며 빠르게 숨쉬는(breathing) 글로우.
-   reduced-motion에선 애니메이션 없이 클래스의 정적 shadow가 그대로 남는다. */
-@media (prefers-reduced-motion: no-preference) {
+   box-shadow 애니메이션은 매 프레임 메인 스레드 페인트라, 모바일(<640px)에선 발열을 줄이려
+   정지하고 클래스의 정적 shadow(인디고 우세)만 남긴다. reduced-motion도 동일. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 640px) {
   .avatar-breathe {
     animation: avatar-breathe 2s ease-in-out infinite;
   }
@@ -191,8 +192,10 @@ body {
 /* 앰비언트 배경 — 위치 이동(드리프트)은 없앴다. 움직이면 8비트 밴딩(계단)이 같이
    기어다녀 훨씬 도드라지기 때문. 대신 컨테이너 hue-rotate로 전체 색만 천천히 옮긴다.
    자식 오브의 blur 필터는 그대로 유지된다(부모 필터는 합성 결과에 적용).
-   모션 민감 사용자(prefers-reduced-motion)에겐 색 순환도 걸지 않아 완전 정지. */
-@media (prefers-reduced-motion: no-preference) {
+   무한 filter 애니메이션은 대형 블러 레이어를 계속 재합성시키므로, 모바일(<640px)에선
+   발열을 줄이려 정지한다 — 기본 색(인디고/퍼플 베이스)으로 멈춘 상태.
+   모션 민감 사용자(prefers-reduced-motion)에게도 걸지 않아 완전 정지. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 640px) {
   .ambient-hue {
     animation: ambient-hue 10s ease-in-out infinite alternate;
   }

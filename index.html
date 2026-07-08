@@ -10,9 +10,66 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#09090b" />
     <title>Shin's Portfolio</title>
+    <style>
+      /* 스플래시 크리티컬 CSS — 번들 CSS/JS가 오기 전에 HTML만으로 첫 화면을 그린다.
+         React가 #root를 렌더하는 순간 스플래시 마크업은 자동으로 교체되어 사라진다. */
+      html {
+        background: #09090b;
+      }
+      #splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: #09090b;
+      }
+      #splash svg {
+        width: 56px;
+        height: 56px;
+        animation: splash-pulse 1.6s ease-in-out infinite;
+      }
+      #splash p {
+        margin: 0;
+        font:
+          600 14px/1 -apple-system,
+          BlinkMacSystemFont,
+          system-ui,
+          sans-serif;
+        letter-spacing: -0.01em;
+        color: #a1a1aa;
+      }
+      @keyframes splash-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.55;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="splash" aria-hidden="true">
+        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sp-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1" /><stop offset="1" stop-color="#ec4899" /></linearGradient>
+            <linearGradient id="sp-mk" gradientUnits="userSpaceOnUse" x1="150" y1="150" x2="410" y2="360"><stop offset="0" stop-color="#818cf8" /><stop offset="1" stop-color="#f472b6" /></linearGradient>
+          </defs>
+          <rect x="16" y="16" width="480" height="480" rx="118" fill="#0e0e12" />
+          <rect x="26" y="26" width="460" height="460" rx="108" fill="none" stroke="url(#sp-ring)" stroke-width="14" />
+          <g fill="none" stroke="url(#sp-mk)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M156 156 L268 256 L156 356" />
+            <path d="M300 356 L404 356" />
+          </g>
+        </svg>
+        <p>Shin's Portfolio</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
