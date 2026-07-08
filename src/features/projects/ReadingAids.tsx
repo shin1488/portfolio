@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/cn';
 import { scrollToHeading } from '@/lib/section';
 import { useActiveHeadingId, useScrollProgress } from '@/lib/useScroll';
@@ -14,6 +15,29 @@ interface ReadingAidsProps {
 export function ReadingAids({ entries }: ReadingAidsProps) {
   const { progress, scrolled } = useScrollProgress();
   const { activeId, select } = useActiveHeadingId(entries.map((entry) => entry.id));
+
+  // FAB 2단계 마운트 — 숨김을 opacity/visibility로만 하면 iOS 26 Safari가 하단에 남아 있는
+  // fixed+backdrop-filter 레이어를 보고 하단 바 글래스를 불투명 단색으로 플래튼시킨다
+  // (MobileDrawer와 같은 규칙: 안 보일 땐 렌더 트리에서 완전히 제거해야 한다).
+  // mounted로 마운트를 만들고 double-rAF 뒤 shown을 켜 등장 트랜지션을 유지한다.
+  const [fabMounted, setFabMounted] = useState(false);
+  const [fabShown, setFabShown] = useState(false);
+  useEffect(() => {
+    if (scrolled) {
+      setFabMounted(true);
+      let raf2 = 0;
+      const raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => setFabShown(true));
+      });
+      return () => {
+        cancelAnimationFrame(raf1);
+        cancelAnimationFrame(raf2);
+      };
+    }
+    setFabShown(false);
+    const timer = setTimeout(() => setFabMounted(false), 300);
+    return () => clearTimeout(timer);
+  }, [scrolled]);
 
   if (entries.length < 2) {
     return null;
@@ -133,27 +157,31 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
       </nav>
 
       {/* 우하단 맨 위로 버튼 — 배경은 fixed 요소 자체가 아닌 absolute 자식에
-          (iOS 26 Safari가 하단 fixed 요소의 배경색으로 하단 바를 칠하는 것 회피) */}
-      <button
-        type="button"
-        aria-label="맨 위로"
-        onClick={() => {
-          select(entries[0].id); // 맨 위로 갈 땐 첫 항목을 강조(고정 해제 겸)
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        className={cn(
-          'group fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-6 z-30 flex size-11 items-center justify-center text-zinc-700 transition-all duration-300 dark:text-zinc-200',
-          scrolled ? 'visible translate-y-0 opacity-100' : 'pointer-events-none invisible translate-y-3 opacity-0',
-        )}
-      >
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 rounded-full border border-zinc-200 bg-white/80 shadow-lg backdrop-blur-md transition-colors group-hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900/80 dark:group-hover:bg-zinc-800"
-        />
-        <svg viewBox="0 0 24 24" className="relative size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <path d="M12 19V5M5 12l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
+          (iOS 26 Safari가 하단 fixed 요소의 배경색으로 하단 바를 칠하는 것 회피).
+          blur는 iOS(-webkit-touch-callout 지원 환경)에서만 끄고 불투명도로 보상 —
+          하단 바 영역의 backdrop-filter가 바 글래스를 검정 단색으로 플래튼시키기 때문. */}
+      {fabMounted && (
+        <button
+          type="button"
+          aria-label="맨 위로"
+          onClick={() => {
+            select(entries[0].id); // 맨 위로 갈 땐 첫 항목을 강조(고정 해제 겸)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={cn(
+            'group fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-6 z-30 flex size-11 items-center justify-center text-zinc-700 transition-all duration-300 dark:text-zinc-200',
+            fabShown && scrolled ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0',
+          )}
+        >
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 rounded-full border border-zinc-200 bg-white/80 shadow-lg backdrop-blur-md transition-colors group-hover:bg-zinc-100 supports-[-webkit-touch-callout:none]:bg-white/95 supports-[-webkit-touch-callout:none]:backdrop-blur-none dark:border-zinc-700 dark:bg-zinc-900/80 dark:group-hover:bg-zinc-800 dark:supports-[-webkit-touch-callout:none]:bg-zinc-900/95"
+          />
+          <svg viewBox="0 0 24 24" className="relative size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M12 19V5M5 12l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      )}
     </>
   );
 }
