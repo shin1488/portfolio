@@ -120,20 +120,25 @@ html::-webkit-scrollbar {
    overflow-x: clip은 루트(html)가 아닌 body에 — 루트에 걸면 Safari의 edge-to-edge
    렌더(바 뒤 페이지 확장)에 간섭할 수 있다. clip은 스크롤 컨테이너를 만들지 않아
    sticky 헤더는 그대로 동작하고, 가로 오버플로우 팬 차단 효과는 동일하다. */
-/* 모바일 앰비언트가 position:absolute로 문서 높이만큼 늘어나 하단 툴바 뒤까지 닿게 하려면
-   기준 컨테이너가 필요하다. #root는 콘텐츠 전체를 감싸 문서 높이와 같으므로 여기에 relative를
-   건다. 데스크톱(앰비언트 fixed)에는 영향 없다. */
-#root {
-  position: relative;
+/* 데스크톱(sm+): 글로우는 orb 레이어(AmbientBackground, fixed -z-10)가 담당하고 배경은
+   html 캔버스(#0d0b14)가 소유해 orb가 그 위에 비친다.
+   모바일(<640px): orb 레이어는 숨긴다(문서 높이 blur 합성 레이어가 backdrop-filter·스크롤을
+   무겁게 만들기 때문). 대신 글로우+베이스색을 #root 배경으로 준다 — #root는 문서 전체 높이라
+   배경이 콘텐츠처럼 하단 툴바 뒤 영역까지 닿고, blur 필터가 없어 가볍다. Safari 26이 하단 바를
+   샘플링할 때도 #root의 #0d0b14를 읽어 검정 폴백을 피한다. */
+@media (max-width: 639px) {
+  #root {
+    background-color: #0d0b14;
+    background-image:
+      radial-gradient(38rem 38rem at 8% 3%, rgba(99, 102, 241, 0.2), transparent 62%),
+      radial-gradient(34rem 34rem at 96% 16%, rgba(236, 72, 153, 0.14), transparent 62%),
+      radial-gradient(42rem 42rem at 50% 40%, rgba(139, 92, 246, 0.1), transparent 62%),
+      radial-gradient(38rem 38rem at 26% 98%, rgba(120, 90, 240, 0.14), transparent 62%);
+  }
 }
 
 body {
   @apply text-zinc-900 antialiased dark:text-zinc-100;
-  /* Safari 26은 하단/상단 바 색을 페이지에서 샘플링한다(theme-color 무시). 하단에 걸친
-     fixed 요소가 없거나 투명하면 body 배경으로 폴백하는데, 투명이면 다크모드에서 검정으로
-     떨어져 바에 검은 띠가 생긴다. 그래서 body에 캔버스색을 명시한다. 앰비언트(fixed z-0)는
-     이 배경 위에 그려지고 콘텐츠(z-10)가 그 위라 글로우는 그대로 보인다. */
-  background-color: #0d0b14;
   overflow-x: clip;
 }
 

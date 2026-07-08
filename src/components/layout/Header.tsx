@@ -203,10 +203,9 @@ function MobileDrawer({
       <div
         className={cn(
           // v4의 translate-y-*는 transform이 아닌 translate 속성을 쓰므로 transition 대상도 translate.
-          // 배경: backdrop-filter(뒤 전체를 매 프레임 블러 캡처)는 모바일에서 매우 비싸 메뉴
-          // 열림 반응을 느리게 만든다. 드로어는 sm:hidden(모바일 전용)이고 원래 의도도 '비침 없이'
-          // 였으므로, 블러 대신 거의 불투명한 단색으로 바꿔 캡처 비용을 없앤다(즉각 반응).
-          'relative flex h-full flex-col bg-zinc-950/95 transition-[translate] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          // 배경: 검은 판 대신 프로스트 글래스 — 투명도를 낮추되 블러를 세게 걸어
+          // 뒤 콘텐츠는 읽히지 않는 색 번짐만 남긴다(비침 없이 유리 질감).
+          'relative flex h-full flex-col bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-[1.4] transition-[translate] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
           shown && open ? 'pointer-events-auto translate-y-0' : '-translate-y-full',
         )}
       >
