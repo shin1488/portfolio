@@ -33,6 +33,17 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
         />
       </div>
 
+      {/* 모바일·태블릿(lg 미만): 세로 바 대신 헤더 바로 아래 얇은 가로 진행 바 — 좌→우로 찬다 */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-x-0 top-14 z-30 h-[3px] overflow-hidden bg-zinc-200/50 lg:hidden dark:bg-zinc-800/60"
+      >
+        <div
+          className="h-full rounded-r-full bg-linear-to-r from-indigo-500 to-pink-500"
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
+
       {/* 미니 목차(좁은 화면 lg~2xl) — 본문 옆에 펼칠 공간이 없을 때. 평소엔 우측 끝에 틱만,
          마우스를 대면 라벨이 왼쪽으로 펼쳐져 클릭할 수 있다(감지 영역은 pl로 조금 넉넉히).
          큰 화면(2xl+)에선 아래의 펼쳐진 미니 목차가 대신 뜬다. */}
