@@ -18,10 +18,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
-      {/* AmbientBackground는 래퍼 안에 — absolute inset-0이 문서 전체 높이(래퍼)를 트랙으로
-          삼아야 내부 sticky 오브 창이 어느 스크롤 위치에서든 뷰포트를 따라올 수 있다 */}
-      <div className="relative flex min-h-dvh flex-col">
-        <AmbientBackground />
+      <AmbientBackground />
+      <div className="flex min-h-dvh flex-col">
         <Header />
         <AppRoutes />
         <Footer />
