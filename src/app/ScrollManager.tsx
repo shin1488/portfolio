@@ -36,18 +36,25 @@ export function ScrollManager() {
           return rawId;
         }
       })();
-      const target = document.getElementById(id) ?? document.getElementById(rawId);
-      if (target) {
-        // 헤더·rail(scrollToSection)과 동일한 오프셋 0 로직으로 이동해 착지 좌표를 통일한다.
-        // (scrollIntoView는 scroll-margin을 반영해 56px 덜 스크롤 → 살짝 위쪽에 멈추던 문제)
-        scrollElementToTop(target, 'instant');
-        // 시각적 스크롤과 함께 낭독/포커스 위치도 앵커로 옮긴다.
-        if (!target.hasAttribute('tabindex')) {
-          target.setAttribute('tabindex', '-1');
+      // 앵커 대상이 아직 렌더 전일 수 있어(지연 로드·일시 오류 후 복구 등) 몇 프레임 재시도한다.
+      // 끝내 못 찾아도 최상단 리셋으로 덮지 않는다 — hash 내비게이션의 의도는 '그 섹션'이므로.
+      const tryScroll = (attempt: number) => {
+        const target = document.getElementById(id) ?? document.getElementById(rawId);
+        if (target) {
+          // 헤더·rail(scrollToSection)과 동일한 오프셋 0 로직으로 이동해 착지 좌표를 통일한다.
+          // (scrollIntoView는 scroll-margin을 반영해 56px 덜 스크롤 → 살짝 위쪽에 멈추던 문제)
+          scrollElementToTop(target, 'instant');
+          // 시각적 스크롤과 함께 낭독/포커스 위치도 앵커로 옮긴다.
+          if (!target.hasAttribute('tabindex')) {
+            target.setAttribute('tabindex', '-1');
+          }
+          target.focus({ preventScroll: true });
+        } else if (attempt < 10) {
+          requestAnimationFrame(() => tryScroll(attempt + 1));
         }
-        target.focus({ preventScroll: true });
-        return;
-      }
+      };
+      tryScroll(0);
+      return;
     }
     // 최초 진입(새로고침 포함)은 브라우저가 스스로 위치를 복원하므로 건드리지 않고,
     // 라우트 전환의 최상단 리셋은 smooth 글라이드 없이 즉시 이동한다.
