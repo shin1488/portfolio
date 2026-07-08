@@ -48,7 +48,8 @@ export function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-30 h-14 border-b border-white/[0.06] bg-zinc-950/55 backdrop-blur-lg backdrop-saturate-[1.4]">
+    // transform-gpu: backdrop-filter 있는 sticky가 iOS 스크롤 중 밀려 보이는 WebKit 이슈 완화(자체 레이어 승격)
+    <header className="sticky top-0 z-30 h-14 transform-gpu border-b border-white/[0.06] bg-zinc-950/55 backdrop-blur-lg backdrop-saturate-[1.4]">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         <button
           type="button"

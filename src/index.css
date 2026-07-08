@@ -20,6 +20,10 @@
 
 html {
   color-scheme: dark;
+  /* 가로 오버플로우 차단 — 어떤 요소가 뷰포트보다 넓어져도 가로 팬(헤더 옆 빈 공간)이
+     생기지 않게 한다. hidden이 아닌 clip인 이유: hidden은 스크롤 컨테이너를 만들어
+     position: sticky(헤더)를 깨지만 clip은 잘라내기만 한다. */
+  overflow-x: clip;
   /* 앵커 이동 시 헤더(56px) 높이만큼 여백 */
   scroll-padding-top: 56px;
   /* 네이티브 스크롤바 전역 숨김 — 스크롤 기능은 유지, 위치 안내는 우측 rail이 대신한다 */
@@ -107,6 +111,14 @@ html::-webkit-scrollbar {
 
 body {
   @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+}
+
+/* 마크다운 본문의 긴 무공백 토큰(URL·경로·식별자 나열 등)이 좁은 화면에서 컨테이너를
+   뚫고 나가 문서 가로폭을 밀어내지 않게, 필요할 때만 단어 중간 줄바꿈을 허용한다.
+   (실례: "(User/Item/Inventory/…/AiChat)"가 390px 뷰포트를 403px로 밀어 헤더/고정
+   요소들이 어긋나 보였다) */
+.prose {
+  overflow-wrap: break-word;
 }
 
 /* 코드블록은 라이트/다크 모두 어두운 배경 위에서 렌더링 —
