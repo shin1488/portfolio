@@ -22,23 +22,23 @@ export function AmbientBackground() {
     <div aria-hidden="true" className="ambient-hue pointer-events-none fixed inset-x-0 top-0 -z-10 hidden h-lvh overflow-hidden sm:block">
       {/* 좌상단 인디고 글로우 — 헤더·로고 근처에서 은은하게 번진다(브랜드 그라데이션 시작색) */}
       <div
-        className="absolute -left-40 -top-48 size-[42rem] rounded-full blur-[120px]"
+        className="absolute -left-40 -top-48 size-168 rounded-full blur-[120px]"
         style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.22), rgba(49,46,120,0.06))' }}
       />
       {/* 우측 핑크 글로우 — 화면 중단 오른쪽에서 대각선으로 브랜드 그라데이션 끝색을 준다 */}
       <div
-        className="absolute -right-32 top-[22%] size-[38rem] rounded-full blur-[130px]"
+        className="absolute -right-32 top-[22%] size-152 rounded-full blur-[130px]"
         style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.16), rgba(110,28,74,0.05))' }}
       />
       {/* 화면 정중앙 바이올렛 톤 — 넓고 옅게 깔아 중앙 허전함을 채운다.
          본문이 얹히는 자리라 alpha를 낮춰 가독성을 지킨다. */}
       <div
-        className="absolute left-1/2 top-1/2 size-[46rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
+        className="absolute left-1/2 top-1/2 size-184 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
         style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.10), rgba(52,40,104,0.04))' }}
       />
       {/* 하단 좌측 인디고-바이올렛 톤 — 아래쪽 여백을 채우고 좌측에 인디고를 퍼뜨려 대각선 균형을 준다 */}
       <div
-        className="absolute -bottom-52 left-1/3 size-[40rem] -translate-x-1/2 rounded-full blur-[140px]"
+        className="absolute -bottom-52 left-1/3 size-160 -translate-x-1/2 rounded-full blur-[140px]"
         style={{ background: 'radial-gradient(circle, rgba(120,90,240,0.16), rgba(46,40,110,0.05))' }}
       />
     </div>

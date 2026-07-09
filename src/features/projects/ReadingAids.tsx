@@ -49,7 +49,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
       <div
         aria-hidden="true"
         style={{ left: 'max(1rem, calc(50% - 28rem))' }}
-        className="fixed top-1/2 z-30 hidden h-[40vh] w-[3px] -translate-y-1/2 overflow-hidden rounded-full bg-zinc-200/50 lg:block dark:bg-zinc-800/60"
+        className="fixed top-1/2 z-30 hidden h-[40vh] w-0.75 -translate-y-1/2 overflow-hidden rounded-full bg-zinc-200/50 lg:block dark:bg-zinc-800/60"
       >
         <div
           className="w-full rounded-full bg-linear-to-b from-indigo-500 to-pink-500"
@@ -80,7 +80,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
               className="flex w-full items-center justify-end rounded-md py-1 pr-0.5 hover:bg-zinc-500/10"
             >
               {/* 라벨 — 평소 max-w-0(숨김), rail hover 시 왼쪽으로 펼침. 활성은 좌측 인디고 시작 그라데이션 */}
-              <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-w-[15rem] group-hover:opacity-100">
+              <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-w-60 group-hover:opacity-100">
                 <span
                   className={cn(
                     'block truncate pr-2.5 text-[13px]',
@@ -136,13 +136,13 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                   />
                   {/* 회색 라벨과 그라데이션 라벨을 겹쳐 두고 활성 시 그라데이션만 opacity로 페이드(깜빡임 없음) */}
                   <span className="grid">
-                    <span className="col-start-1 row-start-1 line-clamp-1 max-w-[10.5rem] text-zinc-400 transition-colors group-hover/item:text-zinc-700 dark:text-zinc-500 dark:group-hover/item:text-zinc-200">
+                    <span className="col-start-1 row-start-1 line-clamp-1 max-w-42 text-zinc-400 transition-colors group-hover/item:text-zinc-700 dark:text-zinc-500 dark:group-hover/item:text-zinc-200">
                       {entry.text}
                     </span>
                     <span
                       aria-hidden="true"
                       className={cn(
-                        'col-start-1 row-start-1 line-clamp-1 max-w-[10.5rem] bg-linear-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent transition-opacity',
+                        'col-start-1 row-start-1 line-clamp-1 max-w-42 bg-linear-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent transition-opacity',
                         active ? 'opacity-100' : 'opacity-0',
                       )}
                     >

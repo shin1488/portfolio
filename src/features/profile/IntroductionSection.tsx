@@ -46,8 +46,8 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
                   aria-current={i === active}
                   onClick={() => scrollToTrackStep(trackRef.current, i, n)}
                   className={cn(
-                    'h-1.5 rounded-full transition-all duration-[250ms]',
-                    i === active ? 'w-[26px] bg-linear-to-r from-indigo-400 to-pink-400' : 'w-1.5 bg-zinc-700',
+                    'h-1.5 rounded-full transition-all duration-250',
+                    i === active ? 'w-6.5 bg-linear-to-r from-indigo-400 to-pink-400' : 'w-1.5 bg-zinc-700',
                   )}
                 />
               ))}
@@ -55,25 +55,25 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
 
             <div
               onMouseLeave={() => setHoverIdx(null)}
-              className="mx-auto mt-12 flex max-w-[760px] flex-col gap-[30px]"
+              className="mx-auto mt-12 flex max-w-190 flex-col gap-7.5"
             >
               {bio.map((paragraph, i) => (
                 <div
                   key={i}
                   onMouseEnter={() => setHoverIdx(i)}
                   onMouseMove={() => setHoverIdx(i)}
-                  className="flex items-stretch gap-[22px]"
+                  className="flex items-stretch gap-5.5"
                 >
                   <span
                     aria-hidden="true"
                     className={cn(
-                      'w-[3px] shrink-0 rounded-sm transition-colors duration-[350ms]',
+                      'w-0.75 shrink-0 rounded-sm transition-colors duration-350',
                       i === active ? 'bg-linear-to-b from-indigo-400 to-pink-400' : 'bg-zinc-800',
                     )}
                   />
                   <p
                     className={cn(
-                      'text-lg leading-[1.9] transition-colors duration-[350ms]',
+                      'text-lg leading-[1.9] transition-colors duration-350',
                       i === active ? 'text-zinc-100' : 'text-zinc-600',
                     )}
                   >

@@ -19,7 +19,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     >
       <div className="mx-auto max-w-xl">
         <Avatar profile={profile} />
-        <p className="mt-[26px] inline-block bg-linear-to-r from-indigo-400 to-pink-400 bg-clip-text text-[15px] font-semibold text-transparent">
+        <p className="mt-6.5 inline-block bg-linear-to-r from-indigo-400 to-pink-400 bg-clip-text text-[15px] font-semibold text-transparent">
           {profile.role}
         </p>
         <h1
@@ -30,7 +30,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           {profile.name}
         </h1>
         {/* 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */}
-        <p className="mx-auto mt-[18px] max-w-[600px] text-xl leading-relaxed text-zinc-300">
+        <p className="mx-auto mt-4.5 max-w-150 text-xl leading-relaxed text-zinc-300">
           {profile.tagline.split(/,\s*/).map((part, i, arr) => (
             <span key={i}>
               {part}
@@ -48,7 +48,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
       {/* 스크롤 힌트 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-[18svh] flex flex-col items-center gap-[7px] text-zinc-600"
+        className="pointer-events-none absolute inset-x-0 bottom-[18svh] flex flex-col items-center gap-1.75 text-zinc-600"
       >
         <span className="text-xs font-semibold uppercase tracking-[0.14em]">Scroll</span>
         <span className="scroll-hint-arrow text-[19px] leading-none">↓</span>
@@ -66,7 +66,7 @@ function Avatar({ profile }: { profile: Profile }) {
         src={profile.avatarImageUrl}
         alt={`${profile.name} 프로필 사진`}
         onError={() => setImageFailed(true)}
-        className="mx-auto size-[118px] sm:size-[150px] shrink-0 rounded-full object-cover shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
+        className="mx-auto size-29.5 sm:size-37.5 shrink-0 rounded-full object-cover shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
       />
     );
   }
@@ -74,7 +74,7 @@ function Avatar({ profile }: { profile: Profile }) {
     <div
       role="img"
       aria-label={`${profile.name} 프로필 사진 자리`}
-      className="mx-auto flex size-[118px] sm:size-[150px] shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-[38px] font-bold text-white shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
+      className="mx-auto flex size-29.5 sm:size-37.5 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-[38px] font-bold text-white shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
     >
       {profile.avatarInitials}
     </div>

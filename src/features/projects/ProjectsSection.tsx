@@ -89,8 +89,8 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                     aria-current={i === activeP}
                     onClick={() => scrollToTrackStep(trackRef.current, i, n)}
                     className={cn(
-                      'h-1.5 rounded-full transition-all duration-[250ms]',
-                      i === activeP ? 'w-[26px] bg-linear-to-r from-indigo-400 to-pink-400' : 'w-1.5 bg-zinc-700',
+                      'h-1.5 rounded-full transition-all duration-250',
+                      i === activeP ? 'w-6.5 bg-linear-to-r from-indigo-400 to-pink-400' : 'w-1.5 bg-zinc-700',
                     )}
                   />
                 ))}
@@ -111,7 +111,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                 disabled={activeP === 0}
                 onClick={() => scrollToTrackStep(trackRef.current, activeP - 1, n)}
               />
-              <span className="min-w-[54px] text-center text-[13px] tabular-nums text-zinc-400">
+              <span className="min-w-13.5 text-center text-[13px] tabular-nums text-zinc-400">
                 {String(activeP + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
               </span>
               <ArrowButton
@@ -134,7 +134,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
               to={`/projects/${project.id}`}
               className="group overflow-hidden rounded-2xl border border-white/10 bg-linear-to-b from-white/[0.05] to-white/[0.02] shadow-xl shadow-black/20 backdrop-blur-xl"
             >
-              <div className="relative aspect-[16/10] overflow-hidden">
+              <div className="relative aspect-16/10 overflow-hidden">
                 <img
                   src={project.thumbnail}
                   alt=""
@@ -189,7 +189,7 @@ function ProjectBlock({
       <Link
         to={`/projects/${project.id}`}
         aria-label={`${project.title} 상세 페이지 보기`}
-        className="absolute inset-0 z-[1]"
+        className="absolute inset-0 z-1"
         tabIndex={active ? 0 : -1}
       />
 
@@ -206,7 +206,7 @@ function ProjectBlock({
           <ul className="mt-5 flex flex-col gap-2.5">
             {project.highlights.map((highlight, i) => (
               <li key={i} className="flex gap-2.5 text-sm leading-[1.6] text-zinc-400">
-                <span aria-hidden="true" className="mt-[7px] size-[5px] shrink-0 bg-indigo-400" />
+                <span aria-hidden="true" className="mt-1.75 size-1.25 shrink-0 bg-indigo-400" />
                 <span>
                   <HighlightText text={highlight} />
                 </span>
@@ -215,7 +215,7 @@ function ProjectBlock({
           </ul>
           <p className="mt-4 text-sm leading-[1.7] text-zinc-500">{project.techStack.join(' · ')}</p>
 
-          <div className="relative z-[2] mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="relative z-2 mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
             <span className="inline-flex items-center gap-1 text-sm font-semibold">
               {/* 텍스트만 로고식 breathing(그라데이션). 화살표는 클립 밖 솔리드 색으로 두어야
                   transform(이동) 시 사라지지 않는다(bg-clip-text + transform 충돌 회피). */}
@@ -240,7 +240,7 @@ function ProjectBlock({
             alt={`${project.title} 미리보기`}
             loading="lazy"
             decoding="async"
-            className="aspect-[4/3] w-full rounded-2xl border border-zinc-800 object-cover"
+            className="aspect-4/3 w-full rounded-2xl border border-zinc-800 object-cover"
           />
         </div>
       </div>

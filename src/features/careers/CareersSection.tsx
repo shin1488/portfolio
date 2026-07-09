@@ -46,10 +46,10 @@ export function CareersSection({ categories }: CareersSectionProps) {
             >
               {/* 좌측 메뉴 + 이동 바 — 세로 중앙 */}
               <div className="flex items-center pr-10">
-                <div className="relative w-full pl-[22px]">
+                <div className="relative w-full pl-5.5">
                   <div
                     aria-hidden="true"
-                    className="absolute left-0 top-[15px] h-[22px] w-[3px] rounded-sm bg-linear-to-b from-indigo-400 to-pink-400"
+                    className="absolute left-0 top-3.75 h-5.5 w-0.75 rounded-sm bg-linear-to-b from-indigo-400 to-pink-400"
                     style={{
                       transform: `translateY(${active * ROW_H}px)`,
                       transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
@@ -68,7 +68,7 @@ export function CareersSection({ categories }: CareersSectionProps) {
                     >
                       <span
                         className={cn(
-                          'text-[23px] font-bold tracking-[-0.01em] transition-colors duration-[250ms]',
+                          'text-[23px] font-bold tracking-[-0.01em] transition-colors duration-250',
                           i === active ? 'text-zinc-100' : 'text-zinc-600',
                         )}
                       >
@@ -80,8 +80,8 @@ export function CareersSection({ categories }: CareersSectionProps) {
               </div>
 
               {/* 우측: 활성 카테고리 항목 — 세로 중앙 */}
-              <div className="flex min-h-[400px] items-center border-l border-zinc-800 pl-10">
-                <ul className="flex w-full flex-col gap-[22px]">
+              <div className="flex min-h-100 items-center border-l border-zinc-800 pl-10">
+                <ul className="flex w-full flex-col gap-5.5">
                   {activeCat.items.map((item, i) => (
                     <li key={i}>
                       <p className="text-[13px] tabular-nums text-zinc-400">
@@ -90,9 +90,9 @@ export function CareersSection({ categories }: CareersSectionProps) {
                         </span>
                         {item.date}
                       </p>
-                      <p className="mt-[5px] text-[17px] font-semibold text-zinc-100">{item.name}</p>
+                      <p className="mt-1.25 text-[17px] font-semibold text-zinc-100">{item.name}</p>
                       {item.description && (
-                        <p className="mt-[3px] text-sm leading-[1.6] text-zinc-400">
+                        <p className="mt-0.75 text-sm leading-[1.6] text-zinc-400">
                           {item.description}
                         </p>
                       )}

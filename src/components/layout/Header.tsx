@@ -63,7 +63,7 @@ export function Header() {
     <header className="sticky top-0 z-30 transform-gpu border-b border-white/[0.06] pt-[env(safe-area-inset-top)]">
       {/* 배경·블러는 sticky 자체가 아닌 absolute 자식에 — iOS 26 Safari가 뷰포트 상단을
           샘플링해 툴바를 칠할 때 sticky 요소 자체의 bg/backdrop-filter를 읽는 것을 피한다 */}
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-zinc-950/55 backdrop-blur-lg backdrop-saturate-[1.4]" />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-zinc-950/55 backdrop-blur-lg backdrop-saturate-140" />
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         <button
           type="button"
@@ -78,7 +78,7 @@ export function Header() {
 
         {/* 데스크톱 내비 (sm+) */}
         <nav aria-label="주요 섹션" className="hidden sm:block">
-          <ul className="flex items-center gap-[22px] text-sm">
+          <ul className="flex items-center gap-5.5 text-sm">
             {NAV_ITEMS.map((item) => {
               const isActive = item.id === active;
               return (
@@ -115,12 +115,12 @@ export function Header() {
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? '메뉴 닫기' : '메뉴 열기'}
           aria-expanded={menuOpen}
-          className="-mr-2 flex cursor-pointer flex-col items-end gap-[5px] p-2 sm:hidden"
+          className="-mr-2 flex cursor-pointer flex-col items-end gap-1.25 p-2 sm:hidden"
         >
           <span
             className={cn(
               'h-0.5 w-5 rounded-full bg-zinc-300 transition-transform duration-300',
-              menuOpen && 'translate-y-[7px] rotate-45',
+              menuOpen && 'translate-y-1.75 rotate-45',
             )}
           />
           {/* 가운데 막대 — opacity만으로는 iOS WebKit(backdrop-filter 레이어 안 리페인트 버그)에서
@@ -134,7 +134,7 @@ export function Header() {
           <span
             className={cn(
               'h-0.5 rounded-full bg-zinc-300 transition-all duration-300',
-              menuOpen ? 'w-5 -translate-y-[7px] -rotate-45' : 'w-3.5',
+              menuOpen ? 'w-5 -translate-y-1.75 -rotate-45' : 'w-3.5',
             )}
           />
         </button>
@@ -160,7 +160,7 @@ function ReadingProgressBar() {
   return (
     <div
       aria-hidden="true"
-      className="absolute inset-x-0 top-full h-[3px] overflow-hidden bg-zinc-200/50 lg:hidden dark:bg-zinc-800/60"
+      className="absolute inset-x-0 top-full h-0.75 overflow-hidden bg-zinc-200/50 lg:hidden dark:bg-zinc-800/60"
     >
       <div
         className="h-full rounded-r-full bg-linear-to-r from-indigo-500 to-pink-500"
@@ -212,7 +212,7 @@ function MobileDrawer({
           // v4의 translate-y-*는 transform이 아닌 translate 속성을 쓰므로 transition 대상도 translate.
           // 배경: 검은 판 대신 프로스트 글래스 — 투명도를 낮추되 블러를 세게 걸어
           // 뒤 콘텐츠는 읽히지 않는 색 번짐만 남긴다(비침 없이 유리 질감).
-          'relative flex h-full flex-col bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-[1.4] transition-[translate] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          'relative flex h-full flex-col bg-zinc-950/80 backdrop-blur-2xl backdrop-saturate-140 transition-[translate] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
           shown && open ? 'pointer-events-auto translate-y-0' : '-translate-y-full',
         )}
       >
@@ -258,7 +258,7 @@ function MobileDrawer({
                     </span>
                   </span>
                   {isActive && (
-                    <span aria-hidden="true" className="size-[7px] rounded-full bg-linear-to-br from-indigo-400 to-pink-400" />
+                    <span aria-hidden="true" className="size-1.75 rounded-full bg-linear-to-br from-indigo-400 to-pink-400" />
                   )}
                 </button>
               </li>

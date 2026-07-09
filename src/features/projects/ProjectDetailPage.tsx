@@ -89,7 +89,7 @@ function ProjectDetailView({ project }: { project: Project }) {
           <ul className="mt-5 flex flex-col gap-2">
             {project.highlights.map((highlight, i) => (
               <li key={i} className="flex gap-2.5 text-sm leading-[1.65] text-zinc-600 dark:text-zinc-400">
-                <span aria-hidden="true" className="mt-[7px] size-[5px] shrink-0 bg-indigo-400" />
+                <span aria-hidden="true" className="mt-1.75 size-1.25 shrink-0 bg-indigo-400" />
                 <span>
                   <HighlightText text={highlight} />
                 </span>

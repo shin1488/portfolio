@@ -27,7 +27,7 @@ export function SectionRail() {
           >
             <span
               className={cn(
-                'absolute right-full mr-3 whitespace-nowrap text-xs font-semibold transition-opacity duration-[250ms] group-hover:opacity-100',
+                'absolute right-full mr-3 whitespace-nowrap text-xs font-semibold transition-opacity duration-250 group-hover:opacity-100',
                 isActive ? 'text-zinc-100 opacity-100' : 'text-zinc-400 opacity-0',
               )}
             >
@@ -36,8 +36,8 @@ export function SectionRail() {
             <span
               aria-hidden="true"
               className={cn(
-                'h-0.5 rounded-full transition-all duration-[250ms]',
-                isActive ? 'w-[26px] bg-linear-to-r from-indigo-400 to-pink-400' : 'w-[14px] bg-zinc-700',
+                'h-0.5 rounded-full transition-all duration-250',
+                isActive ? 'w-6.5 bg-linear-to-r from-indigo-400 to-pink-400' : 'w-3.5 bg-zinc-700',
               )}
             />
           </button>

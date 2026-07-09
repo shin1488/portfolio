@@ -49,10 +49,10 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
             >
               {/* 좌측 타이포 메뉴 + 이동 바 — 세로 중앙 */}
               <div className="flex items-center pr-10">
-                <div className="relative w-full pl-[22px]">
+                <div className="relative w-full pl-5.5">
                   <div
                     aria-hidden="true"
-                    className="absolute left-0 top-[15px] h-[22px] w-[3px] rounded-sm bg-linear-to-b from-indigo-400 to-pink-400"
+                    className="absolute left-0 top-3.75 h-5.5 w-0.75 rounded-sm bg-linear-to-b from-indigo-400 to-pink-400"
                     style={{
                       transform: `translateY(${active * ROW_H}px)`,
                       transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
@@ -71,7 +71,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
                     >
                       <span
                         className={cn(
-                          'text-[23px] font-bold tracking-[-0.01em] transition-colors duration-[250ms]',
+                          'text-[23px] font-bold tracking-[-0.01em] transition-colors duration-250',
                           i === active ? 'text-zinc-100' : 'text-zinc-600',
                         )}
                       >
@@ -83,7 +83,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
               </div>
 
               {/* 우측: 활성 카테고리 스킬 2열 — 세로 중앙 (min-height로 divider 길이 고정) */}
-              <div className="flex min-h-[320px] items-center border-l border-zinc-800 pl-10">
+              <div className="flex min-h-80 items-center border-l border-zinc-800 pl-10">
                 {/* overflow-hidden + -mt-px로 두 컬럼 맨 윗줄의 border-t만 잘라내 상단 가로줄을 없앤다
                     (컬럼 최상단 항목들의 top이 같은 y라 1px 클립으로 좌우 대칭 제거, 행 사이 divider는 유지) */}
                 <div className="w-full overflow-hidden">
@@ -91,7 +91,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
                     {activeCat.skills.map((skill) => (
                       <li
                         key={skill.name}
-                        className="break-inside-avoid border-t border-zinc-800/60 py-[9px]"
+                        className="break-inside-avoid border-t border-zinc-800/60 py-2.25"
                       >
                         <span
                           className={cn(

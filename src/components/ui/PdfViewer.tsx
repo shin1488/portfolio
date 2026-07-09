@@ -302,7 +302,7 @@ export default function PdfViewer({ href, title }: PdfViewerProps) {
         <div
           aria-hidden="true"
           className={cn(
-            'pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[3px] bg-white/10 transition-opacity duration-300',
+            'pointer-events-none absolute inset-x-0 bottom-0 z-10 h-0.75 bg-white/10 transition-opacity duration-300',
             chromeHidden ? 'opacity-100' : 'opacity-0',
           )}
         >
@@ -343,7 +343,7 @@ function HalfNav({
       disabled={disabled}
       aria-label={prev ? '이전 슬라이드' : '다음 슬라이드'}
       className={cn(
-        'group absolute inset-y-0 z-[1] flex w-1/2 items-center outline-none disabled:cursor-default',
+        'group absolute inset-y-0 z-1 flex w-1/2 items-center outline-none disabled:cursor-default',
         hidden ? 'cursor-none' : 'cursor-pointer', // 크롬 숨김 땐 클릭 영역 위에서도 포인터 숨김
         prev ? 'left-0 justify-start pl-6' : 'right-0 justify-end pr-6',
       )}
