@@ -89,7 +89,12 @@ export function Header() {
                     aria-current={isActive}
                     className="group grid cursor-pointer"
                   >
-                    <span className="col-start-1 row-start-1 text-zinc-400 transition-colors group-hover:text-zinc-200">
+                    <span
+                      className={cn(
+                        'col-start-1 row-start-1 text-zinc-400 transition-[color,opacity] group-hover:text-zinc-200',
+                        isActive && 'opacity-0',
+                      )}
+                    >
                       {item.label}
                     </span>
                     <span
