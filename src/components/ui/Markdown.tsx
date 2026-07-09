@@ -8,6 +8,8 @@ import { imageDimensions } from 'virtual:image-dimensions';
 import { buildSrcSet } from '@/lib/image';
 import { FlickerSpinner } from './FlickerSpinner';
 import { Lightbox } from './Lightbox';
+import { PsrFlow } from './PsrFlow';
+import rehypePsr from './rehype-psr';
 
 interface MarkdownProps {
   children: string;
@@ -297,6 +299,13 @@ export function Markdown({ children }: MarkdownProps) {
               />
             );
           },
+          // rehype-psr가 "문제·해결·결과" 리스트를 <div data-psr> 컨테이너로 바꾸면 아이콘
+          // 타임라인(PsrFlow)으로 렌더한다. 각 스텝(PsrStep)은 PsrFlow가 자식의 kind를 읽어
+          // 직접 렌더하므로 여기선 컨테이너만 가로챈다. 그 외 div는 그대로 통과.
+          div({ node, children, ...props }) {
+            if (node?.properties && 'dataPsr' in node.properties) return <PsrFlow>{children}</PsrFlow>;
+            return <div {...props}>{children}</div>;
+          },
     }),
     [],
   );
@@ -310,6 +319,8 @@ export function Markdown({ children }: MarkdownProps) {
           rehypeSlug,
           // 챗봇 action 블록 같은 커스텀 언어는 JSON 문법으로 하이라이트
           [rehypeHighlight, { aliases: { json: ['action'] } }],
+          // "문제·해결·결과" 불릿 리스트를 아이콘 타임라인 구조로 전처리
+          rehypePsr,
         ]}
         components={components}
       >
