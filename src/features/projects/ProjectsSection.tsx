@@ -132,7 +132,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             <Link
               key={project.id}
               to={`/projects/${project.id}`}
-              className="group overflow-hidden rounded-2xl border border-white/10 bg-linear-to-b from-white/[0.05] to-white/[0.02] shadow-xl shadow-black/20 backdrop-blur-xl"
+              className="group overflow-hidden rounded-2xl border border-white/10 bg-linear-to-b from-white/5 to-white/2 shadow-xl shadow-black/20 backdrop-blur-xl"
             >
               <div className="relative aspect-16/10 overflow-hidden">
                 <img
@@ -193,7 +193,7 @@ function ProjectBlock({
         tabIndex={active ? 0 : -1}
       />
 
-      <div className="w-full grid gap-14 sm:[grid-template-columns:1.05fr_0.95fr] sm:items-center">
+      <div className="w-full grid gap-14 sm:grid-cols-[1.05fr_0.95fr] sm:items-center">
         {/* 좌: 정보 */}
         <div>
           <ProjectKindChip kind={project.kind} />
@@ -219,7 +219,7 @@ function ProjectBlock({
             <span className="inline-flex items-center gap-1 text-sm font-semibold">
               {/* 텍스트만 로고식 breathing(그라데이션). 화살표는 클립 밖 솔리드 색으로 두어야
                   transform(이동) 시 사라지지 않는다(bg-clip-text + transform 충돌 회피). */}
-              <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-indigo-300 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent">
+              <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-size-[200%_auto] bg-clip-text text-indigo-300 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent">
                 상세 페이지 보기
               </span>
               <span

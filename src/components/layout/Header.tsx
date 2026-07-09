@@ -60,7 +60,7 @@ export function Header() {
 
   return (
     // transform-gpu: backdrop-filter 있는 sticky가 iOS 스크롤 중 밀려 보이는 WebKit 이슈 완화(자체 레이어 승격)
-    <header className="sticky top-0 z-30 transform-gpu border-b border-white/[0.06] pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-30 transform-gpu border-b border-white/6 pt-[env(safe-area-inset-top)]">
       {/* 배경·블러는 sticky 자체가 아닌 absolute 자식에 — iOS 26 Safari가 뷰포트 상단을
           샘플링해 툴바를 칠할 때 sticky 요소 자체의 bg/backdrop-filter를 읽는 것을 피한다 */}
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-zinc-950/55 backdrop-blur-lg backdrop-saturate-140" />
@@ -71,7 +71,7 @@ export function Header() {
           className="group flex cursor-pointer items-center gap-2 text-sm font-semibold tracking-tight"
         >
           <img src="/favicon.svg" alt="" aria-hidden="true" className="h-5 w-5" />
-          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-zinc-100 transition-colors duration-200 group-hover:animate-[logo-flow_3s_linear_infinite] group-hover:text-transparent">
+          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-size-[200%_auto] bg-clip-text text-zinc-100 transition-colors duration-200 group-hover:animate-[logo-flow_3s_linear_infinite] group-hover:text-transparent">
             {SITE_NAME}
           </span>
         </button>

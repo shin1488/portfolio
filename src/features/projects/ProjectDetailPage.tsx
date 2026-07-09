@@ -53,7 +53,7 @@ function ProjectDetailView({ project }: { project: Project }) {
           >
             ←
           </span>
-          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-[length:200%_auto] bg-clip-text text-indigo-600 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-indigo-400">
+          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-size-[200%_auto] bg-clip-text text-indigo-600 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-indigo-400">
             프로젝트 목록
           </span>
         </Link>

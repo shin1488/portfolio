@@ -139,7 +139,7 @@ function PdfEmbed({ href, title }: { href: string; title?: string }) {
 /** 첫 슬라이드가 뜨기 전 자리표시(레이아웃 예약 + 로딩 표시). */
 function PdfSkeleton({ label }: { label: string }) {
   return (
-    <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-zinc-200 bg-gradient-to-b from-zinc-800 to-zinc-950 dark:border-zinc-800">
+    <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-zinc-200 bg-linear-to-b from-zinc-800 to-zinc-950 dark:border-zinc-800">
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600/80 shadow-lg">
         <svg
           viewBox="0 0 24 24"

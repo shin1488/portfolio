@@ -42,7 +42,7 @@ export function CareersSection({ categories }: CareersSectionProps) {
 
             <div
               onMouseLeave={() => setHoverIdx(null)}
-              className="grid items-stretch gap-0 [grid-template-columns:minmax(0,1fr)_minmax(0,1fr)]"
+              className="grid items-stretch gap-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
             >
               {/* 좌측 메뉴 + 이동 바 — 세로 중앙 */}
               <div className="flex items-center pr-10">

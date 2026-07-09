@@ -45,7 +45,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
 
             <div
               onMouseLeave={() => setHoverIdx(null)}
-              className="grid items-stretch gap-0 [grid-template-columns:minmax(0,1fr)_minmax(0,1fr)]"
+              className="grid items-stretch gap-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
             >
               {/* 좌측 타이포 메뉴 + 이동 바 — 세로 중앙 */}
               <div className="flex items-center pr-10">
@@ -87,7 +87,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
                 {/* overflow-hidden + -mt-px로 두 컬럼 맨 윗줄의 border-t만 잘라내 상단 가로줄을 없앤다
                     (컬럼 최상단 항목들의 top이 같은 y라 1px 클립으로 좌우 대칭 제거, 행 사이 divider는 유지) */}
                 <div className="w-full overflow-hidden">
-                  <ul className="-mt-px w-full columns-2 [column-gap:2rem]">
+                  <ul className="-mt-px w-full columns-2 gap-x-8">
                     {activeCat.skills.map((skill) => (
                       <li
                         key={skill.name}
@@ -123,7 +123,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
               <h3 className="border-b border-zinc-600 pb-2 text-base font-bold text-zinc-100">
                 {category.title}
               </h3>
-              <ul className="mt-3 columns-2 [column-gap:1.5rem]">
+              <ul className="mt-3 columns-2 gap-x-6">
                 {category.skills.map((skill) => (
                   <li key={skill.name} className="break-inside-avoid py-1.5">
                     <span
