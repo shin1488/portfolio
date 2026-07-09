@@ -3,26 +3,67 @@ import { useLocation, useNavigationType } from 'react-router';
 import { scrollElementToTop } from '@/lib/section';
 
 /**
- * 라우트 이동 시 hash 앵커로 스크롤·포커스하고, hash가 없으면 최상단으로 이동한다.
- * 뒤로/앞으로가기(POP)는 브라우저의 스크롤 위치 복원에 맡긴다.
+ * 라우트 이동 시 스크롤·포커스를 관리한다.
+ * - hash 앵커가 있으면 그 섹션으로, 없으면(라우트 전환) 최상단으로 이동한다.
+ * - 뒤로/앞으로가기(POP)는 직접 저장해 둔 스크롤 위치로 복원한다.
+ *
+ * 왜 수동 복원인가: 브라우저의 자동 스크롤 복원(scrollRestoration:auto)은 URL에 #hash가
+ * 있으면 저장된 스크롤 위치 대신 그 앵커(#profile=최상단)로 점프해버려, 프로젝트 상세에서
+ * 뒤로가기하면 보던 위치가 아니라 맨 위로 튄다. 그래서 restoration을 manual로 두고
+ * 히스토리 항목(location.key)별 스크롤 위치를 우리가 저장했다가 POP에서 되돌린다.
  */
 export function ScrollManager() {
   const location = useLocation();
   const navigationType = useNavigationType();
   const isFirstRender = useRef(true);
+  // location.key -> 그 항목에서 마지막으로 본 scrollY
+  const positions = useRef<Map<string, number>>(new Map());
+  const currentKey = useRef(location.key);
+
+  // 브라우저 자동 복원을 끈다(위 설명대로 #hash와 충돌). 초기 로드/새로고침의 복원은
+  // 이 effect가 실행되기 전(브라우저 시점)에 이미 끝나므로 영향받지 않는다.
+  useEffect(() => {
+    if (!('scrollRestoration' in history)) return;
+    const prev = history.scrollRestoration;
+    history.scrollRestoration = 'manual';
+    return () => {
+      history.scrollRestoration = prev;
+    };
+  }, []);
+
+  // 현재 히스토리 항목의 스크롤 위치를 계속 기록해 둔다(POP 복원용).
+  useEffect(() => {
+    const onScroll = () => {
+      positions.current.set(currentKey.current, window.scrollY);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     const isInitialLoad = isFirstRender.current;
     isFirstRender.current = false;
-    // 최초 진입도 navigationType이 POP으로 보고되므로, 진짜 히스토리 이동만 스킵한다.
-    if (navigationType === 'POP' && !isInitialLoad) {
-      return;
-    }
+    currentKey.current = location.key;
 
     // 상세 → 목록 복귀: 특정 프로젝트 구간으로 되돌리는 건 ProjectsSection이 담당하므로 양보한다.
     // (여기서 앵커 스크롤을 하면 최상단으로 갔다가 다시 튀는 이중 스크롤이 생긴다)
     const state = location.state as { focusProjectIndex?: number } | null;
     if (typeof state?.focusProjectIndex === 'number') {
+      return;
+    }
+
+    // 뒤로/앞으로가기: 저장해 둔 위치로 직접 복원한다(브라우저의 #hash 앵커 점프를 덮어쓴다).
+    // 최초 진입도 POP으로 보고되므로 진짜 히스토리 이동만 복원한다.
+    if (navigationType === 'POP' && !isInitialLoad) {
+      const saved = positions.current.get(location.key) ?? 0;
+      // 핀 트랙 높이 계산 전이라 문서가 아직 짧으면 목표에 못 미칠 수 있어 몇 프레임 재시도한다.
+      const restore = (attempt: number) => {
+        window.scrollTo({ top: saved, behavior: 'instant' });
+        if (window.scrollY < saved - 1 && attempt < 10) {
+          requestAnimationFrame(() => restore(attempt + 1));
+        }
+      };
+      restore(0);
       return;
     }
 
@@ -56,7 +97,6 @@ export function ScrollManager() {
       tryScroll(0);
       return;
     }
-    // 최초 진입(새로고침 포함)은 브라우저가 스스로 위치를 복원하므로 건드리지 않고,
     // 라우트 전환의 최상단 리셋은 smooth 글라이드 없이 즉시 이동한다.
     if (!isInitialLoad) {
       window.scrollTo({ top: 0, behavior: 'instant' });
