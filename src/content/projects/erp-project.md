@@ -105,19 +105,6 @@ order: 1
 
 팀의 서비스 캐치프레이즈이고, 이를 **AiChat**으로 구현했습니다. 사용자가 모든 기능과 화면 위치를 숙지하지 않아도, 챗봇에게 질의하면 데이터를 조회해 주고 실제 업무 화면까지 데려다줍니다.
 
-![부족 재고 → 구매 요청 prefill](/content/projects/erp-project/chatbot-prefill.png)
-
-"부족 재고 신청해줘" 한 마디면 ① 챗봇이 MCP 도구로 안전재고 미만 품목을 조회해 표로 정리하고 ② 답변 하단의 버튼으로 구매 요청 화면에 이동하며 ③ 조회된 16개 품목·수량이 폼에 **prefill**됩니다. 사용자는 검토하고 저장만 하면 됩니다.
-
-
-## 답변을 그대로 업무로 — 표 복사·차트 저장
-
-조회 결과를 다시 옮겨 적지 않아도 되도록, 챗봇 답변의 표와 차트를 화면 밖으로 그대로 꺼낼 수 있게 했습니다. 표는 서식을 유지한 채 복사돼 문서·스프레드시트에 바로 붙고, 차트는 우측 상단 버튼 한 번으로 이미지로 저장됩니다.
-
-![챗봇 답변의 표를 복사해 문서에 붙여넣은 결과](/content/projects/erp-project/chatbot-table-paste.png)
-
-![부족·품절 재고 비중 차트 — 우측 상단 버튼으로 이미지 저장](/content/projects/erp-project/chatbot-chart-download.png)
-
 
 ## 쓰기는 원천 차단, 안내는 딥링크로
 
@@ -163,6 +150,22 @@ public void customize(HttpRequest.Builder builder, String method, URI endpoint, 
 
 - **도구 예외의 JSON 변환** — Spring AI 기본 구현은 도구 실행 실패를 평문으로 LLM에 돌려주는데, Gemini는 도구 응답을 JSON으로 파싱하므로 평문이 오면 채팅 전체가 깨졌습니다. `ToolExecutionExceptionProcessor`를 교체해 `{"error": "..."}` JSON으로 감싸 반환하니, 모델이 실패 원인을 읽고 자연어로 설명해 주는 우아한 실패가 됐습니다.
 - **도구 호출 라운드 상한** — "전부 보여줘"류 질의나 에러 반복 시 에이전트 루프가 폭주해 지연·비용이 커집니다. Spring AI에 빌트인 상한이 없어 `ToolExecutionEligibilityChecker`에 라운드 카운터를 달아 상한 초과 시 루프를 끊고 범위를 좁혀 달라는 안내로 대체했습니다.
+
+
+## 한 마디로 발주까지 — 조회·표·딥링크 prefill
+
+![부족 재고 → 구매 요청 prefill](/content/projects/erp-project/chatbot-prefill.png)
+
+"부족 재고 신청해줘" 한 마디면 ① 챗봇이 MCP 도구로 안전재고 미만 품목을 조회해 표로 정리하고 ② 답변 하단의 버튼으로 구매 요청 화면에 이동하며 ③ 조회된 16개 품목·수량이 폼에 **prefill**됩니다. 사용자는 검토하고 저장만 하면 됩니다.
+
+
+## 답변을 그대로 업무로 — 표 복사·차트 저장
+
+조회 결과를 다시 옮겨 적지 않아도 되도록, 챗봇 답변의 표와 차트를 화면 밖으로 그대로 꺼낼 수 있게 했습니다. 표는 서식을 유지한 채 복사돼 문서·스프레드시트에 바로 붙고, 차트는 우측 상단 버튼 한 번으로 이미지로 저장됩니다.
+
+![챗봇 답변의 표를 복사해 문서에 붙여넣은 결과](/content/projects/erp-project/chatbot-table-paste.png)
+
+![부족·품절 재고 비중 차트 — 우측 상단 버튼으로 이미지 저장](/content/projects/erp-project/chatbot-chart-download.png)
 
 
 # Inventory — 정확성이 전부인 도메인
