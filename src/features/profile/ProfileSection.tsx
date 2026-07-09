@@ -15,7 +15,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     <section
       id="profile"
       aria-label="소개"
-      className="relative -mt-[calc(3.5rem+env(safe-area-inset-top))] flex min-h-dvh scroll-mt-14 flex-col items-center justify-center px-6 text-center"
+      className="relative -mt-[calc(3.5rem+env(safe-area-inset-top))] flex min-h-svh scroll-mt-14 flex-col items-center justify-center px-6 text-center"
     >
       <div className="mx-auto max-w-xl">
         <Avatar profile={profile} />
@@ -48,7 +48,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
       {/* 스크롤 힌트 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-[18vh] flex flex-col items-center gap-[7px] text-zinc-600"
+        className="pointer-events-none absolute inset-x-0 bottom-[18svh] flex flex-col items-center gap-[7px] text-zinc-600"
       >
         <span className="text-xs font-semibold uppercase tracking-[0.14em]">Scroll</span>
         <span className="scroll-hint-arrow text-[19px] leading-none">↓</span>
