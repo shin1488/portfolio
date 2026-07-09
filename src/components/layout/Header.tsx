@@ -41,12 +41,19 @@ export function Header() {
     if (!menuOpen) return;
     const prevOverflowY = document.documentElement.style.overflowY;
     document.documentElement.style.overflowY = 'hidden';
+    // iOS Safari는 overflow:hidden만으로 루트 스크롤이 잠기지 않는다(알려진 버그). 레이아웃을
+    // 바꾸는 position:fixed 잠금은 sticky 헤더(햄버거/X)를 튀게 하므로, 열려 있는 동안 문서의
+    // touchmove(스크롤 드래그)를 직접 막는다. 드로어 패널은 overflow-hidden이라 내부 스크롤이
+    // 없어 전체 차단해도 안전하고, 탭(touchstart/end)은 영향받지 않는다.
+    const preventTouch = (event: TouchEvent) => event.preventDefault();
+    document.addEventListener('touchmove', preventTouch, { passive: false });
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMenuOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => {
       document.documentElement.style.overflowY = prevOverflowY;
+      document.removeEventListener('touchmove', preventTouch);
       window.removeEventListener('keydown', onKey);
     };
   }, [menuOpen]);
