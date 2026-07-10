@@ -348,7 +348,7 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 }
 ```
 
-**도메인 예외 409 — MVC Dispatcher 내부 Advice**
+**도메인 예외 409 — MVC Dispatcher · @RestControllerAdvice**
 
 ```json
 {
