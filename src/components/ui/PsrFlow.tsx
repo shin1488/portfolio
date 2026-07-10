@@ -91,9 +91,13 @@ export function PsrStep({ kind, isLast, lineTo, children }: PsrStepProps) {
   const c = PSR[kind];
   return (
     <div className="grid grid-cols-[34px_1fr] gap-x-4">
-      {/* 아이콘 뱃지 + 연결선 */}
+      {/* 아이콘 뱃지 + 연결선. 뱃지: 틴트 배경 + 같은 계열 밝은 테두리(borderColor = 선 색)로
+          좌측 레일과 뱃지 색이 이어진다. */}
       <div className="flex flex-col items-center" aria-hidden="true">
-        <span className={`inline-flex size-8 shrink-0 items-center justify-center rounded-[9px] ${c.tint}`}>
+        <span
+          className={`inline-flex size-8 shrink-0 items-center justify-center rounded-[9px] border ${c.tint}`}
+          style={{ borderColor: c.dot }}
+        >
           <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke={c.dot} strokeWidth={kind === 'result' ? 2.4 : 2.2}>
             {c.icon}
           </svg>
