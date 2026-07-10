@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router';
 import { scrollElementToTop } from '@/lib/section';
 
@@ -40,10 +40,18 @@ export function ScrollManager() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // currentKey는 페인트 전(useLayoutEffect)에 갱신한다. 라우트 전환으로 문서가 줄면(예: 상세
+  // 페이지 lazy 로딩 fallback) 브라우저가 스크롤을 ≈0으로 클램프하며 scroll 이벤트를 쏘는데,
+  // 이 이벤트는 페인트 전에 처리된다. currentKey가 페인트 이후 useEffect에서만 갱신되면 그
+  // 클램프 스크롤이 '아직 옛(떠나는) 키'에 ≈0으로 저장돼, 뒤로가기 복원이 최상단으로 튄다.
+  // 페인트 전에 새(도착) 키로 바꿔두면 그 클램프는 도착 항목에 저장돼 무해하다.
+  useLayoutEffect(() => {
+    currentKey.current = location.key;
+  }, [location.key]);
+
   useEffect(() => {
     const isInitialLoad = isFirstRender.current;
     isFirstRender.current = false;
-    currentKey.current = location.key;
 
     // 상세 → 목록 복귀: 특정 프로젝트 구간으로 되돌리는 건 ProjectsSection이 담당하므로 양보한다.
     // (여기서 앵커 스크롤을 하면 최상단으로 갔다가 다시 튀는 이중 스크롤이 생긴다)
