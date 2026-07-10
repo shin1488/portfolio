@@ -320,7 +320,7 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 
 세 경로에서 실제로 출력된 응답입니다. 출처가 전부 다르지만 전부 같은 구조(ProblemDetail)인 것을 확인할 수 있습니다.
 
-**본문 크기 초과 413 — Servlet Container (필터 sendError → /error 정규화)**
+**본문 크기 초과 413 — Servlet Container (ProblemDetailErrorController, /error)**
 
 ```json
 {
@@ -334,7 +334,7 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 }
 ```
 
-**인증 실패 401 — Security Filter (+ 응답헤더 WWW-Authenticate: Bearer)**
+**인증 실패 401 — Security Filter (ProblemDetailAuthEntryPoint)**
 
 ```json
 {
