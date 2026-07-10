@@ -318,17 +318,17 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 
 ![예외가 흩어지는 세 갈래 — 필터 · 컨테이너 · 디스패처](/content/projects/erp-project/slide-error-paths.png)
 
-세 경로에서 실제로 나간 응답입니다. 출처가 전부 다르지만 같은 구조입니다.
+세 경로에서 실제로 출력된 응답입니다. 출처가 전부 다르지만 전부 같은 구조(ProblemDetail)인 것을 확인할 수 있습니다.
 
 **라우팅 없는 404 — 서블릿 컨테이너**
 
 ```json
 {
   "type": "about:blank",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "요청한 경로를 찾을 수 없습니다",
-  "instance": "/api/unknown",
+  "title": "Content Too Large",
+  "status": 413,
+  "detail": "요청 본문이 허용 크기를 초과했습니다",
+  "instance": "/api/stocks/inbound",
   "code": "COMMON_BAD_REQUEST",
   "timestamp": "2026-06-28T10:12:33.041+09:00"
 }
@@ -355,7 +355,8 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
   "type": "about:blank",
   "title": "Conflict",
   "status": 409,
-  "detail": "이미 존재하는 창고 코드입니다",
+  "detail": "이미 존재하는 창고 코드입니다: WH-HQ-001",
+  "instance": "/api/warehouses",
   "code": "WAREHOUSE_CODE_DUPLICATED",
   "timestamp": "2026-06-28T10:12:33.041+09:00"
 }
