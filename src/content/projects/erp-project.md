@@ -286,6 +286,40 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 ```
 
 
+# 오픈소스 기여 — 챗봇의 권한 위임 해법을 Spring 커뮤니티 샘플로
+
+---
+
+- **문제** — 권한 위임을 구현하던 시점에 Spring 생태계의 MCP 보안 라이브러리인 **[mcp-security](https://github.com/spring-ai-community/mcp-security)**를 검토했으나, 클라이언트 인증 플로우가 authorization_code와 client_credentials뿐이어서 gateway 뒤 resource server인 MCP 호스트가 사용자 신원을 위임할 경로가 없었습니다.
+- **해결** — 프로젝트에서 검증한 token exchange 방식을 **[이슈로 제안](https://github.com/spring-ai-community/mcp-security/issues/88)**하고, 메인테이너와 샘플 방향으로 합의한 뒤 customizer · Keycloak 호환 subject token resolver · 통합 테스트를 [PR로 제출](https://github.com/spring-ai-community/mcp-security/pull/89)했습니다.
+- **결과** — 공식 샘플 모듈(sample-mcp-client-token-exchange) PR이 리뷰 단계에 있으며, Keycloak 연동에서 확인한 요구사항들을 README 문서로 정리해 함께 제출했습니다.
+
+프로젝트가 끝난 뒤, 챗봇에서 직접 구현했던 권한 위임이 라이브러리 전체의 공백이라는 점을 확인하고 기여를 제안했습니다. gateway가 사용자 JWT를 전달하는 MSA 구성에서 MCP 호스트가 사용자 신원을 MCP 서버까지 위임하는 유스케이스와 함께, Keycloak 연동에서 확인한 요구사항 세 가지를 [이슈](https://github.com/spring-ai-community/mcp-security/issues/88)로 정리했습니다.
+
+- Standard Token Exchange가 GA로 제공되는 Keycloak 26.2 이상이 필요합니다.
+- Keycloak은 교환을 요청하는 클라이언트가 subject 토큰의 audience에 포함되어야 교환을 허용하므로, 사용자 토큰을 발급받는 클라이언트에 audience 매퍼가 필요합니다.
+- Spring Security 기본 resolver가 보내는 subject_token_type(jwt)을 Keycloak이 거부하므로, 같은 토큰을 access token 타입으로 재포장해야 합니다.
+
+메인테이너(Spring Security 팀 소속)는 token exchange가 MCP 코어 스펙에 포함되지 않은 기능이므로 라이브러리 본체 통합은 보류하고 샘플로 만드는 방향을 제안했고, 이 방향에 합의해 PR을 재구성했습니다. 제출 전에는 해당 저장소의 통합 테스트 하네스로 전체 흐름을 검증했습니다. 한 클라이언트가 authorization_code로 발급받은 사용자 토큰을 다른 클라이언트가 교환하고, 교환된 토큰으로 보안이 적용된 MCP 서버의 도구를 호출하면 원래 사용자의 신원으로 응답하는 것까지 확인했습니다.
+
+또한 작성한 샘플 코드는 프로젝트의 코드를 그대로 옮기지 않고 라이브러리 컨벤션에 맞추어 새로 작성했습니다. 챗봇에서는 SecurityContextHolder로 사용자 인증을 읽었지만, 라이브러리는 스레드에 의존하지 않도록 McpTransportContext로 인증을 전달하는 방식을 사용하므로 이에 맞추었고, Keycloak 호환 resolver는 팩토리 메서드로 내장하였습니다.
+
+```java
+// OAuth2TokenExchangeSyncHttpRequestCustomizer (샘플 PR) — subject 토큰을 access token 타입으로 재포장한다
+private static OAuth2Token resolveSubjectToken(OAuth2AuthorizationContext context) {
+    if (context.getPrincipal().getPrincipal() instanceof Jwt jwt) {
+        return new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, jwt.getTokenValue(),
+                jwt.getIssuedAt(), jwt.getExpiresAt());
+    }
+    if (context.getPrincipal().getPrincipal() instanceof OAuth2Token token) {
+        return token;
+    }
+    throw new IllegalStateException(
+            "Token exchange requires the principal to carry the subject token, either as a Jwt or an OAuth2Token");
+}
+```
+
+
 # 컨벤션 — "신기술, 그러므로 강력한 컨벤션."
 
 ---
