@@ -236,3 +236,17 @@ body {
     }
   }
 }
+
+/* 모바일(<640px)에서 마크다운 제목류를 한 단계 축소한다(데스크톱 크기는 유지) — 좁은
+   화면에서 prose h1/h2/h3가 과하게 크지 않게. 본문은 그대로 둬 가독성을 지킨다. */
+@media (max-width: 639px) {
+  .prose :where(h1) {
+    font-size: 1.75em;
+  }
+  .prose :where(h2) {
+    font-size: 1.3em;
+  }
+  .prose :where(h3) {
+    font-size: 1.1em;
+  }
+}

@@ -67,7 +67,7 @@ function ProjectDetailView({ project }: { project: Project }) {
         <div className="flex items-start justify-between gap-3">
           {/* 제목 + 코드 바로가기 — 데스크톱(sm+)만 제목 옆 베이스라인 정렬(모바일은 위 뒤로가기 줄에 있음) */}
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold tracking-tight outline-none">
+            <h1 ref={headingRef} tabIndex={-1} className="text-2xl sm:text-3xl font-bold tracking-tight outline-none">
               {project.title}
             </h1>
             <div className="hidden sm:block">

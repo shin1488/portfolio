@@ -25,12 +25,12 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="mt-1.5 text-[38px] sm:text-[46px] font-bold leading-tight tracking-[-0.02em] text-zinc-100 outline-none"
+          className="mt-1.5 text-[30px] sm:text-[46px] font-bold leading-tight tracking-[-0.02em] text-zinc-100 outline-none"
         >
           {profile.name}
         </h1>
         {/* 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */}
-        <p className="mx-auto mt-4.5 max-w-150 text-xl leading-relaxed text-zinc-300">
+        <p className="mx-auto mt-4.5 max-w-150 text-lg leading-relaxed text-zinc-300 sm:text-xl">
           {profile.tagline.split(/,\s*/).map((part, i, arr) => (
             <span key={i}>
               {part}

@@ -126,7 +126,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
 
       {/* 모바일: 핀 없이 세로 나열 — 썸네일을 위로 올린 카드, 카드 전체가 상세 링크 */}
       <div className="mx-auto max-w-2xl px-6 py-14 sm:hidden">
-        <h2 className="text-center text-2xl font-bold tracking-tight">Projects</h2>
+        <h2 className="text-center text-xl font-bold tracking-tight">Projects</h2>
         <div className="mt-8 flex flex-col gap-5">
           {projects.map((project) => (
             <Link

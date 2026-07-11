@@ -116,7 +116,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
 
       {/* 모바일: 핀 없이 전 카테고리를 펼친다 */}
       <div className="mx-auto max-w-5xl px-6 py-14 sm:hidden">
-        <h2 className="text-center text-2xl font-bold tracking-tight">Skills</h2>
+        <h2 className="text-center text-xl font-bold tracking-tight">Skills</h2>
         <div className="mt-8 space-y-9">
           {categories.map((category) => (
             <div key={category.id}>

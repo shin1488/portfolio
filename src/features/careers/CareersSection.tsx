@@ -107,7 +107,7 @@ export function CareersSection({ categories }: CareersSectionProps) {
 
       {/* 모바일: 핀 없이 펼침 */}
       <div className="mx-auto max-w-2xl px-6 py-14 sm:hidden">
-        <h2 className="text-center text-2xl font-bold tracking-tight">Careers</h2>
+        <h2 className="text-center text-xl font-bold tracking-tight">Careers</h2>
         <div className="mt-8 space-y-9">
           {categories.map((category) => (
             <div key={category.id}>
