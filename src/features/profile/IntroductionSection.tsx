@@ -44,7 +44,7 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
                   type="button"
                   aria-label={`${i + 1}번째 문단으로 이동`}
                   aria-current={i === active}
-                  onClick={() => scrollToTrackStep(trackRef.current, i, n)}
+                  onClick={() => scrollToTrackStep(trackRef.current, i, n, 'instant')}
                   className={cn(
                     'h-1.5 rounded-full transition-all duration-250',
                     i === active ? 'w-6.5 bg-linear-to-r from-indigo-400 to-pink-400' : 'w-1.5 bg-zinc-700',
@@ -62,8 +62,9 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
                   key={i}
                   onClick={() => {
                     // 텍스트를 드래그 선택한 뒤의 클릭은 무시 — 선택이 살아 있으면 스크롤하지 않는다.
+                    // 이동은 instant — smooth면 중간 문단들이 차례로 활성화돼 깜빡인다.
                     if (!window.getSelection()?.isCollapsed) return;
-                    scrollToTrackStep(trackRef.current, i, n);
+                    scrollToTrackStep(trackRef.current, i, n, 'instant');
                   }}
                   onMouseEnter={() => setHoverIdx(i)}
                   onMouseMove={() => setHoverIdx(i)}

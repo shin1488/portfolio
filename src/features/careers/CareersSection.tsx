@@ -56,12 +56,15 @@ export function CareersSection({ categories }: CareersSectionProps) {
                       transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
                     }}
                   />
+                  {/* 클릭 이동은 instant — smooth면 트랙을 훑고 지나가며 중간 항목들이 차례로
+                      활성화돼 깜빡인다. 핀 고정 트랙이라 즉시 이동해도 콘텐츠는 제자리고
+                      활성 인덱스만 바뀌어, 전환은 CSS 트랜지션이 부드럽게 처리한다. */}
                   {categories.map((category, i) => (
                     <button
                       key={category.id}
                       type="button"
                       aria-current={i === active}
-                      onClick={() => scrollToTrackStep(trackRef.current, i, n)}
+                      onClick={() => scrollToTrackStep(trackRef.current, i, n, 'instant')}
                       onMouseEnter={() => setHoverIdx(i)}
                       onMouseMove={() => setHoverIdx(i)}
                       onFocus={() => setHoverIdx(i)}
