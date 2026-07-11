@@ -290,11 +290,11 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 
 ---
 
-- **문제** — 권한 위임을 구현하던 시점에 Spring 생태계의 MCP 보안 라이브러리인 **[mcp-security](https://github.com/spring-ai-community/mcp-security)**를 검토했으나, 클라이언트 인증 플로우가 authorization_code와 client_credentials뿐이어서 gateway 뒤 resource server인 MCP 호스트가 사용자 신원을 위임할 경로가 없었습니다.
-- **해결** — 프로젝트에서 검증한 token exchange 방식을 **[이슈로 제안](https://github.com/spring-ai-community/mcp-security/issues/88)**하고, 메인테이너와 샘플 방향으로 합의한 뒤 customizer · Keycloak 호환 subject token resolver · 통합 테스트를 [PR로 제출](https://github.com/spring-ai-community/mcp-security/pull/89)했습니다.
+- **문제** — 권한 위임을 구현하던 시점에 Spring 생태계의 MCP 보안 라이브러리인 **[mcp-security](https://github.com/spring-ai-community/mcp-security)**를 검토했으나, 클라이언트 인증 플로우가 authorization_code와 client_credentials밖에 존재하지 않아 gateway 뒤 resource server인 MCP 호스트가 사용자 신원을 위임할 경로가 없었습니다.
+- **해결** — 프로젝트에서 검증한 token exchange 방식을 **[이슈로 제안](https://github.com/spring-ai-community/mcp-security/issues/88)**하고, 메인테이너와 샘플 방향으로 합의한 뒤 customizer · Keycloak 호환 subject token resolver · 통합 테스트를 **[PR로 제출](https://github.com/spring-ai-community/mcp-security/pull/89)**했습니다.
 - **결과** — 공식 샘플 모듈(sample-mcp-client-token-exchange) PR이 리뷰 단계에 있으며, Keycloak 연동에서 확인한 요구사항들을 README 문서로 정리해 함께 제출했습니다.
 
-프로젝트가 끝난 뒤, 챗봇에서 직접 구현했던 권한 위임이 라이브러리 전체의 공백이라는 점을 확인하고 기여를 제안했습니다. gateway가 사용자 JWT를 전달하는 MSA 구성에서 MCP 호스트가 사용자 신원을 MCP 서버까지 위임하는 유스케이스와 함께, Keycloak 연동에서 확인한 요구사항 세 가지를 [이슈](https://github.com/spring-ai-community/mcp-security/issues/88)로 정리했습니다.
+프로젝트가 끝난 뒤, 챗봇에서 직접 구현했던 권한 위임이 라이브러리 전체의 공백이라는 점을 확인하고 기여를 제안했습니다. gateway가 사용자 JWT를 전달하는 MSA 구성에서 MCP 호스트가 사용자 신원을 MCP 서버까지 위임하는 유스케이스와 함께, Keycloak 연동에서 확인한 요구사항 세 가지를 **[이슈](https://github.com/spring-ai-community/mcp-security/issues/88)**로 정리했습니다.
 
 - Standard Token Exchange가 GA로 제공되는 Keycloak 26.2 이상이 필요합니다.
 - Keycloak은 교환을 요청하는 클라이언트가 subject 토큰의 audience에 포함되어야 교환을 허용하므로, 사용자 토큰을 발급받는 클라이언트에 audience 매퍼가 필요합니다.
