@@ -300,7 +300,7 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 - Keycloak은 교환을 요청하는 클라이언트가 subject 토큰의 audience에 포함되어야 교환을 허용하므로, 사용자 토큰을 발급받는 클라이언트에 audience 매퍼가 필요합니다.
 - Spring Security 기본 resolver가 보내는 subject_token_type(jwt)을 Keycloak이 거부하므로, 같은 토큰을 access token 타입으로 재포장해야 합니다.
 
-메인테이너(Spring Security 팀 소속)는 token exchange가 MCP 코어 스펙에 포함되지 않은 기능이므로 라이브러리 본체 통합은 보류하고 샘플로 만드는 방향을 제안했고, 이 방향에 합의해 PR을 재구성했습니다. 제출 전에는 해당 저장소의 Spring Authorization Server 기반 통합 테스트 하네스로 전체 흐름을 검증했습니다. 한 클라이언트가 authorization_code로 발급받은 사용자 토큰을 다른 클라이언트가 교환하고, 교환된 토큰으로 보안이 적용된 MCP 서버의 도구를 호출하면 원래 사용자의 신원으로 응답하는 것까지 확인했습니다.
+메인테이너(Spring Security 팀 소속)는 RFC 8693 자체는 확립된 표준이지만 MCP 인증 스펙이 요구하는 범위는 아니라는 이유로, 라이브러리 본체 통합은 보류하고 샘플로 만드는 방향을 제안했습니다. 본체는 스펙이 요구하는 기능을 추적하고 스펙 밖의 토큰 획득 전략은 샘플이 맡는 구분으로 이해했고, 이 방향에 합의해 PR을 샘플 모듈로 재구성했습니다. 제출 전에는 해당 저장소의 Spring Authorization Server 기반 통합 테스트 하네스로 전체 흐름을 검증했습니다. 한 클라이언트가 authorization_code로 발급받은 사용자 토큰을 다른 클라이언트가 교환하고, 교환된 토큰으로 보안이 적용된 MCP 서버의 도구를 호출하면 원래 사용자의 신원으로 응답하는 것까지 확인했습니다.
 
 또한 작성한 샘플 코드는 프로젝트의 코드를 그대로 옮기지 않고 라이브러리 컨벤션에 맞추어 새로 작성했습니다. 챗봇에서는 SecurityContextHolder로 사용자 인증을 읽었지만, 라이브러리는 스레드에 의존하지 않도록 McpTransportContext로 인증을 전달하는 방식을 사용하므로 이에 맞추었고, Keycloak 호환 resolver는 팩토리 메서드로 내장하였습니다. resolver가 보내는 access token 타입은 Keycloak과 Spring Authorization Server가 모두 수용하므로, 하나의 resolver로 두 인가 서버를 지원합니다.
 
