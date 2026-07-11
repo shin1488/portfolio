@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/cn';
-import { scrollToTrackStep } from '@/lib/section';
+import { isProgrammaticScroll, scrollToTrackStep } from '@/lib/section';
 import { useStickyProgress } from '@/lib/useStickyProgress';
 
 interface IntroductionSectionProps {
@@ -16,13 +16,20 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const n = bio.length;
-  const scrollIdx = useStickyProgress(trackRef, n, hoverIdx !== null);
+  // paused를 쓰지 않는다 — 호버 중 scrollIdx를 멈춰두면 값이 낡아서, 호버가 풀리는 순간
+  // 한 프레임 동안 낡은(이전) 항목이 비친다. 호버 우선순위는 아래 `hoverIdx ?? scrollIdx`가 이미 보장.
+  const scrollIdx = useStickyProgress(trackRef, n);
   const active = hoverIdx ?? scrollIdx;
 
   // 스크롤하는 동안에는 호버 잠금을 해제한다 — 마우스가 문단 위에 멈춰 있어도 스크롤로 활성 문단이 진행되게.
   // (스크롤이 멈춘 뒤 마우스를 움직이면 onMouseMove로 호버가 다시 걸린다)
   useEffect(() => {
-    const onScroll = () => setHoverIdx((h) => (h === null ? h : null));
+    const onScroll = () => {
+      // 클릭에 의한 프로그래매틱 스크롤에선 호버 선택을 유지한다 — 여기서 풀어버리면
+      // scrollIdx가 아직 rAF로 갱신되기 전(이전 값)이라, 한 프레임 동안 이전 항목이 비쳐 깜빡인다.
+      if (isProgrammaticScroll()) return;
+      setHoverIdx((h) => (h === null ? h : null));
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
