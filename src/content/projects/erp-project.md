@@ -92,7 +92,7 @@ QR/바코드를 스캔해 입고와 출고를 처리하고, 재고 조회 · 작
 ---
 
 - **Backend** — Java 25 · Spring Boot 4.0.6 · Spring AI 2.0(MCP) · Spring Data JPA · PostgreSQL 18 · Redis 8
-- **Auth** — Keycloak 26.2 (OIDC · 웹 BFF 세션 + 모바일 Bearer/PKCE · RFC 8693 Token Exchange)
+- **Auth** — Keycloak 26.2 (OIDC · 웹 BFF 세션 + 모바일 Bearer/PKCE · [RFC 8693 Token Exchange](https://www.rfc-editor.org/rfc/rfc8693))
 - **Infra** — Docker Compose · AWS ECS Fargate · ALB · RDS · ElastiCache · Cloud Map · GitLab
 - **LLM** — Gemini 3.5 Flash (Spring AI ChatClient + MCP 도구 호출)
 - **Frontend** — React 19 · Vite · TanStack Query · Zustand · Tailwind CSS 4
@@ -197,9 +197,15 @@ public class StockMcpTools {
 ````
 
 
-## 챗봇의 권한 문제 — RFC 8693 Token Exchange(OBO)
+## 챗봇의 권한 문제 — [RFC 8693 Token Exchange](https://www.rfc-editor.org/rfc/rfc8693)(On-Behalf-Of)
 
-챗봇은 자기 권한을 갖지 않습니다. 요청자가 매번 다르니 권한도 매번 달라야 하기 때문입니다. 본사 직원과 지점 직원이 동일한 질문을 해도 보여야 할 답은 다릅니다. 그렇지만 원본 사용자 토큰을 하위 서비스에 그대로 넘기는 passthrough는 MCP 스펙이 금지하는 안티패턴입니다. 그래서 **도구 호출(tools/call)에만 사용자 토큰을 RFC 8693 token exchange로 교환해 부착**하고, initialize·tools/list 같은 프로토콜 요청은 서비스 토큰으로 분리했습니다. 사용자 컨텍스트가 없으면 서비스 토큰으로 fallback하지 않고 실패시킵니다. 지점 직원의 질의가 전사 데이터로 새는 tenancy 누수를 막기 위해서입니다.
+챗봇은 자기 권한을 갖지 않습니다. 요청자가 매번 다르니 권한도 매번 달라야 하기 때문입니다. 본사 직원과 지점 직원이 동일한 질문을 해도 보여야 할 답은 다릅니다.
+
+가장 단순한 방법은 사용자가 보낸 토큰을 리소스 서버(MCP 서버)에 그대로 넘기는 것이지만, 이 passthrough는 MCP 스펙이 금지하는 안티패턴입니다. 토큰에는 수신자(audience)가 지정되어 있고, 챗봇이 받은 사용자 토큰의 수신자는 챗봇이지 MCP 서버가 아니기 때문입니다. 리소스 서버가 자신을 수신자로 지정하지 않은 토큰까지 수용하기 시작하면, 한 서비스에서 탈취된 토큰으로 침해가 다른 서비스까지 번지는 횡적 이동 경로가 열려 버립니다.
+
+**RFC 8693 token exchange**는 이 문제를 passthrough가 아니라 재발급으로 해결합니다. 챗봇이 받은 사용자 토큰을 인가 서버(Keycloak)에 제출하면, 인가 서버가 사용자 신원(sub)을 유지한 채 MCP 서버 호출용 새 토큰을 발급합니다. 원본 자격증명을 넘기는 것이 아니라 인가 서버가 새로 내린 인가 결정이므로, 수신자 규칙을 지키면서도 호출자가 어느 사용자인지를 리소스 서버까지 가져갈 수 있습니다. 챗봇이 사용자를 대신해 권한을 행사한다는 뜻에서 On-Behalf-Of(OBO)라고 부릅니다.
+
+그래서 **도구 호출(tools/call)에만 사용자 토큰을 교환해 부착**하고, initialize·tools/list 같은 프로토콜 요청은 서비스 토큰으로 분리했습니다. 사용자 컨텍스트가 없으면 서비스 토큰으로 fallback하지 않고 실패시킵니다. 지점 직원의 질의가 전사 데이터로 새는 tenancy 누수를 막기 위해서입니다.
 
 ```java
 // McpOutboundAuthCustomizer (AiChat) — MCP 아웃바운드 요청에 토큰을 부착한다
