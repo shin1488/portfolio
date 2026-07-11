@@ -286,7 +286,7 @@ public class ToolCallIterationLimiter implements ToolExecutionEligibilityChecker
 ```
 
 
-# 오픈소스 기여 — 챗봇의 권한 위임 해법을 Spring 커뮤니티 샘플로
+# ⭐️오픈소스 기여 — 챗봇의 권한 위임 해법을 Spring 커뮤니티 샘플로
 
 ---
 
