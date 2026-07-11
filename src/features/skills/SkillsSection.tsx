@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/cn';
+import { scrollToTrackStep } from '@/lib/section';
 import { useStickyProgress } from '@/lib/useStickyProgress';
 import type { SkillCategory } from '@/types/content';
 
@@ -63,10 +64,11 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
                       key={category.id}
                       type="button"
                       aria-current={i === active}
+                      onClick={() => scrollToTrackStep(trackRef.current, i, n)}
                       onMouseEnter={() => setHoverIdx(i)}
                       onMouseMove={() => setHoverIdx(i)}
                       onFocus={() => setHoverIdx(i)}
-                      className="flex w-full items-center text-left"
+                      className="flex w-full cursor-pointer items-center text-left"
                       style={{ height: ROW_H }}
                     >
                       <span

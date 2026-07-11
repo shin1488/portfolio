@@ -60,9 +60,14 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
               {bio.map((paragraph, i) => (
                 <div
                   key={i}
+                  onClick={() => {
+                    // 텍스트를 드래그 선택한 뒤의 클릭은 무시 — 선택이 살아 있으면 스크롤하지 않는다.
+                    if (!window.getSelection()?.isCollapsed) return;
+                    scrollToTrackStep(trackRef.current, i, n);
+                  }}
                   onMouseEnter={() => setHoverIdx(i)}
                   onMouseMove={() => setHoverIdx(i)}
-                  className="flex items-stretch gap-5.5"
+                  className="flex cursor-pointer items-stretch gap-5.5"
                 >
                   <span
                     aria-hidden="true"
