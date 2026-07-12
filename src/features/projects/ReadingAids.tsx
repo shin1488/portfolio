@@ -52,7 +52,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
         className="fixed top-1/2 z-30 hidden h-[40vh] w-0.75 -translate-y-1/2 overflow-hidden rounded-full bg-zinc-200/50 lg:block dark:bg-zinc-800/60"
       >
         <div
-          className="w-full rounded-full bg-linear-to-b from-cyan-400 to-sky-500"
+          className="w-full rounded-full bg-linear-to-b from-green-400 to-blue-700"
           style={{ height: `${progress * 100}%` }}
         />
       </div>
@@ -85,7 +85,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                   className={cn(
                     'block truncate pr-2.5 text-[13px]',
                     active
-                      ? 'bg-linear-to-r from-cyan-400 to-sky-500 bg-clip-text font-medium text-transparent'
+                      ? 'bg-linear-to-r from-green-400 to-blue-500 bg-clip-text font-medium text-transparent'
                       : 'text-zinc-500 dark:text-zinc-400',
                   )}
                 >
@@ -98,7 +98,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                 aria-hidden="true"
                 className={cn(
                   'h-0.5 shrink-0 rounded-full transition-all',
-                  active ? 'w-5 bg-sky-400' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
+                  active ? 'w-5 bg-blue-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
                 )}
               />
             </a>
@@ -131,7 +131,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                     aria-hidden="true"
                     className={cn(
                       'h-px shrink-0 transition-all',
-                      active ? 'w-5 bg-cyan-500' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
+                      active ? 'w-5 bg-green-400' : 'w-2.5 bg-zinc-400/60 dark:bg-zinc-600',
                     )}
                   />
                   {/* 회색 라벨과 그라데이션 라벨을 겹쳐 두고 활성 시 그라데이션만 opacity로 페이드(깜빡임 없음) */}
@@ -142,7 +142,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
                     <span
                       aria-hidden="true"
                       className={cn(
-                        'col-start-1 row-start-1 line-clamp-1 max-w-42 bg-linear-to-r from-cyan-400 to-sky-500 bg-clip-text text-transparent transition-opacity',
+                        'col-start-1 row-start-1 line-clamp-1 max-w-42 bg-linear-to-r from-green-400 to-blue-500 bg-clip-text text-transparent transition-opacity',
                         active ? 'opacity-100' : 'opacity-0',
                       )}
                     >
