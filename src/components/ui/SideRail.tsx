@@ -72,7 +72,7 @@ function CollapsedItem({
       type="button"
       onClick={() => onSelect(item.id)}
       aria-current={active}
-      className="flex w-full cursor-pointer items-center justify-end rounded-md py-1 pr-0.5"
+      className="flex w-full cursor-pointer items-center justify-end rounded-md py-1 pr-0.5 hover:bg-zinc-500/10"
     >
       {/* 라벨 — 평소 max-w-0(숨김), rail에 마우스를 대면 왼쪽으로 펼쳐진다 */}
       <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-w-60 group-hover:opacity-100">
@@ -111,7 +111,7 @@ function ExpandedItem({
       type="button"
       onClick={() => onSelect(item.id)}
       aria-current={active}
-      className="group/item flex cursor-pointer items-center gap-2.5 rounded-md py-1 pl-3 pr-2 font-mono text-[11px]"
+      className="group/item flex cursor-pointer items-center gap-2.5 rounded-md py-1 pl-3 pr-2 font-mono text-[11px] hover:bg-zinc-500/10"
     >
       {/* 틱 — 라벨의 왼쪽에 붙으므로 그라데이션 시작색(accent)으로 둔다 */}
       <span

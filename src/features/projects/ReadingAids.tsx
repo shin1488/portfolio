@@ -47,12 +47,11 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
 
   return (
     <>
-      {/* 왼쪽 스크롤 진행 바 — 본문 프레임(72rem) 왼쪽 바깥 2rem 지점. 프레임 바깥에 자리가
-          날 만큼 넓을 때(1281px+)만 노출한다. */}
+      {/* 왼쪽 스크롤 진행 바 — 본문(max-w-3xl=48rem) 왼쪽 바깥 약 4rem 지점에 배치(뷰포트 끝 X) */}
       <div
         aria-hidden="true"
-        style={{ left: 'calc(50% - 38rem)' }}
-        className="fixed top-1/2 z-30 hidden h-[40vh] w-0.75 -translate-y-1/2 overflow-hidden rounded-full bg-zinc-800/60 min-[1281px]:block"
+        style={{ left: 'max(1rem, calc(50% - 28rem))' }}
+        className="fixed top-1/2 z-30 hidden h-[40vh] w-0.75 -translate-y-1/2 overflow-hidden rounded-full bg-zinc-800/60 lg:block"
       >
         <div
           className="w-full rounded-full bg-linear-to-b from-accent to-accent-end"

@@ -3,6 +3,18 @@ import { Reveal } from '@/components/ui/Reveal';
 import type { SectionId } from '@/lib/nav';
 import { Frame } from './Frame';
 
+/**
+ * 섹션 제목 뒤에 깔리는 글로우 색 — PSR 타임라인(문제·해결·결과)이 쓰는 세 색을 그대로 가져온다.
+ * 액센트 두 색은 브랜드용이고, 이 세 색은 섹션을 구분하는 표식으로만 쓴다.
+ */
+export const SECTION_GLOW = {
+  rose: '#fb7185',
+  indigo: '#818cf8',
+  emerald: '#6ee7b7',
+} as const;
+
+export type SectionGlow = keyof typeof SECTION_GLOW;
+
 interface SectionProps {
   id: SectionId;
   /** 도면 좌표처럼 붙는 두 자리 순번 — '01', '02' */
@@ -11,6 +23,10 @@ interface SectionProps {
   slug: string;
   title: string;
   description?: string;
+  /** 제목 뒤 글로우 색. 없으면 글로우를 그리지 않는다. */
+  glow?: SectionGlow;
+  /** 글로우를 프레임의 어느 쪽에 붙일지 */
+  glowSide?: 'left' | 'right';
   children: ReactNode;
 }
 
@@ -19,13 +35,34 @@ interface SectionProps {
  * 가로 hairline을 경계로 콘텐츠 격자가 붙는다. 모든 섹션이 이 골격을 공유하므로
  * 페이지 전체가 하나의 도면처럼 이어져 읽힌다.
  */
-export function Section({ id, index, slug, title, description, children }: SectionProps) {
+export function Section({
+  id,
+  index,
+  slug,
+  title,
+  description,
+  glow,
+  glowSide = 'left',
+  children,
+}: SectionProps) {
   const headingId = `${id}-heading`;
   return (
     <section id={id} aria-labelledby={headingId} className="scroll-mt-11">
-      <Frame>
+      {/* overflow-hidden: 글로우가 프레임 세로선 밖으로 새지 않게 잘라낸다 */}
+      <Frame className="relative overflow-hidden">
+        {glow && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-72"
+            style={{
+              backgroundImage: `radial-gradient(46% 100% at ${
+                glowSide === 'left' ? '4%' : '96%'
+              } 0%, color-mix(in srgb, ${SECTION_GLOW[glow]} 22%, transparent), transparent 70%)`,
+            }}
+          />
+        )}
         <Reveal>
-          <div className="flex items-start justify-between gap-6 border-b border-divider px-5 py-8 md:px-8 md:py-11">
+          <div className="relative flex items-start justify-between gap-6 border-b border-divider px-5 py-8 md:px-8 md:py-11">
             <div>
               <h2
                 id={headingId}

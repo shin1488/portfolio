@@ -28,15 +28,18 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           }}
         />
 
-        <div className="relative grid gap-12 px-5 py-24 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-16 md:px-8">
+        {/* 좌측 여백은 다른 섹션(px-8)보다 넉넉하게 — 초대형 이름이 프레임 선에 붙지 않게 한다.
+            사진은 텍스트 블록과 세로 중앙을 맞춘다. */}
+        <div className="relative grid gap-12 px-6 py-24 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-16 md:px-16">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400 md:text-[13px]">
+            {/* 역할 — 로고 호버와 같은 그라데이션이 상시 흐른다(breathing) */}
+            <p className="w-fit animate-[logo-flow_4s_linear_infinite] bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-[15px] font-bold tracking-tight text-transparent md:text-lg">
               {profile.role}
             </p>
             <h1
               ref={headingRef}
               tabIndex={-1}
-              className="mt-5 text-[64px] font-bold leading-[1.02] tracking-[-0.05em] text-zinc-100 outline-none sm:text-[96px] lg:text-[124px]"
+              className="mt-4 text-[64px] font-bold leading-[1.02] tracking-[-0.05em] text-zinc-100 outline-none sm:text-[96px] lg:text-[124px]"
             >
               {profile.name}
             </h1>
@@ -76,10 +79,13 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
   );
 }
 
-/** 프로필 사진 — 도면 톤에 맞춰 원형 대신 hairline 테두리의 정사각으로 둔다. */
+/**
+ * 프로필 사진 — 인물 사진의 원본 비율(세로 3:4)에 맞춘 세로 직사각형. 정사각으로 자르면
+ * 어깨와 머리 위가 잘려 구도가 어긋나므로, 도면 톤은 hairline 테두리로만 유지한다.
+ */
 function Avatar({ profile }: { profile: Profile }) {
   const [imageFailed, setImageFailed] = useState(false);
-  const box = 'size-24 shrink-0 border border-divider object-cover md:size-36';
+  const box = 'w-28 shrink-0 aspect-3/4 border border-divider object-cover md:w-44';
 
   if (profile.avatarImageUrl && !imageFailed) {
     return (

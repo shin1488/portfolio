@@ -44,7 +44,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
   if (!n) return null;
 
   return (
-    <Section id="projects" index="02" slug="projects" title="Projects">
+    <Section id="projects" index="02" slug="projects" title="Projects" glow="rose" glowSide="left">
       {/* 첫 행(md는 두 칸)만 위 선을 지운다 — 섹션 헤더의 아래 선과 겹치지 않게. */}
       <div className="grid [&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider md:grid-cols-2 md:[&>*:nth-child(2)]:border-t-0 md:[&>*:nth-child(odd)]:border-r">
         {projects.map((project, i) => (
@@ -82,7 +82,8 @@ function ProjectCell({ project, delay }: { project: Project; delay: number }) {
 
         <div className="px-5 py-7 md:px-8 md:py-8">
           <div className="flex items-baseline justify-between gap-4">
-            <h3 className="text-xl font-bold tracking-tight text-zinc-100 transition-colors group-hover:text-accent">
+            {/* 호버 시 로고와 같은 그라데이션이 흐른다 — 단색 그린 대신 액센트 두 색을 모두 쓴다 */}
+            <h3 className="bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-xl font-bold tracking-tight text-zinc-100 transition-colors group-hover:animate-[logo-flow_2.5s_linear_infinite] group-hover:text-transparent">
               {project.title}
             </h3>
             <span className="shrink-0 font-mono text-[11px] text-zinc-500">

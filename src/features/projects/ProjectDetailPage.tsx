@@ -38,9 +38,9 @@ function ProjectDetailView({ project }: { project: Project }) {
   return (
     <>
       <ReadingAids entries={toc} />
-      {/* 폭은 헤더·홈 프레임과 같은 max-w-6xl. 다만 좌우 세로선은 두지 않는다 — 진행 바와 목차
-          rail이 이미 본문 양옆을 잡고 있어, 세로선까지 더하면 읽는 화면이 번잡해진다. */}
-      <article className="mx-auto max-w-6xl px-5 py-12 sm:py-16 md:px-8">
+      {/* 읽기 화면이라 폭은 프레임(72rem)까지 넓히지 않는다 — 한 줄이 길어지면 눈이 줄을 되짚기
+          어렵다. 좌우 세로선도 두지 않는다(진행 바와 목차 rail이 이미 양옆을 잡고 있다). */}
+      <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 코드 바로가기를 둔다(제목 줄이 빽빽해지지 않게) */}
       <div className="flex items-center justify-between gap-3">
         <Link

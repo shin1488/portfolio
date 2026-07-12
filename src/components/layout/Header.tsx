@@ -92,8 +92,10 @@ export function Header() {
                     onClick={() => go(item.id)}
                     aria-current={isActive}
                     className={cn(
-                      'cursor-pointer transition-colors',
-                      isActive ? 'text-accent' : 'text-zinc-400 hover:text-zinc-100',
+                      'cursor-pointer bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text transition-colors',
+                      isActive
+                        ? 'animate-[logo-flow_4s_linear_infinite] text-transparent'
+                        : 'text-zinc-400 hover:text-zinc-100',
                     )}
                   >
                     {item.label}
@@ -236,8 +238,10 @@ function MobileDrawer({
                   >
                     <span
                       className={cn(
-                        'text-[26px] font-bold tracking-[-0.02em] transition-colors',
-                        isActive ? 'text-accent' : 'text-zinc-200',
+                        'bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-[26px] font-bold tracking-[-0.02em] transition-colors',
+                        isActive
+                          ? 'animate-[logo-flow_4s_linear_infinite] text-transparent'
+                          : 'text-zinc-200',
                       )}
                     >
                       {item.label}
