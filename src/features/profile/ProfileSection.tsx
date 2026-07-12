@@ -22,8 +22,8 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage: [
-              'radial-gradient(62% 62% at 0% 0%, color-mix(in srgb, var(--color-accent) 20%, transparent), transparent 72%)',
-              'radial-gradient(62% 62% at 100% 100%, color-mix(in srgb, var(--color-accent-end) 26%, transparent), transparent 72%)',
+              'radial-gradient(95% 95% at 0% 0%, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 70%)',
+              'radial-gradient(95% 95% at 100% 100%, color-mix(in srgb, var(--color-accent-end) 38%, transparent), transparent 70%)',
             ].join(','),
           }}
         />
