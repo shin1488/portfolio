@@ -91,17 +91,46 @@ export function pausePopTransition(paused: boolean) {
   popPaused = paused;
 }
 
+/** 우리가 되쏜 popstate인지 표시 — 되쏜 이벤트는 라우터가 처리하도록 그대로 흘려보낸다. */
+let replayingPop = false;
+
 /**
  * 뒤로/앞으로가기(popstate)도 같은 크로스페이드를 태운다.
  *
  * 반드시 React가 마운트되기 전에 호출해야 한다 — popstate 리스너는 등록 순서대로 실행되므로,
  * react-router보다 먼저 등록해야 아직 예전 화면인 상태에서 '이전 화면' 스냅샷을 찍을 수 있다.
- * (react-router의 리스너는 그 뒤에 돌아 라우트 state를 갱신하고, React가 커밋하면 표식이 바뀐다)
+ *
+ * 여기서 이벤트를 한 번 가로챘다가 전환 콜백 안에서 되쏘는 이유:
+ * 원래는 라우터가 popstate를 먼저 처리하게 두고, 전환 콜백 안에서는 '새 화면이 커밋될 때까지'
+ * 기다리기만 했다. 그러면 화면을 바꾸는 일이 콜백 밖에서 일어난다. 앞으로 가는 이동(flushSync로
+ * 콜백 안에서 DOM을 바꾼다)은 iOS Safari에서도 멀쩡한데 뒤로가기만 깜빡였고, 둘의 차이가 바로
+ * 이것이었다(?vt=off로 확인 — 전환을 끄면 깜빡임이 사라진다).
+ * 그래서 뒤로가기도 앞으로 가는 이동과 똑같은 모양으로 맞춘다: 라우터의 처리를 콜백 안으로
+ * 끌어와 flushSync로 감싸, 화면 교체가 콜백 안에서 끝나게 한다.
  */
 export function installRouteTransition() {
-  window.addEventListener('popstate', () => {
+  window.addEventListener('popstate', (event) => {
+    if (replayingPop) return; // 우리가 되쏜 이벤트 — 라우터가 받게 둔다
     if (popPaused || !canTransition()) return;
+
+    // 라우터를 포함한 다른 popstate 리스너가 이 이벤트를 보기 전에 멈춰 세운다.
+    event.stopImmediatePropagation();
+
     const before = currentMark();
-    startAndIgnoreAbort(() => waitForRoute(before));
+    startAndIgnoreAbort(async () => {
+      flushSync(() => {
+        replayingPop = true;
+        try {
+          // 라우터가 실제로 보는 것은 window.location이므로, 같은 state로 다시 쏘면
+          // 원래 이벤트와 똑같이 처리된다.
+          window.dispatchEvent(new PopStateEvent('popstate', { state: event.state }));
+        } finally {
+          replayingPop = false;
+        }
+      });
+      // 라우터가 내부적으로 전환(startTransition)으로 상태를 바꾸면 flushSync로도 즉시 커밋되지
+      // 않는다. 그런 경우를 위해 표식이 바뀔 때까지 짧게 기다린다.
+      await waitForRoute(before);
+    });
   });
 }
