@@ -1,7 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router';
-import { FlickerSpinner } from '@/components/ui/FlickerSpinner';
 import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
 import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
 import { SideRail } from '@/components/ui/SideRail';
@@ -10,6 +9,7 @@ import { scrollHeadingInContainer } from '@/lib/section';
 import type { TocEntry } from '@/lib/toc';
 import { useActiveHeadingId } from '@/lib/useScroll';
 import { DOC_TRANSITION, DOC_TRANSITION_ATTR, waitForElement } from '@/lib/viewTransition';
+import { ProjectBodySkeleton } from './ProjectBodySkeleton';
 import { formatPeriod } from './period';
 import type { Project } from '@/types/content';
 
@@ -195,11 +195,11 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 pb-28 pt-8"
           >
             {bodyMounted ? (
-              <Suspense fallback={<BodyLoading />}>
+              <Suspense fallback={<ProjectBodySkeleton />}>
                 <ProjectBody body={project.body} scrollRootRef={bodyRef} onToc={setToc} />
               </Suspense>
             ) : (
-              <BodyLoading />
+              <ProjectBodySkeleton />
             )}
           </div>
 
@@ -229,14 +229,6 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         />
       )}
     </>
-  );
-}
-
-function BodyLoading() {
-  return (
-    <div className="flex justify-center py-24 text-zinc-600">
-      <FlickerSpinner className="size-11" />
-    </div>
   );
 }
 

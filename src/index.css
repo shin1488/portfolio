@@ -190,9 +190,10 @@ body {
 }
 
 /* 플리커 스피너 — 7×7 점 격자가 켜졌다 꺼졌다 한다. steps(1)로 부드러운 페이드 없이
-   딱딱 끊기는 on/off. 점마다 음수 delay를 흩뿌려 무작위로 깜빡이는 느낌을 낸다. */
+   딱딱 끊기는 on/off. 점마다 음수 delay를 흩뿌려 무작위로 깜빡이는 느낌을 낸다.
+   화면에 들어와 있는 스피너(.flicker-on)만 돈다 — 이유는 FlickerSpinner 주석 참고. */
 @media (prefers-reduced-motion: no-preference) {
-  .flicker-dot {
+  .flicker-on .flicker-dot {
     animation: dot-flicker 1.05s steps(1) infinite;
   }
   @keyframes dot-flicker {

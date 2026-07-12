@@ -37,7 +37,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
         <div className="relative grid gap-12 px-6 py-24 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-16 md:px-16">
           <div>
             {/* 역할 — 로고 호버와 같은 그라데이션이 상시 흐른다(breathing) */}
-            <p className="accent-flow w-fit animate-[logo-flow_4s_linear_infinite] bg-size-[200%_auto] bg-clip-text text-[15px] font-bold tracking-tight text-transparent md:text-lg">
+            <p className="w-fit animate-[logo-flow_4s_linear_infinite] bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-[15px] font-bold tracking-tight text-transparent md:text-lg">
               {profile.role}
             </p>
             <h1

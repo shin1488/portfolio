@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react';
+import { useLayoutEffect, type RefObject } from 'react';
 
 /**
  * 컨테이너 안의 요소들을 뷰포트(또는 지정한 스크롤 컨테이너)에 들어올 때 하나씩 떠오르게 한다.
@@ -6,13 +6,19 @@ import { useEffect, type RefObject } from 'react';
  * 렌더된 DOM에 클래스를 붙여 같은 효과를 낸다.
  *
  * 동작 줄이기(prefers-reduced-motion) 설정이면 클래스를 붙이지 않아 처음부터 그대로 보인다.
+ *
+ * useEffect가 아니라 useLayoutEffect인 이유: useEffect는 페인트 뒤에 돌기 때문에 블록들이 이미
+ * opacity 1로 한 번 그려진 뒤 숨김 클래스가 붙는다. 그러면 브라우저가 그것을 '변화'로 보고
+ * 문서 안 모든 블록에 1 → 0 트랜지션을 동시에 걸어 버린다(상세 페이지에서 2,000개 넘는 애니메이션이
+ * 한꺼번에 돌았다). 페인트 전에 붙이면 초기 스타일이 곧 opacity 0이라 트랜지션이 아예 생기지 않고,
+ * 화면에 들어온 블록만 is-visible로 한 번 전환된다.
  */
 export function useRevealOnScroll(
   containerRef: RefObject<HTMLElement | null>,
   selector: string,
   scrollRootRef?: RefObject<HTMLElement | null>,
 ) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
