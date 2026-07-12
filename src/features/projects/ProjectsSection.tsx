@@ -58,7 +58,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             <ProjectCard
               key={project.id}
               project={project}
-              delay={(i % 2) * 50}
+              delay={(i % 2) * 90}
               onOpen={() => setOpenId(project.id)}
             />
           ))}

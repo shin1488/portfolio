@@ -106,10 +106,10 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             <button
               type="button"
               onClick={() => navigate(`/projects/${project.id}`)}
-              className="inline-flex cursor-pointer items-center gap-1.5 border border-divider px-3 py-1.5 font-mono text-[11px] text-zinc-300 transition-colors hover:border-accent/60 hover:text-accent"
+              aria-label="상세 페이지에서 보기"
+              className="inline-flex size-8 cursor-pointer items-center justify-center border border-divider text-zinc-400 transition-colors hover:border-accent/60 hover:text-accent"
             >
               <ExpandIcon />
-              확대
             </button>
             <button
               type="button"
@@ -134,7 +134,8 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             const next = event.currentTarget.scrollTop > 240;
             setScrolled((prev) => (prev === next ? prev : next));
           }}
-          className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-5 py-8 md:px-8"
+          // pb: 맨 위로 버튼(우하단 고정)이 마지막 문단을 덮지 않도록 바닥 여백을 확보한다.
+          className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-5 pb-28 pt-8 md:px-8"
         >
           <Markdown>{project.body}</Markdown>
         </div>
@@ -143,7 +144,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         <ScrollTopButton
           visible={scrolled}
           onClick={() => bodyRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="absolute bottom-5 right-5"
+          className="absolute bottom-6 right-6"
         />
       </div>
     </div>
@@ -154,7 +155,7 @@ function ExpandIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="size-3.5"
+      className="size-4"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"

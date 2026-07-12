@@ -24,7 +24,7 @@ export function CareersSection({ categories }: CareersSectionProps) {
         <div className="grid [&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider md:grid-cols-2 md:[&>*:nth-child(2)]:border-t-0">
           {categories.map((category, i) => (
             <div key={category.id} className="px-5 py-7 md:px-8 md:py-9">
-              <Reveal delay={(i % 2) * 50}>
+              <Reveal delay={(i % 2) * 90}>
                 <p className="font-mono text-[11px] text-zinc-500">{category.title}/</p>
                 <ul className="mt-5 flex flex-col gap-6">
                   {category.items.map((item, j) => (

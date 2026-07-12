@@ -25,8 +25,6 @@ export function Reveal({ delay = 0, className, children }: RevealProps) {
       setVisible(true);
       return;
     }
-    // 요소가 조금이라도 걸치면 바로 켠다 — 임계값이나 음수 여백을 두면 빠르게 스크롤할 때
-    // 콘텐츠가 화면에 들어온 뒤에야 뒤늦게 떠올라 따라오지 못하는 느낌이 난다.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -34,7 +32,7 @@ export function Reveal({ delay = 0, className, children }: RevealProps) {
           observer.disconnect();
         }
       },
-      { threshold: 0, rootMargin: '0px 0px 120px 0px' },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' },
     );
     observer.observe(element);
     return () => observer.disconnect();
@@ -44,8 +42,8 @@ export function Reveal({ delay = 0, className, children }: RevealProps) {
     <div
       ref={ref}
       className={cn(
-        'transition-[opacity,transform] duration-200 ease-out',
-        visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
+        'transition-[opacity,transform] duration-700 ease-out',
+        visible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0',
         className,
       )}
       style={delay > 0 ? { transitionDelay: `${delay}ms` } : undefined}

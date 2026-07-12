@@ -19,7 +19,7 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
       <ul className="[&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider">
         {bio.map((paragraph, i) => (
           <li key={i}>
-            <Reveal delay={i * 40}>
+            <Reveal delay={i * 80}>
               <div className="grid gap-3 px-5 py-8 md:grid-cols-[5rem_minmax(0,1fr)] md:gap-6 md:px-8 md:py-10">
                 <span
                   aria-hidden="true"
