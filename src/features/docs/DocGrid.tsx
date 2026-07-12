@@ -2,7 +2,13 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { startRouteTransition } from '@/lib/viewTransition';
 import { DocCard } from './DocCard';
-import { canUseModal, DocModal, preloadDocBody, preloadDetail } from './DocModal';
+import {
+  canUseModal,
+  DocModal,
+  preloadDocBody,
+  preloadDetail,
+  readModalState,
+} from './DocModal';
 import type { Doc } from '@/types/content';
 
 interface DocGridProps {
@@ -21,7 +27,15 @@ interface DocGridProps {
 export function DocGrid({ docs, basePath, onModalOpenChange }: DocGridProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [openId, setOpenId] = useState<string | null>(null);
+  // 팝업이 열려 있던 히스토리 항목으로 되돌아온 것이라면(팝업 → 본문 링크 → 상세 → 뒤로가기)
+  // 그 팝업을 그대로 다시 연다. 열림 상태를 컴포넌트 state에만 두면 홈이 다시 마운트되면서
+  // 사라져, 뒤로가기가 팝업이 아니라 홈으로 빠져 버린다.
+  const [openId, setOpenId] = useState<string | null>(() => {
+    if (!canUseModal()) return null;
+    const modal = readModalState();
+    if (!modal || modal.base !== basePath) return null;
+    return docs.some((doc) => doc.id === modal.id) ? modal.id : null;
+  });
   const n = docs.length;
 
   // 좁은 화면(모바일)에서는 팝업을 띄우지 않고 상세 페이지로 바로 넘어간다 — 팝업이 화면을 거의

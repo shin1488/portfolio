@@ -22,6 +22,34 @@ interface DocModalProps {
 /** 여닫이 트랜지션 길이(ms) — 닫을 때 이 시간만큼 기다렸다가 언마운트한다. */
 const TRANSITION_MS = 260;
 
+/** 본문 스크롤을 히스토리 항목에 적는 간격(ms) — 스크롤할 때마다 쓰면 너무 잦다. */
+const SAVE_TOP_MS = 200;
+/** 되돌아왔을 때 스크롤을 되돌리길 포기하는 시점(ms) — 본문이 그때까지 안 자라면 그만둔다. */
+const RESTORE_TIMEOUT_MS = 1500;
+
+/**
+ * 팝업이 쌓아 둔 히스토리 항목에 적어 두는 것 — 어느 목록의 어느 문서를 열었고, 본문을 어디까지
+ * 읽었는지다. 이 항목으로 되돌아오면(팝업에서 본문 링크를 눌러 상세로 갔다가 뒤로가기) 홈이 이
+ * 표시를 보고 팝업을 같은 자리에 다시 연다.
+ */
+export interface ModalHistoryState {
+  id: string;
+  base: string;
+  top: number;
+}
+
+/** 지금 히스토리 항목이 가리키는 팝업 — 없으면 null. */
+export function readModalState(): ModalHistoryState | null {
+  const state = window.history.state as { modal?: ModalHistoryState } | null;
+  const modal = state?.modal;
+  return modal && typeof modal.id === 'string' && typeof modal.base === 'string' ? modal : null;
+}
+
+/** 지금 히스토리 항목의 팝업 표시를 갱신한다(새로 쌓지 않는다). */
+function writeModalState(next: ModalHistoryState) {
+  window.history.replaceState({ ...window.history.state, modal: next }, '');
+}
+
 /**
  * 무거운 것만 lazy로 뗀다 — 팝업 껍데기는 홈 번들에 있어 클릭 즉시 뜨고, react-markdown 체인
  * (300KB대)과 상세 라우트는 필요할 때 내려받는다. 카드 호버 시 미리 받아 두기도 한다(preload).
@@ -55,6 +83,10 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
+  /** 본문 스크롤을 히스토리에 적은 마지막 시각 — 너무 잦게 쓰지 않기 위한 스로틀 */
+  const lastSaveRef = useRef(0);
+  /** 스크롤이 멎은 뒤 마지막 위치를 한 번 더 적기 위한 타이머 */
+  const saveTimerRef = useRef(0);
   // 마운트 다음 프레임에 켜서 등장 트랜지션(페이드 + 살짝 확대)이 발동하게 한다.
   // 닫을 때는 다시 꺼서 퇴장 트랜지션을 보인 뒤 언마운트한다.
   const [shown, setShown] = useState(false);
@@ -104,10 +136,16 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
   useEffect(() => {
     // 이미 쌓았으면 다시 쌓지 않는다 — StrictMode가 개발 모드에서 effect를 두 번 돌리면
     // 항목이 두 개 쌓여 뒤로가기를 두 번 눌러야 나가게 된다(ref는 재마운트에도 유지된다).
-    if (!pushedRef.current) {
-      window.history.pushState({ ...window.history.state, modal: true }, '');
-      pushedRef.current = true;
+    // 뒤로가기로 이 팝업의 항목에 되돌아온 경우에도 항목은 이미 있으므로 새로 쌓지 않는다.
+    const restored = readModalState();
+    const onOwnEntry = restored?.id === doc.id && restored.base === basePath;
+    if (!pushedRef.current && !onOwnEntry) {
+      window.history.pushState(
+        { ...window.history.state, modal: { id: doc.id, base: basePath, top: 0 } },
+        '',
+      );
     }
+    pushedRef.current = true;
     pausePopTransition(true);
     const onPop = () => {
       pushedRef.current = false; // 우리가 쌓은 항목이 이미 빠졌다
@@ -140,6 +178,54 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
       window.history.back();
     }
   }, [closeNow]);
+
+  /**
+   * 읽던 위치를 히스토리 항목에 눌러 적고(스크롤 중 스로틀), 되돌아왔을 때 그 자리에서 이어 읽게
+   * 한다. 언마운트 시점에 적지 않는 이유: 본문 링크로 상세에 갈 때는 새 항목이 이미 쌓인 뒤라
+   * 그때 적으면 팝업의 항목이 아니라 상세의 항목에 적힌다.
+   */
+  const saveTop = useCallback(() => {
+    const modal = readModalState();
+    if (!modal || modal.id !== doc.id || modal.base !== basePath) return;
+    writeModalState({ ...modal, top: bodyRef.current?.scrollTop ?? 0 });
+  }, [doc.id, basePath]);
+
+  // 본문이 붙은 뒤에 되돌린다. 한 번으로 끝나지 않는다: 마크다운은 늦게 그려지고 이미지도 뒤늦게
+  // 붙으므로, 되돌린 직후에도 본문 높이가 계속 바뀐다. 문서가 짧은 동안 scrollTop을 넣으면
+  // 브라우저가 값을 깎고(clamp), 나중에 위쪽 요소가 자라면 같은 좌표가 다른 지점을 가리킨다.
+  // 그래서 정해진 시간 동안 목표 좌표를 계속 눌러 준다. 사용자가 스크롤·터치·키로 개입하면
+  // 즉시 그만둔다 — 사용자와 스크롤을 두고 다투지 않는다.
+  useEffect(() => {
+    if (!bodyMounted) return;
+    const modal = readModalState();
+    const top = modal && modal.id === doc.id && modal.base === basePath ? modal.top : 0;
+    if (top <= 0) return;
+
+    let cancelled = false;
+    const abort = () => {
+      cancelled = true;
+    };
+    const passiveOnce = { once: true, passive: true } as const;
+    const body = bodyRef.current;
+    body?.addEventListener('wheel', abort, passiveOnce);
+    body?.addEventListener('touchstart', abort, passiveOnce);
+    window.addEventListener('keydown', abort, { once: true });
+
+    const deadline = Date.now() + RESTORE_TIMEOUT_MS;
+    let timer = 0;
+    const step = () => {
+      if (cancelled || !bodyRef.current) return;
+      bodyRef.current.scrollTop = top;
+      if (Date.now() < deadline) timer = window.setTimeout(step, 32);
+    };
+    step();
+    return () => {
+      window.clearTimeout(timer);
+      body?.removeEventListener('wheel', abort);
+      body?.removeEventListener('touchstart', abort);
+      window.removeEventListener('keydown', abort);
+    };
+  }, [bodyMounted, doc.id, basePath]);
 
   /**
    * '확대' — 팝업이 사그라들고 상세 페이지가 떠오른다. 전환 자체는 startRouteTransition이 담당하고,
@@ -238,7 +324,20 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
               // 렌더를 일으켜, 스크롤 중 팝업 전체가 매 프레임 다시 렌더되지 않게 한다.
               const next = event.currentTarget.scrollTop > 240;
               setScrolled((prev) => (prev === next ? prev : next));
+              // 읽던 위치는 히스토리 항목에 스로틀해 적되, 스크롤이 멎은 뒤에 한 번 더 적는다.
+              // 스로틀만 두면 마지막 구간(특히 맨 아래까지 한 번에 굴린 경우)이 빠져, 되돌아왔을 때
+              // 조금 위에 서게 된다.
+              const now = Date.now();
+              if (now - lastSaveRef.current > SAVE_TOP_MS) {
+                lastSaveRef.current = now;
+                saveTop();
+              }
+              window.clearTimeout(saveTimerRef.current);
+              saveTimerRef.current = window.setTimeout(saveTop, SAVE_TOP_MS);
             }}
+            // 본문 안의 무언가를 누르는 순간(내부 링크 등)의 위치를 그대로 적어 둔다 —
+            // 스로틀·디바운스가 아직 안 돈 사이에 화면을 떠나면 마지막 위치가 유실된다.
+            onClickCapture={saveTop}
             // overscroll은 세로만 격리한다 — overscroll-contain(양축)이면 가로 오버스크롤까지
             // 붙잡아 트랙패드 두 손가락 뒤로가기 제스처가 팝업에 먹혀 버린다.
             // 가로 스크롤은 아예 막는다(코드블록 등은 자기 안에서 스크롤한다).
