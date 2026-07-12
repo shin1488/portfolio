@@ -84,6 +84,35 @@ body {
   transform: none;
 }
 
+/* 팝업 → 상세 페이지 '확대' 전환(View Transition).
+   팝업 패널과 상세 본문이 view-transition-name: project-doc을 공유하므로, 브라우저가 두 박스를
+   짝지어 위치·크기를 이어 붙인다. 여기서는 그 속도만 사이트 이징에 맞춘다.
+   배경(root)의 기본 크로스페이드는 조금 짧게 둬 본문 모프가 주인공이 되게 한다. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(project-doc) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  ::view-transition-old(project-doc),
+  ::view-transition-new(project-doc) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 260ms;
+  }
+}
+
+/* 동작 줄이기 설정이면 전환 애니메이션 없이 즉시 바뀐다 */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* 네이티브 스크롤바를 숨긴 스크롤 컨테이너 — 팝업 본문처럼 자체 스크롤을 갖는 영역용 */
 .no-scrollbar {
   scrollbar-width: none; /* Firefox */

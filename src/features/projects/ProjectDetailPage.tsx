@@ -13,6 +13,7 @@ import { formatPeriod } from './period';
 import { HighlightText } from './HighlightText';
 import { ProjectKindChip } from './ProjectKindChip';
 import { ProjectLinks } from './ProjectLinks';
+import { DOC_TRANSITION } from '@/lib/viewTransition';
 import { ReadingAids } from './ReadingAids';
 import { TableOfContents } from './TableOfContents';
 import type { Project } from '@/types/content';
@@ -43,8 +44,13 @@ function ProjectDetailView({ project }: { project: Project }) {
     <>
       <ReadingAids entries={toc} />
       {/* 읽기 화면이라 폭은 프레임(72rem)까지 넓히지 않는다 — 한 줄이 길어지면 눈이 줄을 되짚기
-          어렵다. 좌우 세로선도 두지 않는다(진행 바와 목차 rail이 이미 양옆을 잡고 있다). */}
-      <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+          어렵다. 좌우 세로선도 두지 않는다(진행 바와 목차 rail이 이미 양옆을 잡고 있다).
+          viewTransitionName: 팝업 패널과 같은 이름이라, '확대'로 들어오면 팝업이 이 본문으로
+          늘어나 보인다(ProjectModal 참고). */}
+      <article
+        style={{ viewTransitionName: DOC_TRANSITION }}
+        className="mx-auto max-w-3xl px-6 py-12 sm:py-16"
+      >
       {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 코드 바로가기를 둔다(제목 줄이 빽빽해지지 않게) */}
       <div className="flex items-center justify-between gap-3">
         <Link

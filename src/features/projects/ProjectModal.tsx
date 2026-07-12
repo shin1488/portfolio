@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { Markdown } from '@/components/ui/Markdown';
 import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
 import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
 import { cn } from '@/lib/cn';
 import { useRevealOnScroll } from '@/lib/useRevealOnScroll';
+import { DOC_TRANSITION } from '@/lib/viewTransition';
 import { formatPeriod } from './period';
 import type { Project } from '@/types/content';
 
@@ -51,6 +53,27 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     window.setTimeout(onClose, TRANSITION_MS);
   }, [onClose]);
 
+  /**
+   * '확대' — 팝업 패널이 상세 본문으로 늘어나며 라우트가 바뀐다.
+   *
+   * react-router의 navigate({ viewTransition: true })는 Data/Framework 모드 전용이라
+   * 우리 <BrowserRouter>(선언형 모드)에선 무시된다. 그래서 직접 startViewTransition으로 감싸고,
+   * 그 콜백 안에서 flushSync로 라우트 전환을 동기 렌더시킨다 — 콜백이 끝난 시점의 DOM이 '새 화면'
+   * 스냅샷이 되므로, 비동기로 렌더되면 전환이 빈 화면을 잡는다.
+   * 미지원 브라우저에서는 그냥 즉시 이동한다.
+   */
+  const expandToDetail = useCallback(() => {
+    const path = `/projects/${project.id}`;
+    const start = document.startViewTransition?.bind(document);
+    if (!start || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      navigate(path);
+      return;
+    }
+    start(() => {
+      flushSync(() => navigate(path));
+    });
+  }, [navigate, project.id]);
+
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기. 잠금은 body가 아닌 html(overflowY)에 건다
   // — html에 overflow-x: clip이 있어, body에 걸면 body가 클리핑 컨테이너가 되며 sticky 헤더가
   // 문서 최상단으로 튀어 버린다(Header의 드로어 잠금과 같은 이유).
@@ -90,7 +113,9 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           'relative flex max-h-[88vh] w-full max-w-4xl flex-col border border-divider bg-[#111113] outline-none transition-[opacity,transform,scale] ease-[cubic-bezier(0.22,1,0.36,1)]',
           shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-3 scale-97 opacity-0',
         )}
-        style={{ transitionDuration: `${TRANSITION_MS}ms` }}
+        // viewTransitionName: '확대'로 상세 페이지에 넘어갈 때 이 패널이 상세 본문 박스로 늘어나는
+        // 모프 애니메이션의 짝이 된다(상세 페이지의 article이 같은 이름을 쓴다).
+        style={{ transitionDuration: `${TRANSITION_MS}ms`, viewTransitionName: DOC_TRANSITION }}
       >
         {/* 상단 바 — 높이가 고정된 flex 항목이라 본문이 이 위로 올라오지 못한다 */}
         <div className="flex shrink-0 items-center justify-between gap-4 border-b border-divider px-5 py-4 md:px-8">
@@ -105,7 +130,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
-              onClick={() => navigate(`/projects/${project.id}`)}
+              onClick={expandToDetail}
               aria-label="상세 페이지에서 보기"
               className="inline-flex size-8 cursor-pointer items-center justify-center border border-divider text-zinc-400 transition-colors hover:border-accent/60 hover:text-accent"
             >
