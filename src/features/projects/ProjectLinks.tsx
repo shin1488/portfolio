@@ -13,7 +13,7 @@ export function ProjectLinks({ project }: { project: Project }) {
           href={link.href}
           target="_blank"
           rel="noreferrer"
-          className="bg-linear-to-r from-accent to-accent-end bg-clip-text font-mono text-[11px] text-zinc-500 transition-colors hover:text-transparent"
+          className="inline-flex items-center gap-1 bg-linear-to-r from-accent to-accent-end bg-clip-text text-[13px] font-semibold text-zinc-300 transition-colors hover:text-transparent"
         >
           {link.label} <span aria-hidden="true">↗</span>
           <span className="sr-only"> — {project.title} (새 탭에서 열림)</span>

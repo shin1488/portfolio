@@ -1,5 +1,4 @@
 @import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
-@import '@fontsource-variable/jetbrains-mono/wght.css';
 @import 'tailwindcss';
 @import 'highlight.js/styles/github-dark.css';
 @plugin "@tailwindcss/typography";
@@ -13,12 +12,6 @@
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
     system-ui, Roboto, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR',
     sans-serif;
-
-  /* 메타 라벨(섹션 인덱스·기간·카테고리)은 모노 — 본문 산세리프와 층위를 갈라
-     '기술 도면' 톤을 만든다. */
-  --font-mono:
-    'JetBrains Mono Variable', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
-    Consolas, monospace;
 
   /* 페이지 전체를 관통하는 hairline 격자의 단일 색. 모든 프레임·셀 경계가 이 값을 쓴다. */
   --color-divider: #27272a;
@@ -74,6 +67,20 @@ body {
     transparent 1px,
     transparent 8px
   );
+}
+
+/* 스크롤 진입 시 떠오르는 요소 — 상세 페이지·팝업의 마크다운 블록에 JS가 클래스를 붙인다.
+   동작 줄이기(prefers-reduced-motion) 설정이면 JS가 클래스를 아예 붙이지 않아 즉시 보인다. */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms ease-out;
+}
+.reveal-item.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 /* Hero 스크롤 힌트 화살표 — 아래로 살짝 바운스 */

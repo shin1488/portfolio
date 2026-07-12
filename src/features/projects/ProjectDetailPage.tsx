@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Link, useParams } from 'react-router';
 import { Badge } from '@/components/ui/Badge';
 import { Markdown } from '@/components/ui/Markdown';
@@ -7,6 +7,7 @@ import { content } from '@/data';
 import { SITE_NAME } from '@/lib/site';
 import { extractToc } from '@/lib/toc';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
+import { useRevealOnScroll } from '@/lib/useRevealOnScroll';
 import { useRouteFocus } from '@/lib/useRouteFocus';
 import { formatPeriod } from './period';
 import { HighlightText } from './HighlightText';
@@ -35,6 +36,9 @@ function ProjectDetailView({ project }: { project: Project }) {
   // 목록으로 돌아갈 때 이 프로젝트가 놓인 핀 트랙 구간으로 복귀시키기 위한 인덱스.
   // (state는 Link가 SPA 이동에 실어 보내고, ProjectsSection이 마운트 시 해당 구간으로 스크롤한다)
   const projectIndex = content.projects.findIndex((p) => p.id === project.id);
+  // 본문 블록을 스크롤 진입 시 하나씩 떠오르게 한다(홈의 Reveal과 같은 효과).
+  const bodyRef = useRef<HTMLDivElement>(null);
+  useRevealOnScroll(bodyRef, '.prose > *');
   return (
     <>
       <ReadingAids entries={toc} />
@@ -105,7 +109,7 @@ function ProjectDetailView({ project }: { project: Project }) {
         <TableOfContents entries={toc} />
       </div>
 
-      <div className="mt-5 border-t border-divider pt-5">
+      <div ref={bodyRef} className="mt-5 border-t border-divider pt-5">
         <Markdown>{project.body}</Markdown>
       </div>
       </article>

@@ -1,6 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Markdown } from '@/components/ui/Markdown';
+import { cn } from '@/lib/cn';
+import { useRevealOnScroll } from '@/lib/useRevealOnScroll';
 import { formatPeriod } from './period';
 import type { Project } from '@/types/content';
 
@@ -11,8 +13,12 @@ interface ProjectModalProps {
 
 /**
  * 프로젝트 본문 팝업 — 카드를 누르면 상세 문서의 본문만 이 안에서 읽는다.
- * 목차·읽기 진행 바·스크롤 복원 같은 긴 문서용 장치는 붙이지 않고, '확대'를 눌러
- * 상세 페이지로 넘어갔을 때 제공한다.
+ * 목차·스크롤 복원 같은 긴 문서용 장치는 붙이지 않고, '확대'를 눌러 상세 페이지로
+ * 넘어갔을 때 제공한다.
+ *
+ * 스크롤 컨테이너는 오버레이가 아니라 패널 안쪽 본문 영역이다 — 오버레이를 스크롤시키면
+ * 본문이 상단 바 위로 흘러 올라가 버린다. 상단 바를 고정 높이로 두고 본문만 스크롤시키면
+ * 본문이 바를 넘어설 수 없고, 바 아래 진행 바도 이 컨테이너 기준으로 계산할 수 있다.
  *
  * 라우트 단위 code-split 대상이라 default export를 쓴다 — react-markdown 체인이
  * 홈 번들에 딸려 들어가지 않도록 팝업을 열 때 처음 내려받는다.
@@ -20,7 +26,18 @@ interface ProjectModalProps {
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+  // 마운트 다음 프레임에 켜서 등장 트랜지션(페이드 + 살짝 확대)이 발동하게 한다.
+  const [shown, setShown] = useState(false);
   const titleId = `project-modal-${project.id}`;
+
+  useRevealOnScroll(bodyRef, '.prose > *', bodyRef);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기. 잠금은 body가 아닌 html(overflowY)에 건다
   // — html에 overflow-x: clip이 있어, body에 걸면 body가 클리핑 컨테이너가 되며 sticky 헤더가
@@ -32,7 +49,6 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       if (event.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
-    // 낭독기·키보드 포커스를 팝업 안으로 옮긴다.
     panelRef.current?.focus({ preventScroll: true });
     return () => {
       document.documentElement.style.overflowY = prevOverflowY;
@@ -42,7 +58,10 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-[#111113]/85 px-4 py-6 backdrop-blur-sm sm:py-12"
+      className={cn(
+        'fixed inset-0 z-50 flex items-center justify-center bg-[#111113]/85 p-4 backdrop-blur-sm transition-opacity duration-300',
+        shown ? 'opacity-100' : 'opacity-0',
+      )}
       onClick={(event) => {
         // 패널 바깥(배경)을 눌렀을 때만 닫는다
         if (event.target === event.currentTarget) onClose();
@@ -54,10 +73,13 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="relative w-full max-w-4xl border border-divider bg-[#111113] outline-none"
+        className={cn(
+          'flex max-h-[88vh] w-full max-w-4xl flex-col border border-divider bg-[#111113] outline-none transition-[opacity,transform,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-3 scale-97 opacity-0',
+        )}
       >
-        {/* 상단 바 — 스크롤해도 제목과 조작 버튼이 남는다 */}
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-divider bg-[#111113]/95 px-5 py-4 backdrop-blur md:px-8">
+        {/* 상단 바 — 높이가 고정된 flex 항목이라 본문이 이 위로 올라오지 못한다 */}
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-divider px-5 py-4 md:px-8">
           <div className="min-w-0">
             <h2 id={titleId} className="truncate text-lg font-bold tracking-tight text-zinc-100">
               {project.title}
@@ -86,7 +108,23 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         </div>
 
-        <div className="px-5 py-8 md:px-8">
+        {/* 읽기 진행 바 — 상단 바 바로 아래(모바일 헤더와 같은 자리) */}
+        <div aria-hidden="true" className="h-0.75 shrink-0 overflow-hidden bg-zinc-800/60">
+          <div
+            className="h-full bg-linear-to-r from-accent to-accent-end"
+            style={{ width: `${progress * 100}%` }}
+          />
+        </div>
+
+        <div
+          ref={bodyRef}
+          onScroll={(event) => {
+            const el = event.currentTarget;
+            const scrollable = el.scrollHeight - el.clientHeight;
+            setProgress(scrollable > 0 ? Math.min(1, el.scrollTop / scrollable) : 0);
+          }}
+          className="flex-1 overflow-y-auto overscroll-contain px-5 py-8 md:px-8"
+        >
           <Markdown>{project.body}</Markdown>
         </div>
       </div>

@@ -36,7 +36,7 @@ export function SideRail({
     <>
       <nav
         aria-label={ariaLabel}
-        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-1 overflow-y-auto py-3 pl-8 pr-1.5 lg:flex 2xl:hidden"
+        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto py-3 pl-8 pr-3 lg:flex 2xl:hidden"
       >
         {items.map((item) => (
           <CollapsedItem
@@ -53,7 +53,7 @@ export function SideRail({
         style={{ left: `calc(50% + ${expandedOffsetRem}rem)` }}
         className="fixed top-1/2 z-30 hidden max-h-[76vh] -translate-y-1/2 overflow-y-auto 2xl:block"
       >
-        <ul className="space-y-1">
+        <ul className="space-y-0.5">
           {items.map((item) => (
             <li key={item.id}>
               <ExpandedItem item={item} active={item.id === activeId} onSelect={onSelect} />
@@ -82,7 +82,7 @@ function CollapsedItem({
       type="button"
       onClick={() => onSelect(item.id)}
       aria-current={active}
-      className="flex w-full cursor-pointer items-center justify-end rounded-md py-2 pl-2 pr-2.5 transition-colors hover:bg-zinc-500/30"
+      className="flex w-full cursor-pointer items-center justify-end rounded-md py-1 pr-0.5 hover:bg-zinc-500/10"
     >
       {/* 라벨 — 평소 max-w-0(숨김), rail에 마우스를 대면 왼쪽으로 펼쳐진다 */}
       <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-w-60 group-hover:opacity-100">
@@ -121,7 +121,7 @@ function ExpandedItem({
       type="button"
       onClick={() => onSelect(item.id)}
       aria-current={active}
-      className="group/item flex cursor-pointer items-center gap-2.5 rounded-md py-2 pl-3 pr-3.5 font-mono text-[11px] transition-colors hover:bg-zinc-500/30"
+      className="group/item flex cursor-pointer items-center gap-2.5 rounded-md py-1 pl-3 pr-2 font-mono text-[11px]"
     >
       {/* 틱 — 라벨의 왼쪽에 붙으므로 그라데이션 시작색(accent)으로 둔다 */}
       <span
