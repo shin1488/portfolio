@@ -70,17 +70,29 @@ body {
 }
 
 /* 스크롤 진입 시 떠오르는 요소 — 상세 페이지·팝업의 마크다운 블록에 JS가 클래스를 붙인다.
-   동작 줄이기(prefers-reduced-motion) 설정이면 JS가 클래스를 아예 붙이지 않아 즉시 보인다. */
+   동작 줄이기(prefers-reduced-motion) 설정이면 JS가 클래스를 아예 붙이지 않아 즉시 보인다.
+   전환은 짧게(260ms) — 길면 스크롤을 조금만 빨리 굴려도 글이 뒤늦게 따라 올라온다. */
 .reveal-item {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(10px);
   transition:
-    opacity 600ms ease-out,
-    transform 600ms ease-out;
+    opacity 260ms ease-out,
+    transform 260ms ease-out;
 }
 .reveal-item.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* 네이티브 스크롤바를 숨긴 스크롤 컨테이너 — 팝업 본문처럼 자체 스크롤을 갖는 영역용 */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* 구 Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chrome/Safari */
 }
 
 /* Hero 스크롤 힌트 화살표 — 아래로 살짝 바운스 */

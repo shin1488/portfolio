@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Markdown } from '@/components/ui/Markdown';
 import { cn } from '@/lib/cn';
@@ -11,6 +11,9 @@ interface ProjectModalProps {
   onClose: () => void;
 }
 
+/** 여닫이 트랜지션 길이(ms) — 닫을 때 이 시간만큼 기다렸다가 언마운트한다. */
+const TRANSITION_MS = 260;
+
 /**
  * 프로젝트 본문 팝업 — 카드를 누르면 상세 문서의 본문만 이 안에서 읽는다.
  * 목차·스크롤 복원 같은 긴 문서용 장치는 붙이지 않고, '확대'를 눌러 상세 페이지로
@@ -18,7 +21,8 @@ interface ProjectModalProps {
  *
  * 스크롤 컨테이너는 오버레이가 아니라 패널 안쪽 본문 영역이다 — 오버레이를 스크롤시키면
  * 본문이 상단 바 위로 흘러 올라가 버린다. 상단 바를 고정 높이로 두고 본문만 스크롤시키면
- * 본문이 바를 넘어설 수 없고, 바 아래 진행 바도 이 컨테이너 기준으로 계산할 수 있다.
+ * 본문이 바를 넘어설 수 없고, 바 아래 진행 바와 '맨 위로' 버튼도 이 컨테이너 기준으로
+ * 계산할 수 있다.
  *
  * 라우트 단위 code-split 대상이라 default export를 쓴다 — react-markdown 체인이
  * 홈 번들에 딸려 들어가지 않도록 팝업을 열 때 처음 내려받는다.
@@ -28,7 +32,9 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   // 마운트 다음 프레임에 켜서 등장 트랜지션(페이드 + 살짝 확대)이 발동하게 한다.
+  // 닫을 때는 다시 꺼서 퇴장 트랜지션을 보인 뒤 언마운트한다.
   const [shown, setShown] = useState(false);
   const titleId = `project-modal-${project.id}`;
 
@@ -39,6 +45,11 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  const requestClose = useCallback(() => {
+    setShown(false);
+    window.setTimeout(onClose, TRANSITION_MS);
+  }, [onClose]);
+
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기. 잠금은 body가 아닌 html(overflowY)에 건다
   // — html에 overflow-x: clip이 있어, body에 걸면 body가 클리핑 컨테이너가 되며 sticky 헤더가
   // 문서 최상단으로 튀어 버린다(Header의 드로어 잠금과 같은 이유).
@@ -46,7 +57,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     const prevOverflowY = document.documentElement.style.overflowY;
     document.documentElement.style.overflowY = 'hidden';
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') requestClose();
     };
     window.addEventListener('keydown', onKey);
     panelRef.current?.focus({ preventScroll: true });
@@ -54,17 +65,18 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       document.documentElement.style.overflowY = prevOverflowY;
       window.removeEventListener('keydown', onKey);
     };
-  }, [onClose]);
+  }, [requestClose]);
 
   return (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-[#111113]/85 p-4 backdrop-blur-sm transition-opacity duration-300',
+        'fixed inset-0 z-50 flex items-center justify-center bg-[#111113]/85 p-4 backdrop-blur-sm transition-opacity',
         shown ? 'opacity-100' : 'opacity-0',
       )}
+      style={{ transitionDuration: `${TRANSITION_MS}ms` }}
       onClick={(event) => {
         // 패널 바깥(배경)을 눌렀을 때만 닫는다
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) requestClose();
       }}
     >
       <div
@@ -74,9 +86,10 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cn(
-          'flex max-h-[88vh] w-full max-w-4xl flex-col border border-divider bg-[#111113] outline-none transition-[opacity,transform,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+          'relative flex max-h-[88vh] w-full max-w-4xl flex-col border border-divider bg-[#111113] outline-none transition-[opacity,transform,scale] ease-[cubic-bezier(0.22,1,0.36,1)]',
           shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-3 scale-97 opacity-0',
         )}
+        style={{ transitionDuration: `${TRANSITION_MS}ms` }}
       >
         {/* 상단 바 — 높이가 고정된 flex 항목이라 본문이 이 위로 올라오지 못한다 */}
         <div className="flex shrink-0 items-center justify-between gap-4 border-b border-divider px-5 py-4 md:px-8">
@@ -99,7 +112,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={requestClose}
               aria-label="닫기"
               className="inline-flex size-8 cursor-pointer items-center justify-center border border-divider text-zinc-400 transition-colors hover:text-zinc-100"
             >
@@ -116,17 +129,43 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           />
         </div>
 
+        {/* 본문 — 네이티브 스크롤바는 숨긴다(위 진행 바가 위치를 알려 준다) */}
         <div
           ref={bodyRef}
           onScroll={(event) => {
             const el = event.currentTarget;
             const scrollable = el.scrollHeight - el.clientHeight;
             setProgress(scrollable > 0 ? Math.min(1, el.scrollTop / scrollable) : 0);
+            setScrolled(el.scrollTop > 240);
           }}
-          className="flex-1 overflow-y-auto overscroll-contain px-5 py-8 md:px-8"
+          className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-5 py-8 md:px-8"
         >
           <Markdown>{project.body}</Markdown>
         </div>
+
+        {/* 맨 위로 — 패널 우하단. 어느 정도 내려온 뒤에만 나타난다. */}
+        <button
+          type="button"
+          aria-label="맨 위로"
+          onClick={() => bodyRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={cn(
+            'absolute bottom-5 right-5 flex size-10 cursor-pointer items-center justify-center border border-divider bg-zinc-900/85 text-zinc-300 backdrop-blur transition-all duration-300 hover:border-accent/60 hover:text-accent',
+            scrolled ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0',
+          )}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="size-4.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
+        </button>
       </div>
     </div>
   );

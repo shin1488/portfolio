@@ -31,8 +31,10 @@ export function useRevealOnScroll(
       },
       {
         root: scrollRootRef?.current ?? null,
-        threshold: 0.08,
-        rootMargin: '0px 0px -32px 0px',
+        // 요소가 조금이라도 걸치면 바로 켠다 — 임계값이나 음수 여백을 두면 빠르게 스크롤할 때
+        // 글이 화면에 들어온 뒤에야 뒤늦게 떠올라 따라오지 못하는 느낌이 난다.
+        threshold: 0,
+        rootMargin: '0px 0px 120px 0px',
       },
     );
     items.forEach((item) => observer.observe(item));
