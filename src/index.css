@@ -56,6 +56,16 @@ html::-webkit-scrollbar {
 
 body {
   @apply text-zinc-900 antialiased dark:text-zinc-100;
+}
+
+/* 가로 스크롤을 잠근다 — 프레임 십자 마크처럼 경계선 밖으로 4~5px 물려 놓은 장식이 좁은 화면에서
+   문서 폭을 넘기는데, 그만큼 좌우로 밀리면 세로선이 흔들려 보인다.
+   hidden이 아니라 clip인 이유는 hidden이 html을 스크롤 컨테이너로 만들어 sticky 헤더의 기준을
+   뷰포트에서 그 컨테이너로 옮겨 버리기 때문이다. clip은 잘라내기만 하고 스크롤 컨테이너를 만들지
+   않는다. body가 아니라 html에 거는 이유는, body의 overflow는 html이 visible일 때만 뷰포트로
+   전파되는데 그 전파가 브라우저마다 갈리기 때문이다(측정: body에만 걸었을 때 문서 폭 410px,
+   html에 걸면 390px). */
+html {
   overflow-x: clip;
 }
 
@@ -330,8 +340,10 @@ body {
 
 /* 인라인 코드: 백틱 문자 대신 배경 칩으로 코드임을 드러낸다. 글자는 액센트 로즈 —
    본문 흐름 안에서 코드 조각임을 색으로 짚어 준다. */
+/* 인라인 코드는 좁은 화면에서 한 줄에 안 들어가면 중간에서 끊어 준다 — 식별자에는 공백이 없어
+   기본값(normal)으로는 줄바꿈 지점이 아예 없고, 그대로 문단 폭을 밀어낸다. */
 .prose :not(pre) > code {
-  @apply rounded-md bg-zinc-800 px-1.5 py-0.5 font-medium text-accent-rose;
+  @apply break-words rounded-md bg-zinc-800 px-1.5 py-0.5 font-medium text-accent-rose;
 }
 
 .prose :not(pre) > code::before,

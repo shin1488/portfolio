@@ -119,7 +119,9 @@ export function PsrStep({ kind, isLast, lineTo, children }: PsrStepProps) {
       </div>
       {/* 라벨 + 본문. 라벨은 leading-8(=뱃지 높이 32px)로 줄박스를 잡아, 텍스트가 아이콘
           뱃지의 세로 중앙과 같은 높이에 오게 한다(둘 다 행 상단에서 시작하는 32px 블록). */}
-      <div className={isLast ? undefined : 'pb-5'}>
+      {/* min-w-0 — 그리드 칸의 최소 폭은 기본값이 auto(=내용 폭)라, 줄바꿈 지점이 없는 긴
+          인라인 코드가 들어오면 칸이 그만큼 벌어져 화면 밖으로 밀려난다. */}
+      <div className={`min-w-0 ${isLast ? '' : 'pb-5'}`}>
         <span className={`text-[20px] font-bold leading-8 ${c.labelClass}`}>{c.label}</span>
         <div
           className={`mt-1 text-[15px] leading-[1.7] ${
