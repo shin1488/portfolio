@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Markdown } from '@/components/ui/Markdown';
+import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
+import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
 import { cn } from '@/lib/cn';
 import { useRevealOnScroll } from '@/lib/useRevealOnScroll';
 import { formatPeriod } from './period';
@@ -31,7 +33,6 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   // 마운트 다음 프레임에 켜서 등장 트랜지션(페이드 + 살짝 확대)이 발동하게 한다.
   // 닫을 때는 다시 꺼서 퇴장 트랜지션을 보인 뒤 언마운트한다.
@@ -121,51 +122,29 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         </div>
 
-        {/* 읽기 진행 바 — 상단 바 바로 아래(모바일 헤더와 같은 자리) */}
-        <div aria-hidden="true" className="h-0.75 shrink-0 overflow-hidden bg-zinc-800/60">
-          <div
-            className="h-full bg-linear-to-r from-accent to-accent-end"
-            style={{ width: `${progress * 100}%` }}
-          />
-        </div>
+        {/* 읽기 진행 바 — 상단 바 바로 아래(모바일 헤더와 같은 자리). 패널 본문 스크롤을 읽는다. */}
+        <ScrollProgressBar scrollRef={bodyRef} className="shrink-0" />
 
         {/* 본문 — 네이티브 스크롤바는 숨긴다(위 진행 바가 위치를 알려 준다) */}
         <div
           ref={bodyRef}
           onScroll={(event) => {
-            const el = event.currentTarget;
-            const scrollable = el.scrollHeight - el.clientHeight;
-            setProgress(scrollable > 0 ? Math.min(1, el.scrollTop / scrollable) : 0);
-            setScrolled(el.scrollTop > 240);
+            // 진행률은 ScrollProgressBar가 DOM을 직접 갱신한다. 여기서는 참/거짓이 뒤집힐 때만
+            // 렌더를 일으켜, 스크롤 중 팝업 전체가 매 프레임 다시 렌더되지 않게 한다.
+            const next = event.currentTarget.scrollTop > 240;
+            setScrolled((prev) => (prev === next ? prev : next));
           }}
           className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-5 py-8 md:px-8"
         >
           <Markdown>{project.body}</Markdown>
         </div>
 
-        {/* 맨 위로 — 패널 우하단. 어느 정도 내려온 뒤에만 나타난다. */}
-        <button
-          type="button"
-          aria-label="맨 위로"
+        {/* 맨 위로 — 패널 우하단. 상세 페이지와 같은 공용 버튼이다. */}
+        <ScrollTopButton
+          visible={scrolled}
           onClick={() => bodyRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-          className={cn(
-            'absolute bottom-5 right-5 flex size-10 cursor-pointer items-center justify-center border border-divider bg-zinc-900/85 text-zinc-300 backdrop-blur transition-all duration-300 hover:border-accent/60 hover:text-accent',
-            scrolled ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0',
-          )}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            className="size-4.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M12 19V5M5 12l7-7 7 7" />
-          </svg>
-        </button>
+          className="absolute bottom-5 right-5"
+        />
       </div>
     </div>
   );

@@ -44,8 +44,8 @@ export function Reveal({ delay = 0, className, children }: RevealProps) {
     <div
       ref={ref}
       className={cn(
-        'transition-[opacity,transform] duration-300 ease-out',
-        visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
+        'transition-[opacity,transform] duration-200 ease-out',
+        visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
         className,
       )}
       style={delay > 0 ? { transitionDelay: `${delay}ms` } : undefined}

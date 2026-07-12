@@ -1,17 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/** 문서 스크롤 진행률(0~1)과 일정 이상 내렸는지 여부를 rAF로 갱신한다. */
-export function useScrollProgress(threshold = 400) {
-  const [state, setState] = useState({ progress: 0, scrolled: false });
+/**
+ * 문서를 threshold 이상 내렸는지만 반환한다(맨 위로 버튼 노출용).
+ * 진행률은 여기서 다루지 않는다 — 매 프레임 setState로 진행률을 흘리면 그 컴포넌트 트리가
+ * 프레임마다 다시 렌더돼 진행 바가 끊겨 보인다. 진행 바는 ScrollProgressBar가 DOM을 직접
+ * 갱신하는 방식으로 그린다. 이 훅은 참/거짓이 뒤집힐 때만 렌더를 일으킨다.
+ */
+export function useScrolledPast(threshold = 400): boolean {
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
-      const scrollTop = window.scrollY;
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = scrollable > 0 ? Math.min(1, Math.max(0, scrollTop / scrollable)) : 0;
-      setState({ progress, scrolled: scrollTop > threshold });
+      const next = window.scrollY > threshold;
+      setScrolled((prev) => (prev === next ? prev : next));
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -26,7 +29,7 @@ export function useScrollProgress(threshold = 400) {
     };
   }, [threshold]);
 
-  return state;
+  return scrolled;
 }
 
 /** 주어진 heading id들 중 현재 읽고 있는 섹션 id를 반환한다(미니 목차 강조용). */

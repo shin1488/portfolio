@@ -71,13 +71,13 @@ body {
 
 /* 스크롤 진입 시 떠오르는 요소 — 상세 페이지·팝업의 마크다운 블록에 JS가 클래스를 붙인다.
    동작 줄이기(prefers-reduced-motion) 설정이면 JS가 클래스를 아예 붙이지 않아 즉시 보인다.
-   전환은 짧게(260ms) — 길면 스크롤을 조금만 빨리 굴려도 글이 뒤늦게 따라 올라온다. */
+   전환은 짧게(170ms) — 길면 스크롤을 조금만 빨리 굴려도 글이 뒤늦게 따라 올라온다. */
 .reveal-item {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(6px);
   transition:
-    opacity 260ms ease-out,
-    transform 260ms ease-out;
+    opacity 170ms ease-out,
+    transform 170ms ease-out;
 }
 .reveal-item.is-visible {
   opacity: 1;
