@@ -9,7 +9,7 @@ import { cn } from '@/lib/cn';
 import { scrollHeadingInContainer } from '@/lib/section';
 import type { TocEntry } from '@/lib/toc';
 import { useActiveHeadingId } from '@/lib/useScroll';
-import { DOC_TRANSITION } from '@/lib/viewTransition';
+import { DOC_TRANSITION, DOC_TRANSITION_ATTR, waitForElement } from '@/lib/viewTransition';
 import { formatPeriod } from './period';
 import type { Project } from '@/types/content';
 
@@ -83,8 +83,8 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
    * react-router의 navigate({ viewTransition: true })는 Data/Framework 모드 전용이라
    * 우리 <BrowserRouter>(선언형 모드)에선 무시된다. 그래서 직접 startViewTransition으로 감싼다.
    * 콜백 안에서 flushSync로 라우트를 동기 렌더시키되, 상세 라우트는 lazy라 그 순간엔 아직
-   * Suspense 폴백이다 — 콜백이 돌려준 프로미스를 두 프레임 뒤에 풀어, 실제 본문이 DOM에 붙은
-   * 뒤에 '새 화면' 스냅샷이 찍히게 한다(그래야 팝업 → 본문 모프가 성립한다).
+   * Suspense 폴백이다 — 그래서 상세 본문이 실제로 DOM에 붙을 때까지 기다린 뒤 콜백 프로미스를
+   * 푼다. 그래야 '새 화면' 스냅샷에 짝이 될 요소가 들어 있어 팝업 → 본문 모프가 성립한다.
    * 미지원 브라우저와 동작 줄이기 설정에서는 애니메이션 없이 즉시 이동한다.
    */
   const expandToDetail = useCallback(async () => {
@@ -97,13 +97,10 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
       navigate(path);
       return;
     }
-    start(
-      () =>
-        new Promise<void>((resolve) => {
-          flushSync(() => navigate(path));
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-        }),
-    );
+    start(async () => {
+      flushSync(() => navigate(path));
+      await waitForElement(`[${DOC_TRANSITION_ATTR}]`);
+    });
   }, [navigate, project.id]);
 
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기. 잠금은 body가 아닌 html(overflowY)에 건다

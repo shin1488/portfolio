@@ -13,7 +13,7 @@ import { formatPeriod } from './period';
 import { HighlightText } from './HighlightText';
 import { ProjectKindChip } from './ProjectKindChip';
 import { ProjectLinks } from './ProjectLinks';
-import { DOC_TRANSITION } from '@/lib/viewTransition';
+import { DOC_TRANSITION, DOC_TRANSITION_ATTR } from '@/lib/viewTransition';
 import { ReadingAids } from './ReadingAids';
 import { TableOfContents } from './TableOfContents';
 import type { Project } from '@/types/content';
@@ -48,6 +48,7 @@ function ProjectDetailView({ project }: { project: Project }) {
           viewTransitionName: 팝업 패널과 같은 이름이라, '확대'로 들어오면 팝업이 이 본문으로
           늘어나 보인다(ProjectModal 참고). */}
       <article
+        {...{ [DOC_TRANSITION_ATTR]: '' }}
         style={{ viewTransitionName: DOC_TRANSITION }}
         className="mx-auto max-w-3xl px-6 py-12 sm:py-16"
       >
