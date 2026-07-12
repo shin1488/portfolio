@@ -22,6 +22,17 @@ function currentMark(): string | null {
   return document.documentElement.getAttribute(ROUTE_ATTR);
 }
 
+/**
+ * startViewTransition 래퍼 — 전환이 다른 전환에 밀려 스킵되면 ready/finished가 reject되는데,
+ * 핸들러를 안 달면 unhandled rejection으로 콘솔에 에러가 찍힌다(정상 동작인데도).
+ * 실패해도 DOM은 그대로 갱신되므로 조용히 넘긴다.
+ */
+function startAndIgnoreAbort(update: () => void | Promise<void>) {
+  const transition = document.startViewTransition(update);
+  transition.ready.catch(() => {});
+  transition.finished.catch(() => {});
+}
+
 function canTransition(): boolean {
   return (
     typeof document.startViewTransition === 'function' &&
@@ -62,10 +73,20 @@ export function startRouteTransition(update: () => void) {
     return;
   }
   const before = currentMark();
-  document.startViewTransition(async () => {
+  startAndIgnoreAbort(async () => {
     flushSync(update);
     await waitForRoute(before);
   });
+}
+
+/**
+ * 뒤로가기가 '라우트 이동'이 아닌 상황(팝업 닫기)에서는 크로스페이드를 걸지 않는다.
+ * 라우트가 바뀌지 않으므로 표식도 안 바뀌고, 그대로 두면 전환이 타임아웃까지 화면을 붙잡는다.
+ */
+let popPaused = false;
+
+export function pausePopTransition(paused: boolean) {
+  popPaused = paused;
 }
 
 /**
@@ -77,8 +98,8 @@ export function startRouteTransition(update: () => void) {
  */
 export function installRouteTransition() {
   window.addEventListener('popstate', () => {
-    if (!canTransition()) return;
+    if (popPaused || !canTransition()) return;
     const before = currentMark();
-    document.startViewTransition(() => waitForRoute(before));
+    startAndIgnoreAbort(() => waitForRoute(before));
   });
 }

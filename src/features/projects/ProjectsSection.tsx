@@ -1,8 +1,14 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { Section } from '@/components/layout/Section';
+import { startRouteTransition } from '@/lib/viewTransition';
 import { ProjectCard } from './ProjectCard';
-import { ProjectModal, preloadProjectBody } from './ProjectModal';
+import {
+  canUseModal,
+  ProjectModal,
+  preloadProjectBody,
+  preloadProjectDetail,
+} from './ProjectModal';
 import type { Project } from '@/types/content';
 
 interface ProjectsSectionProps {
@@ -17,8 +23,23 @@ interface ProjectsSectionProps {
  */
 export function ProjectsSection({ projects, onModalOpenChange }: ProjectsSectionProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [openId, setOpenId] = useState<string | null>(null);
   const n = projects.length;
+
+  // 좁은 화면(모바일)에서는 팝업을 띄우지 않고 상세 페이지로 바로 넘어간다 — 팝업이 화면을 거의
+  // 다 덮는데 그 안에 스크롤 컨테이너가 또 생겨 중첩 스크롤이 되고, 목차 rail도 숨겨져 이득이 없다.
+  const open = (id: string) => {
+    if (canUseModal()) {
+      setOpenId(id);
+      return;
+    }
+    startRouteTransition(() => navigate(`/projects/${id}`));
+  };
+  // 마우스를 올리거나 포커스가 닿으면 곧 필요해질 청크를 미리 받아 둔다(화면 폭에 따라 대상이 다르다).
+  const prefetch = () => {
+    void (canUseModal() ? preloadProjectBody() : preloadProjectDetail());
+  };
 
   useEffect(() => {
     onModalOpenChange?.(openId !== null);
@@ -63,10 +84,8 @@ export function ProjectsSection({ projects, onModalOpenChange }: ProjectsSection
               key={project.id}
               project={project}
               delay={(i % 2) * 90}
-              onOpen={() => setOpenId(project.id)}
-              // 마우스를 올린 순간 본문 청크(react-markdown 체인)를 미리 받아 둔다 —
-              // 클릭 후에 내려받으면 본문이 많은 프로젝트에서 팝업이 한참 늦게 채워진다.
-              onPrefetch={preloadProjectBody}
+              onOpen={() => open(project.id)}
+              onPrefetch={prefetch}
             />
           ))}
         </div>

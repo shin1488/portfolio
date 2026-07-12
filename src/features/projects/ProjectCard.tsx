@@ -14,7 +14,7 @@ interface ProjectCardProps {
   project: Project;
   /** 등장 시차(ms) — 같은 행의 카드들을 계단식으로 띄운다. 위치와 무관하게 표시는 동일하다. */
   delay?: number;
-  /** 카드를 눌렀을 때 본문 팝업을 여는 콜백 */
+  /** 카드를 눌렀을 때 — 넓은 화면이면 본문 팝업을 열고, 좁은 화면이면 상세 페이지로 이동한다 */
   onOpen: () => void;
   /** 마우스를 올리거나 포커스가 닿았을 때 본문 청크를 미리 받아 두는 콜백 */
   onPrefetch?: () => void;
@@ -25,8 +25,8 @@ interface ProjectCardProps {
  * 놓이든 클래스가 완전히 같다(칸 사이 세로선은 격자 쪽에서 절대 위치 선으로 그린다 —
  * 셀에 border-r을 주면 그 칸의 콘텐츠 폭만 1px 좁아져 썸네일 높이가 옆 칸과 어긋난다).
  *
- * 카드 전체가 오버레이 링크다. 평범한 클릭은 본문 팝업을 열고, 새 탭·새 창(⌘·Ctrl·중클릭)과
- * 크롤러에는 상세 페이지 링크 그대로 남는다.
+ * 카드 전체가 오버레이 링크다. 평범한 클릭은 (넓은 화면에서) 본문 팝업을 열고, 새 탭·새 창
+ * (⌘·Ctrl·중클릭)과 크롤러에는 상세 페이지 링크 그대로 남는다.
  */
 export function ProjectCard({ project, delay = 0, onOpen, onPrefetch }: ProjectCardProps) {
   const shownTech = project.techStack.slice(0, TECH_VISIBLE);

@@ -7,7 +7,7 @@ import { cn } from '@/lib/cn';
 import { scrollHeadingInContainer } from '@/lib/section';
 import type { TocEntry } from '@/lib/toc';
 import { useActiveHeadingId } from '@/lib/useScroll';
-import { startRouteTransition } from '@/lib/viewTransition';
+import { pausePopTransition, startRouteTransition } from '@/lib/viewTransition';
 import { ProjectBodySkeleton } from './ProjectBodySkeleton';
 import { formatPeriod } from './period';
 import type { Project } from '@/types/content';
@@ -26,7 +26,16 @@ const TRANSITION_MS = 260;
  */
 const ProjectBody = lazy(() => import('./ProjectBody'));
 export const preloadProjectBody = () => import('./ProjectBody');
-const preloadProjectDetail = () => import('./ProjectDetailPage');
+export const preloadProjectDetail = () => import('./ProjectDetailPage');
+
+/**
+ * 팝업을 쓸 만한 화면인지 — 좁은 화면에서는 팝업 대신 상세 페이지로 바로 간다.
+ * 폭이 좁으면 팝업이 화면을 거의 다 덮는데, 그 안에 또 스크롤 컨테이너가 생겨 중첩 스크롤이 되고
+ * (본문 스크롤 vs 페이지 스크롤) 목차 rail도 어차피 숨겨져 팝업으로 얻는 게 없다.
+ */
+export function canUseModal(): boolean {
+  return window.matchMedia('(min-width: 768px)').matches;
+}
 
 /**
  * 프로젝트 본문 팝업 — 카드를 누르면 상세 문서의 본문만 이 안에서 읽는다.
@@ -71,10 +80,46 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     };
   }, []);
 
-  const requestClose = useCallback(() => {
+  // 퇴장 트랜지션을 보인 뒤 언마운트한다.
+  const closeNow = useCallback(() => {
     setShown(false);
     window.setTimeout(onClose, TRANSITION_MS);
   }, [onClose]);
+
+  /**
+   * 뒤로가기로 팝업을 닫을 수 있게 히스토리 항목을 하나 쌓는다 — 팝업이 열린 채로 뒤로가기를
+   * 누르면 사이트를 떠나 버리는 게 아니라 팝업만 닫히고 홈에 남는다.
+   *
+   * react-router의 navigate가 아니라 History API를 직접 쓴다: navigate는 새 location.key를
+   * 만들어 라우트 이동으로 취급되고, ScrollManager가 최상단으로 스크롤을 되돌려 버린다.
+   * URL과 react-router의 state(key·idx)를 그대로 둔 채 항목만 하나 더 쌓으면, 뒤로가기 때
+   * 라우트는 그대로고 popstate만 우리에게 온다. 그 popstate에는 크로스페이드를 걸지 않는다
+   * (라우트가 안 바뀌므로 전환이 표식 변화를 기다리다 화면을 붙잡는다).
+   */
+  const pushedRef = useRef(false);
+  useEffect(() => {
+    window.history.pushState({ ...window.history.state, modal: true }, '');
+    pushedRef.current = true;
+    pausePopTransition(true);
+    const onPop = () => {
+      pushedRef.current = false; // 우리가 쌓은 항목이 이미 빠졌다
+      closeNow();
+    };
+    window.addEventListener('popstate', onPop);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      pausePopTransition(false);
+    };
+  }, [closeNow]);
+
+  /** 닫기·ESC·배경 클릭 — 쌓아 둔 히스토리 항목을 빼면서 닫는다(뒤로가기와 같은 경로로 수렴). */
+  const requestClose = useCallback(() => {
+    if (pushedRef.current) {
+      window.history.back();
+      return;
+    }
+    closeNow();
+  }, [closeNow]);
 
   /**
    * '확대' — 팝업이 사그라들고 상세 페이지가 떠오른다. 전환 자체는 startRouteTransition이 담당하고,
