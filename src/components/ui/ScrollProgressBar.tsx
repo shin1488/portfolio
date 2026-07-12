@@ -63,13 +63,21 @@ export function ScrollProgressBar({
   return (
     <div
       aria-hidden="true"
-      className={cn('overflow-hidden bg-zinc-800/60', orientation === 'x' ? 'h-0.75' : 'w-0.75', className)}
+      className={cn(
+        'overflow-hidden bg-zinc-800/60',
+        orientation === 'x' ? 'h-0.75' : 'w-0.75',
+        className,
+      )}
     >
+      {/* 초기 상태(0)도 클래스가 아니라 인라인 transform으로 준다 — Tailwind의 scale-x-0/scale-y-0은
+          transform이 아니라 표준 `scale` 속성을 쓰고, 이 속성은 transform 위에 곱해져서 인라인
+          transform을 0으로 눌러 버린다(바가 영영 안 차던 원인). */}
       <div
         ref={fillRef}
+        style={{ transform: orientation === 'x' ? 'scaleX(0)' : 'scaleY(0)' }}
         className={cn(
-          'size-full bg-linear-to-r from-accent to-accent-end',
-          orientation === 'x' ? 'origin-left scale-x-0' : 'origin-top scale-y-0 bg-linear-to-b',
+          'size-full from-accent to-accent-end',
+          orientation === 'x' ? 'origin-left bg-linear-to-r' : 'origin-top bg-linear-to-b',
         )}
       />
     </div>
