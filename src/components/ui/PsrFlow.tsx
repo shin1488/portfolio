@@ -6,7 +6,8 @@ import { Children, isValidElement, type ReactElement, type ReactNode } from 'rea
  * 바꿔 두면, Markdown.tsx 의 div 오버라이드가 이 두 컴포넌트로 렌더한다.
  *
  * 시각: 왼쪽에 아이콘 뱃지(⚠ 문제 / ⚙ 해결 / ✓ 결과) + 다음 스텝으로 이어지는
- * 세로 그라데이션 선, 오른쪽에 라벨 + 본문. 문제=rose, 해결=indigo, 결과=emerald.
+ * 세로 그라데이션 선, 오른쪽에 라벨 + 본문. 문제(rose) → 해결(amber) → 결과(green)로
+ * 색이 옮겨 가며, 도착점인 결과가 사이트 액센트인 그린과 맞물린다.
  * 결과 본문만 살짝 밝게/굵게(도착점 강조). not-prose 로 본문 prose와 충돌 방지.
  */
 
@@ -31,9 +32,9 @@ const PSR: Record<
   },
   solution: {
     label: '해결',
-    dot: '#818cf8', // indigo-400
-    labelClass: 'text-indigo-300',
-    tint: 'bg-indigo-500/12',
+    dot: '#fbbf24', // amber-400 (dot·연결선)
+    labelClass: 'text-amber-300',
+    tint: 'bg-amber-400/12',
     icon: (
       <>
         <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
@@ -47,9 +48,9 @@ const PSR: Record<
   },
   result: {
     label: '결과',
-    dot: '#6ee7b7', // emerald-300
-    labelClass: 'text-emerald-300',
-    tint: 'bg-emerald-400/12',
+    dot: '#4ade80', // green-400 (dot·연결선)
+    labelClass: 'text-green-300',
+    tint: 'bg-green-500/12',
     icon: <path d="M20 6 9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />,
   },
 };

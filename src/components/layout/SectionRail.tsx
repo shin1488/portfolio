@@ -4,7 +4,7 @@ import { scrollToSection, useActiveSection } from '@/lib/section';
 
 /**
  * 우측 고정 섹션 rail(스크롤 스파이) — 현재 섹션을 틱으로 표시하고 클릭 시 그 섹션으로 이동.
- * 평소엔 틱만, rail hover 시 라벨 노출. 1080px 이하에서는 숨긴다.
+ * 평소엔 틱만, rail hover 시 모노 라벨이 함께 나온다. 1080px 이하에서는 숨긴다.
  */
 export function SectionRail() {
   const ids = NAV_ITEMS.map((item) => item.id);
@@ -23,12 +23,12 @@ export function SectionRail() {
             type="button"
             onClick={() => scrollToSection(item.id)}
             aria-current={isActive}
-            className="relative flex items-center"
+            className="relative flex cursor-pointer items-center"
           >
             <span
               className={cn(
-                'absolute right-full mr-3 whitespace-nowrap text-xs font-semibold transition-opacity duration-250 group-hover:opacity-100',
-                isActive ? 'text-zinc-100 opacity-100' : 'text-zinc-400 opacity-0',
+                'absolute right-full mr-3 whitespace-nowrap font-mono text-[11px] transition-opacity duration-250 group-hover:opacity-100',
+                isActive ? 'text-green-400 opacity-100' : 'text-zinc-400 opacity-0',
               )}
             >
               {item.label}
@@ -36,8 +36,8 @@ export function SectionRail() {
             <span
               aria-hidden="true"
               className={cn(
-                'h-0.5 rounded-full transition-all duration-250',
-                isActive ? 'w-6.5 bg-linear-to-r from-indigo-400 to-pink-400' : 'w-3.5 bg-zinc-700',
+                'h-px transition-all duration-250',
+                isActive ? 'w-6.5 bg-green-400' : 'w-3.5 bg-zinc-700',
               )}
             />
           </button>

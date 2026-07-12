@@ -142,7 +142,7 @@ function PdfEmbed({ href, title }: { href: string; title?: string }) {
 function PdfSkeleton({ label }: { label: string }) {
   return (
     <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-zinc-200 bg-linear-to-b from-zinc-800 to-zinc-950 dark:border-zinc-800">
-      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600/80 shadow-lg">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-green-600/80 shadow-lg">
         <svg
           viewBox="0 0 24 24"
           className="h-7 w-7 fill-none stroke-white"

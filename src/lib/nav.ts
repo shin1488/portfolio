@@ -7,8 +7,8 @@ export interface NavItem {
 export const NAV_ITEMS = [
   { id: 'profile', label: 'Profile' },
   { id: 'about', label: 'Introduction' },
-  { id: 'skills', label: 'Skills' },
   { id: 'projects', label: 'Projects' },
+  { id: 'skills', label: 'Skills' },
   { id: 'careers', label: 'Careers' },
 ] as const satisfies readonly NavItem[];
 

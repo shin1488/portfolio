@@ -1,3 +1,4 @@
+import { HatchDivider } from '@/components/layout/Frame';
 import { SectionRail } from '@/components/layout/SectionRail';
 import { content } from '@/data';
 import { CareersSection } from '@/features/careers/CareersSection';
@@ -8,21 +9,24 @@ import { SkillsSection } from '@/features/skills/SkillsSection';
 import { SITE_NAME } from '@/lib/site';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
 import { useRouteFocus } from '@/lib/useRouteFocus';
-import { useSectionPager } from '@/lib/useSectionPager';
 
-// 각 섹션의 DOM id 순서 — 섹션 사이 전환 구간에서 인접 섹션으로 강제 스냅할 대상.
-const SECTION_IDS = ['profile', 'about', 'skills', 'projects', 'careers'];
-
+/**
+ * 홈 — 히어로부터 마지막 섹션까지 하나의 프레임(좌우 hairline)이 관통하고,
+ * 섹션과 섹션은 빗금 구분대로 나뉜다.
+ */
 export function HomePage() {
   useDocumentTitle(SITE_NAME);
   const headingRef = useRouteFocus();
-  useSectionPager(SECTION_IDS);
   return (
     <>
       <ProfileSection profile={content.profile} headingRef={headingRef} />
+      <HatchDivider />
       <IntroductionSection bio={content.profile.bio} />
-      <SkillsSection categories={content.skillCategories} />
+      <HatchDivider />
       <ProjectsSection projects={content.projects} />
+      <HatchDivider />
+      <SkillsSection categories={content.skillCategories} />
+      <HatchDivider />
       <CareersSection categories={content.careers} />
       <SectionRail />
     </>

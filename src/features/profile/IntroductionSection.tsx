@@ -1,115 +1,40 @@
-import { useEffect, useRef, useState } from 'react';
-import { cn } from '@/lib/cn';
-import { isProgrammaticScroll, scrollToTrackStep } from '@/lib/section';
-import { useStickyProgress } from '@/lib/useStickyProgress';
+import { Section } from '@/components/layout/Section';
+import { Reveal } from '@/components/ui/Reveal';
 
 interface IntroductionSectionProps {
   bio: string[];
 }
 
 /**
- * Introduction — 핀 고정 read-along. 스크롤 진행도에 따라 자기소개 문단을 하나씩 강조한다.
- * 상단 진행 dot(클릭 시 해당 문단으로), 좌측 인디고 바 + 문단 색 전환. 문단 hover로도 활성.
- * 모바일: 핀 없이 전 문단을 펼친다.
+ * Introduction — 자기소개 문단을 번호가 붙은 격자 행으로 쌓는다.
+ * 좌측 모노 번호가 도면의 항목 번호처럼 읽히고, 우측이 본문이다.
  */
 export function IntroductionSection({ bio }: IntroductionSectionProps) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  const n = bio.length;
-  // paused를 쓰지 않는다 — 호버 중 scrollIdx를 멈춰두면 값이 낡아서, 호버가 풀리는 순간
-  // 한 프레임 동안 낡은(이전) 항목이 비친다. 호버 우선순위는 아래 `hoverIdx ?? scrollIdx`가 이미 보장.
-  const scrollIdx = useStickyProgress(trackRef, n);
-  const active = hoverIdx ?? scrollIdx;
-
-  // 스크롤하는 동안에는 호버 잠금을 해제한다 — 마우스가 문단 위에 멈춰 있어도 스크롤로 활성 문단이 진행되게.
-  // (스크롤이 멈춘 뒤 마우스를 움직이면 onMouseMove로 호버가 다시 걸린다)
-  useEffect(() => {
-    const onScroll = () => {
-      // 클릭에 의한 프로그래매틱 스크롤에선 호버 선택을 유지한다 — 여기서 풀어버리면
-      // scrollIdx가 아직 rAF로 갱신되기 전(이전 값)이라, 한 프레임 동안 이전 항목이 비쳐 깜빡인다.
-      if (isProgrammaticScroll()) return;
-      setHoverIdx((h) => (h === null ? h : null));
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  if (!n) return null;
+  if (!bio.length) return null;
 
   return (
-    <section id="about" aria-label="Introduction" className="scroll-mt-14">
-      {/* 데스크톱: 핀 고정 read-along (문단당 넉넉한 스크롤 배분) */}
-      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 24}vh` }}>
-        <div className="sticky top-0 flex h-screen items-center">
-          <div className="mx-auto w-full max-w-5xl px-6">
-            <h2 className="text-center text-3xl font-bold tracking-tight">Introduction</h2>
-
-            <div className="mt-4 flex justify-center gap-2">
-              {bio.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`${i + 1}번째 문단으로 이동`}
-                  aria-current={i === active}
-                  onClick={() => scrollToTrackStep(trackRef.current, i, n, 'instant')}
-                  className={cn(
-                    'h-1.5 rounded-full transition-all duration-250',
-                    i === active ? 'w-6.5 bg-linear-to-r from-indigo-400 to-pink-400' : 'w-1.5 bg-zinc-700',
-                  )}
-                />
-              ))}
-            </div>
-
-            <div
-              onMouseLeave={() => setHoverIdx(null)}
-              className="mx-auto mt-12 flex max-w-190 flex-col gap-7.5"
-            >
-              {bio.map((paragraph, i) => (
-                <div
-                  key={i}
-                  onClick={() => {
-                    // 텍스트를 드래그 선택한 뒤의 클릭은 무시 — 선택이 살아 있으면 스크롤하지 않는다.
-                    // 이동은 instant — smooth면 중간 문단들이 차례로 활성화돼 깜빡인다.
-                    if (!window.getSelection()?.isCollapsed) return;
-                    scrollToTrackStep(trackRef.current, i, n, 'instant');
-                  }}
-                  onMouseEnter={() => setHoverIdx(i)}
-                  onMouseMove={() => setHoverIdx(i)}
-                  className="flex cursor-pointer items-stretch gap-5.5"
+    <Section id="about" index="01" slug="about" title="Introduction">
+      {/* 행 사이에만 hairline — 첫 행 위는 섹션 헤더의 아래 선이, 마지막 행 아래는
+          다음 구분대의 위 선이 이미 그어져 있어 중복을 피한다. */}
+      <ul className="[&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider">
+        {bio.map((paragraph, i) => (
+          <li key={i}>
+            <Reveal delay={i * 80}>
+              <div className="grid gap-3 px-5 py-8 md:grid-cols-[5rem_minmax(0,1fr)] md:gap-6 md:px-8 md:py-10">
+                <span
+                  aria-hidden="true"
+                  className="font-mono text-[11px] leading-8 text-zinc-600"
                 >
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'w-0.75 shrink-0 rounded-sm transition-colors duration-350',
-                      i === active ? 'bg-linear-to-b from-indigo-400 to-pink-400' : 'bg-zinc-800',
-                    )}
-                  />
-                  <p
-                    className={cn(
-                      'text-lg leading-[1.9] transition-colors duration-350',
-                      i === active ? 'text-zinc-100' : 'text-zinc-600',
-                    )}
-                  >
-                    {paragraph}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 모바일: 핀 없이 전 문단 펼침 */}
-      <div className="mx-auto max-w-2xl px-6 py-14 sm:hidden">
-        <h2 className="text-center text-xl font-bold tracking-tight">Introduction</h2>
-        <div className="mt-8 space-y-7">
-          {bio.map((paragraph, i) => (
-            <p key={i} className="leading-[1.8] text-zinc-300">
-              {paragraph}
-            </p>
-          ))}
-        </div>
-      </div>
-    </section>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <p className="text-[15px] leading-[1.9] text-zinc-300 md:text-[17px]">
+                  {paragraph}
+                </p>
+              </div>
+            </Reveal>
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }

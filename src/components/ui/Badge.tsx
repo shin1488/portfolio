@@ -13,7 +13,7 @@ const toneClasses: Record<BadgeTone, string> = {
   neutral:
     'border-zinc-200 bg-white text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-300',
   accent:
-    'border-indigo-200 bg-indigo-50 font-semibold text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300',
+    'border-green-200 bg-green-50 font-semibold text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-300',
 };
 
 export function Badge({ tone = 'neutral', className, children }: BadgeProps) {

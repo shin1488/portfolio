@@ -1,4 +1,5 @@
 import { useState, type Ref } from 'react';
+import { Frame } from '@/components/layout/Frame';
 import type { Profile } from '@/types/content';
 
 interface ProfileSectionProps {
@@ -7,58 +8,89 @@ interface ProfileSectionProps {
   headingRef?: Ref<HTMLHeadingElement>;
 }
 
-/** Hero — 한 화면 꽉 채운 중앙 정렬 인트로 + 하단 스크롤 힌트. 자기소개는 Introduction 섹션. */
+/** 히어로 — 프레임 안 좌측 정렬 인트로. 좌상단에서 번지는 그린 글로우가 유일한 색이다. */
 export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
   return (
-    // -mt-14: 흐름을 차지하는 sticky 헤더(h-14, 56px)만큼 위로 끌어올려, 최상단(scroll=0)에서도
-    // 히어로가 뷰포트 정중앙에 오게 한다(로고 클릭 시 착지 지점과도 일치 → 위치 튐 없음).
-    <section
-      id="profile"
-      aria-label="소개"
-      className="relative -mt-[calc(3.5rem+env(safe-area-inset-top))] flex min-h-svh scroll-mt-14 flex-col items-center justify-center px-6 text-center"
-    >
-      <div className="mx-auto max-w-xl">
-        <Avatar profile={profile} />
-        <p className="mt-6.5 inline-block bg-linear-to-r from-indigo-400 to-pink-400 bg-clip-text text-[15px] font-semibold text-transparent">
-          {profile.role}
-        </p>
-        <h1
-          ref={headingRef}
-          tabIndex={-1}
-          className="mt-1.5 text-[30px] sm:text-[46px] font-bold leading-tight tracking-[-0.02em] text-zinc-100 outline-none"
-        >
-          {profile.name}
-        </h1>
-        {/* 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */}
-        <p className="mx-auto mt-4.5 max-w-150 text-lg leading-relaxed text-zinc-300 sm:text-xl">
-          {profile.tagline.split(/,\s*/).map((part, i, arr) => (
-            <span key={i}>
-              {part}
-              {i < arr.length - 1 && (
-                <>
-                  ,<br />
-                </>
-              )}
-            </span>
-          ))}
-        </p>
-        {profile.location && <p className="mt-4 text-sm text-zinc-500">{profile.location}</p>}
-      </div>
+    <section id="profile" aria-label="Profile" className="scroll-mt-11">
+      {/* 헤더(44px)를 뺀 첫 화면을 히어로가 채운다 */}
+      <Frame className="relative flex min-h-[calc(100svh-2.75rem-env(safe-area-inset-top))] flex-col justify-center overflow-hidden">
+        {/* 액센트 글로우 — 좌상단 모서리에서 대각으로 번지는 단일 라디얼. 프레임 밖으로
+            새지 않도록 Frame이 overflow-hidden으로 잘라낸다. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(58% 105% at 2% 0%, rgba(34,197,94,0.16), transparent 100%)',
+          }}
+        />
 
-      {/* 스크롤 힌트 */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-[18svh] flex flex-col items-center gap-1.75 text-zinc-600"
-      >
-        <span className="text-xs font-semibold uppercase tracking-[0.14em]">Scroll</span>
-        <span className="scroll-hint-arrow text-[19px] leading-none">↓</span>
-      </div>
+        <div className="relative grid gap-12 px-5 py-24 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-16 md:px-8">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400 md:text-[13px]">
+              {profile.role}
+            </p>
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="mt-5 text-[64px] font-bold leading-[1.02] tracking-[-0.05em] text-zinc-100 outline-none sm:text-[96px] lg:text-[124px]"
+            >
+              {profile.name}
+            </h1>
+            {/* 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */}
+            <p className="mt-6 max-w-xl text-[15px] leading-[1.75] text-zinc-400 md:text-lg">
+              {profile.tagline.split(/,\s*/).map((part, i, arr) => (
+                <span key={i}>
+                  {part}
+                  {i < arr.length - 1 && (
+                    <>
+                      ,<br />
+                    </>
+                  )}
+                </span>
+              ))}
+            </p>
+
+            <ul className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[11px] text-zinc-500">
+              {profile.location && <li>{profile.location}</li>}
+              {profile.links.map((link, i) => {
+                const opensNewTab = /^https?:/i.test(link.href);
+                return (
+                  <li key={i}>
+                    <a
+                      href={link.href}
+                      {...(opensNewTab ? { target: '_blank', rel: 'noreferrer' } : {})}
+                      className="transition-colors hover:text-green-400"
+                    >
+                      {link.label} <span aria-hidden="true">↗</span>
+                      {opensNewTab && <span className="sr-only"> (새 탭에서 열림)</span>}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <Avatar profile={profile} />
+        </div>
+
+        {/* 스크롤 힌트 — 하단 중앙은 연락처 독이 차지하므로 우측 하단 모서리에 주석처럼 둔다 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-6 right-5 flex items-center gap-2 text-zinc-600 md:right-8"
+        >
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em]">Scroll</span>
+          <span className="scroll-hint-arrow text-[15px] leading-none">↓</span>
+        </div>
+      </Frame>
     </section>
   );
 }
 
+/** 프로필 사진 — 도면 톤에 맞춰 원형 대신 hairline 테두리의 정사각으로 둔다. */
 function Avatar({ profile }: { profile: Profile }) {
   const [imageFailed, setImageFailed] = useState(false);
+  const box = 'size-24 shrink-0 border border-divider object-cover md:size-36';
 
   if (profile.avatarImageUrl && !imageFailed) {
     return (
@@ -66,7 +98,7 @@ function Avatar({ profile }: { profile: Profile }) {
         src={profile.avatarImageUrl}
         alt={`${profile.name} 프로필 사진`}
         onError={() => setImageFailed(true)}
-        className="mx-auto size-29.5 sm:size-37.5 shrink-0 rounded-full object-cover shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
+        className={box}
       />
     );
   }
@@ -74,7 +106,7 @@ function Avatar({ profile }: { profile: Profile }) {
     <div
       role="img"
       aria-label={`${profile.name} 프로필 사진 자리`}
-      className="mx-auto flex size-29.5 sm:size-37.5 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-[38px] font-bold text-white shadow-[0_0_35px_-8px_rgba(99,102,241,0.55),0_0_64px_-12px_rgba(236,72,153,0.32)] avatar-breathe"
+      className={`${box} flex items-center justify-center bg-zinc-900 font-mono text-2xl font-bold text-green-400`}
     >
       {profile.avatarInitials}
     </div>

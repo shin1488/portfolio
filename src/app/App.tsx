@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router';
 import { Analytics } from '@vercel/analytics/react';
-import { AmbientBackground } from '@/components/layout/AmbientBackground';
 import { ContactDock } from '@/components/layout/ContactDock';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
@@ -18,7 +17,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
-      <AmbientBackground />
       <div className="flex min-h-dvh flex-col">
         <Header />
         <AppRoutes />

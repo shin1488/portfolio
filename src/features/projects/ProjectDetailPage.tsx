@@ -49,11 +49,11 @@ function ProjectDetailView({ project }: { project: Project }) {
           {/* 화살표는 클립 밖 솔리드 색 — transform 이동 시 사라지지 않게. 텍스트만 breathing. */}
           <span
             aria-hidden="true"
-            className="mr-1 text-indigo-600 transition-transform group-hover:-translate-x-1 dark:text-indigo-400"
+            className="mr-1 text-green-600 transition-transform group-hover:-translate-x-1 dark:text-green-400"
           >
             ←
           </span>
-          <span className="bg-linear-to-r from-indigo-400 via-pink-400 to-indigo-400 bg-size-[200%_auto] bg-clip-text text-indigo-600 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-indigo-400">
+          <span className="bg-linear-to-r from-green-400 via-emerald-300 to-green-400 bg-size-[200%_auto] bg-clip-text text-green-600 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-green-400">
             프로젝트 목록
           </span>
         </Link>
@@ -89,7 +89,7 @@ function ProjectDetailView({ project }: { project: Project }) {
           <ul className="mt-5 flex flex-col gap-2">
             {project.highlights.map((highlight, i) => (
               <li key={i} className="flex gap-2.5 text-sm leading-[1.65] text-zinc-600 dark:text-zinc-400">
-                <span aria-hidden="true" className="mt-1.75 size-1.25 shrink-0 bg-indigo-400" />
+                <span aria-hidden="true" className="mt-1.75 size-1.25 shrink-0 bg-green-400" />
                 <span>
                   <HighlightText text={highlight} />
                 </span>

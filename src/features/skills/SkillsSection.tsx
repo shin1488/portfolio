@@ -1,158 +1,101 @@
-import { useEffect, useRef, useState } from 'react';
+import { Section } from '@/components/layout/Section';
+import { Reveal } from '@/components/ui/Reveal';
 import { cn } from '@/lib/cn';
-import { isProgrammaticScroll, scrollToTrackStep } from '@/lib/section';
-import { useStickyProgress } from '@/lib/useStickyProgress';
-import type { SkillCategory } from '@/types/content';
+import type { Skill, SkillCategory } from '@/types/content';
 
 interface SkillsSectionProps {
   categories: SkillCategory[];
 }
 
-// 좌측 메뉴 각 행 높이(px) — 이동 바 translateY 계산과 공유
-const ROW_H = 52;
-
 /**
- * Skills — 핀 고정 스텝스루. 세로로 긴 트랙 안에 sticky 패널을 두고, 트랙을 지나는
- * 스크롤 진행도를 카테고리 인덱스로 매핑한다(호버 시엔 그 항목을 우선). 좌측 타이포 메뉴
- * (제목만, 개수 숫자 없음)에서 활성 항목만 강조되고, 우측에 그 카테고리 스킬이 2열로 나온다.
- * 정중앙 세로 divider = 제목 글자 중앙(minmax(0,1fr) 2열 + gap 0). 좌우 콘텐츠는 세로 중앙 정렬.
- * 모바일: 핀 없이 전 카테고리를 펼친다.
+ * Skills — 상단에 전체 기술이 흐르는 마퀴 두 줄, 아래에 카테고리별 격자.
+ * 마퀴는 훑어보는 용도라 순서를 섞어 두 줄로 나누고, 정확한 분류는 아래 격자가 담당한다.
  */
 export function SkillsSection({ categories }: SkillsSectionProps) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  const n = categories.length;
-  // paused를 쓰지 않는다 — 호버 중 scrollIdx를 멈춰두면 값이 낡아서, 호버가 풀리는 순간
-  // 한 프레임 동안 낡은(이전) 항목이 비친다. 호버 우선순위는 아래 `hoverIdx ?? scrollIdx`가 이미 보장.
-  const scrollIdx = useStickyProgress(trackRef, n);
-  const active = hoverIdx ?? scrollIdx;
+  if (!categories.length) return null;
 
-  // 스크롤하는 동안에는 호버 잠금을 해제한다 — 마우스가 항목 위에 멈춰 있어도 스크롤로 활성 항목이 진행되게.
-  // (스크롤이 멈춘 뒤 마우스를 움직이면 onMouseMove로 호버가 다시 걸린다)
-  useEffect(() => {
-    const onScroll = () => {
-      // 클릭에 의한 프로그래매틱 스크롤에선 호버 선택을 유지한다 — 여기서 풀어버리면
-      // scrollIdx가 아직 rAF로 갱신되기 전(이전 값)이라, 한 프레임 동안 이전 항목이 비쳐 깜빡인다.
-      if (isProgrammaticScroll()) return;
-      setHoverIdx((h) => (h === null ? h : null));
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  if (!n) return null;
-  const activeCat = categories[active] ?? categories[0];
+  const all = categories.flatMap((category) => category.skills);
+  const rowA = all.filter((_, i) => i % 2 === 0);
+  const rowB = all.filter((_, i) => i % 2 === 1);
 
   return (
-    <section id="skills" aria-label="Skills" className="scroll-mt-14">
-      {/* 데스크톱: 핀 고정 스텝스루 (트랙 = 100vh + 카테고리당 24vh) */}
-      <div ref={trackRef} className="relative hidden sm:block" style={{ height: `${100 + n * 24}vh` }}>
-        <div className="sticky top-0 flex h-screen items-center">
-          <div className="mx-auto w-full max-w-5xl px-6">
-            <h2 className="mb-11 text-center text-3xl font-bold tracking-tight">Skills</h2>
-
-            <div
-              onMouseLeave={() => setHoverIdx(null)}
-              className="grid items-stretch gap-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
-            >
-              {/* 좌측 타이포 메뉴 + 이동 바 — 세로 중앙 */}
-              <div className="flex items-center pr-10">
-                <div className="relative w-full pl-5.5">
-                  <div
-                    aria-hidden="true"
-                    className="absolute left-0 top-3.75 h-5.5 w-0.75 rounded-sm bg-linear-to-b from-indigo-400 to-pink-400"
-                    style={{
-                      transform: `translateY(${active * ROW_H}px)`,
-                      transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
-                    }}
-                  />
-                  {/* 클릭 이동은 instant — smooth면 트랙을 훑고 지나가며 중간 항목들이 차례로
-                      활성화돼 깜빡인다. 핀 고정 트랙이라 즉시 이동해도 콘텐츠는 제자리고
-                      활성 인덱스만 바뀌어, 전환은 CSS 트랜지션이 부드럽게 처리한다. */}
-                  {categories.map((category, i) => (
-                    <button
-                      key={category.id}
-                      type="button"
-                      aria-current={i === active}
-                      onClick={() => scrollToTrackStep(trackRef.current, i, n, 'instant')}
-                      onMouseEnter={() => setHoverIdx(i)}
-                      onMouseMove={() => setHoverIdx(i)}
-                      onFocus={() => setHoverIdx(i)}
-                      className="flex w-full cursor-pointer items-center text-left"
-                      style={{ height: ROW_H }}
-                    >
-                      <span
-                        className={cn(
-                          'text-[23px] font-bold tracking-[-0.01em] transition-colors duration-250',
-                          i === active ? 'text-zinc-100' : 'text-zinc-600',
-                        )}
-                      >
-                        {category.title}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 우측: 활성 카테고리 스킬 2열 — 세로 중앙 (min-height로 divider 길이 고정) */}
-              <div className="flex min-h-80 items-center border-l border-zinc-800 pl-10">
-                {/* overflow-hidden + -mt-px로 두 컬럼 맨 윗줄의 border-t만 잘라내 상단 가로줄을 없앤다
-                    (컬럼 최상단 항목들의 top이 같은 y라 1px 클립으로 좌우 대칭 제거, 행 사이 divider는 유지) */}
-                <div className="w-full overflow-hidden">
-                  <ul className="-mt-px w-full columns-2 gap-x-8">
-                    {activeCat.skills.map((skill) => (
-                      <li
-                        key={skill.name}
-                        className="break-inside-avoid border-t border-zinc-800/60 py-2.25"
-                      >
-                        <span
-                          className={cn(
-                            'text-base',
-                            skill.highlight
-                              ? 'font-semibold text-indigo-300'
-                              : 'font-medium text-zinc-300',
-                          )}
-                        >
-                          {skill.name}
-                          {skill.highlight && <span className="sr-only"> (주력)</span>}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <Section id="skills" index="03" slug="skills" title="Skills">
+      <div className="marquee relative overflow-hidden border-b border-divider py-7">
+        <MarqueeRow skills={rowA} seconds={44} />
+        <MarqueeRow skills={rowB} seconds={52} reverse />
+        {/* 양끝 페이드 — 프레임 세로선 안쪽에서 흐름이 자연스럽게 사라지게 한다 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-linear-to-r from-[#111113] to-transparent md:w-28"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-[#111113] to-transparent md:w-28"
+        />
       </div>
 
-      {/* 모바일: 핀 없이 전 카테고리를 펼친다 */}
-      <div className="mx-auto max-w-5xl px-6 py-14 sm:hidden">
-        <h2 className="text-center text-xl font-bold tracking-tight">Skills</h2>
-        <div className="mt-8 space-y-9">
-          {categories.map((category) => (
-            <div key={category.id}>
-              <h3 className="border-b border-zinc-600 pb-2 text-base font-bold text-zinc-100">
-                {category.title}
-              </h3>
-              <ul className="mt-3 columns-2 gap-x-6">
+      <div className="grid [&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider md:grid-cols-2 md:[&>*:nth-child(2)]:border-t-0 md:[&>*:nth-child(odd)]:border-r">
+        {categories.map((category, i) => (
+          <div key={category.id} className="px-5 py-7 md:px-8">
+            <Reveal delay={(i % 2) * 90}>
+              <p className="font-mono text-[11px] text-zinc-500">{category.title}/</p>
+              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2.5">
                 {category.skills.map((skill) => (
-                  <li key={skill.name} className="break-inside-avoid py-1.5">
+                  <li key={skill.name}>
                     <span
                       className={cn(
-                        'text-sm',
-                        skill.highlight ? 'font-semibold text-indigo-300' : 'text-zinc-300',
+                        'text-[15px]',
+                        skill.highlight
+                          ? 'font-semibold text-green-400'
+                          : 'font-medium text-zinc-300',
                       )}
                     >
                       {skill.name}
+                      {skill.highlight && <span className="sr-only"> (주력)</span>}
                     </span>
                   </li>
                 ))}
               </ul>
-            </div>
-          ))}
-        </div>
+            </Reveal>
+          </div>
+        ))}
       </div>
-    </section>
+    </Section>
+  );
+}
+
+/**
+ * 마퀴 한 줄 — 같은 목록을 두 벌 이어 붙이고 -50%까지 이동시켜 이음매 없이 순환시킨다.
+ * 두 번째 벌은 시각적 중복이므로 낭독기에서 숨긴다.
+ */
+function MarqueeRow({
+  skills,
+  seconds,
+  reverse = false,
+}: {
+  skills: Skill[];
+  seconds: number;
+  reverse?: boolean;
+}) {
+  return (
+    <div className="flex overflow-hidden py-1.5">
+      <ul
+        className={cn('marquee-track flex shrink-0 items-center', reverse && 'is-reverse')}
+        style={{ ['--marquee-duration' as string]: `${seconds}s` }}
+      >
+        {[...skills, ...skills].map((skill, i) => (
+          <li
+            key={i}
+            aria-hidden={i >= skills.length}
+            className={cn(
+              'whitespace-nowrap px-6 text-lg md:px-9 md:text-xl',
+              skill.highlight ? 'font-semibold text-zinc-200' : 'font-medium text-zinc-600',
+            )}
+          >
+            {skill.name}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
