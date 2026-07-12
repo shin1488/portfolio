@@ -14,16 +14,17 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     <section id="profile" aria-label="Profile" className="scroll-mt-11">
       {/* 헤더(44px)를 뺀 첫 화면을 히어로가 채운다 */}
       <Frame className="relative flex min-h-[calc(100svh-2.75rem-env(safe-area-inset-top))] flex-col justify-center overflow-hidden">
-        {/* 액센트 글로우 — 좌상단 그린, 우하단 블루. 액센트 두 색이 히어로를 대각으로 가로지른다.
-            색은 color-mix로 @theme 토큰에서 직접 끌어와, 토큰을 바꾸면 글로우도 따라온다.
+        {/* 액센트 글로우 — 좌상단 그린, 우하단 블루. 크기를 비대칭으로 둬(그린이 크고 블루가 작다)
+            1:1 대칭에서 오는 단조로움을 없애고, 그린이 중앙을 넘어 뻗어 블루와 겹치게 해 두 색이
+            섞이는 구간을 만든다. 색은 color-mix로 @theme 토큰을 직접 끌어와 토큰을 바꾸면 따라온다.
             프레임 밖으로 새지 않도록 Frame이 overflow-hidden으로 잘라낸다. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage: [
-              'radial-gradient(95% 95% at 0% 0%, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 70%)',
-              'radial-gradient(95% 95% at 100% 100%, color-mix(in srgb, var(--color-accent-end) 38%, transparent), transparent 70%)',
+              'radial-gradient(120% 110% at -8% -10%, color-mix(in srgb, var(--color-accent) 34%, transparent), transparent 78%)',
+              'radial-gradient(66% 72% at 104% 106%, color-mix(in srgb, var(--color-accent-end) 42%, transparent), transparent 70%)',
             ].join(','),
           }}
         />
@@ -66,13 +67,16 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           <Avatar profile={profile} />
         </div>
 
-        {/* 스크롤 힌트 — 하단 중앙은 연락처 독이 차지하므로 우측 하단 모서리에 주석처럼 둔다 */}
+        {/* 스크롤 힌트 — 하단 중앙은 연락처 독이 차지하므로 우측 하단 모서리에 둔다.
+            글로우 위에 얹히므로 배경과 묻히지 않게 밝기를 올리고 화살표를 키웠다. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-6 right-5 flex items-center gap-2 text-zinc-600 md:right-8"
+          className="pointer-events-none absolute bottom-6 right-5 flex items-center gap-2.5 text-zinc-300 md:right-8"
         >
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em]">Scroll</span>
-          <span className="scroll-hint-arrow text-[15px] leading-none">↓</span>
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.2em]">
+            Scroll
+          </span>
+          <span className="scroll-hint-arrow text-[19px] leading-none text-accent">↓</span>
         </div>
       </Frame>
     </section>

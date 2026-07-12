@@ -25,7 +25,7 @@ export function SideRail({ items, activeId, onSelect, ariaLabel }: SideRailProps
     <>
       <nav
         aria-label={ariaLabel}
-        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto py-3 pl-8 pr-3 min-[1081px]:flex 2xl:hidden"
+        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto py-3 pl-8 pr-3 lg:flex 2xl:hidden"
       >
         {items.map((item) => (
           <CollapsedItem
