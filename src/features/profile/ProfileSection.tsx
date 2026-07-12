@@ -23,8 +23,11 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage: [
-              'radial-gradient(120% 110% at -8% -10%, color-mix(in srgb, var(--color-accent) 34%, transparent), transparent 78%)',
-              'radial-gradient(66% 72% at 104% 106%, color-mix(in srgb, var(--color-accent-end) 42%, transparent), transparent 70%)',
+              // 꼬리를 길게 끄는 중간 정지점을 둔다 — 두 색 모두 바깥으로 갈수록 옅게 남아,
+              // 겹치는 대각 구간에서 그린과 블루가 섞이며 넘어간다(정지점 없이 바로 transparent로
+              // 빼면 각자 자기 모서리에서 사그라들어 서로 만나지 못한다).
+              'radial-gradient(125% 115% at -6% -8%, color-mix(in srgb, var(--color-accent) 40%, transparent) 0%, color-mix(in srgb, var(--color-accent) 16%, transparent) 45%, transparent 88%)',
+              'radial-gradient(80% 88% at 106% 108%, color-mix(in srgb, var(--color-accent-end) 48%, transparent) 0%, color-mix(in srgb, var(--color-accent-end) 18%, transparent) 45%, transparent 88%)',
             ].join(','),
           }}
         />

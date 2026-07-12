@@ -16,6 +16,8 @@ export function SectionRail() {
       items={NAV_ITEMS.map((item) => ({ id: item.id, label: item.label }))}
       activeId={active}
       onSelect={scrollToSection}
+      // 프레임(max-w-6xl=72rem) 우측 경계가 50%+36rem — 그 1rem 바깥에 붙인다
+      expandedOffsetRem={37}
     />
   );
 }

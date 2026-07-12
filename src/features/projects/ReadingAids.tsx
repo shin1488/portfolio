@@ -67,6 +67,8 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
           select(id); // 클릭한 항목을 고정 강조 — 바닥 근처 섹션도 마지막으로 안 튀게
           scrollToHeading(id);
         }}
+        // 상세 본문은 max-w-3xl(48rem)이라 우측 경계가 50%+24rem — 홈보다 안쪽에 붙는다
+        expandedOffsetRem={28}
       />
 
       {/* 우하단 맨 위로 버튼 — 배경은 fixed 요소 자체가 아닌 absolute 자식에

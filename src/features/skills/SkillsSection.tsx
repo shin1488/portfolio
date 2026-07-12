@@ -34,9 +34,15 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
         />
       </div>
 
-      <div className="grid [&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider md:grid-cols-2 md:[&>*:nth-child(2)]:border-t-0 md:[&>*:nth-child(odd)]:border-r">
-        {categories.map((category, i) => (
-          <div key={category.id} className="px-5 py-7 md:px-8">
+      {/* 세로 divider는 절대 위치 선 — 셀에 border-r을 주면 그 칸의 콘텐츠 폭만 1px 좁아진다 */}
+      <div className="relative">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px bg-divider md:block"
+        />
+        <div className="grid [&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider md:grid-cols-2 md:[&>*:nth-child(2)]:border-t-0">
+          {categories.map((category, i) => (
+            <div key={category.id} className="px-5 py-7 md:px-8">
             <Reveal delay={(i % 2) * 90}>
               <p className="font-mono text-[11px] text-zinc-500">{category.title}/</p>
               <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2.5">
@@ -57,8 +63,9 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
                 ))}
               </ul>
             </Reveal>
-          </div>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
     </Section>
   );
