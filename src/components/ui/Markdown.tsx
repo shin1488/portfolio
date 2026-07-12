@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Link, useNavigate } from 'react-router';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
@@ -6,6 +7,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
 import { imageDimensions } from 'virtual:image-dimensions';
 import { buildSrcSet } from '@/lib/image';
+import { startRouteTransition } from '@/lib/viewTransition';
 import { Skeleton } from './Skeleton';
 import { Lightbox } from './Lightbox';
 import { PsrFlow } from './PsrFlow';
@@ -13,6 +15,39 @@ import rehypePsr from './rehype-psr';
 
 interface MarkdownProps {
   children: string;
+}
+
+/**
+ * 사이트 안의 다른 화면으로 가는 링크인지 — '/projects/…', '/osc/…', '/#섹션' 같은 주소다.
+ * public 아래의 파일(이미지·PDF)도 '/'로 시작하지만 그것은 화면이 아니라 자료라, 확장자가 있으면
+ * 라우트로 보지 않는다.
+ */
+function isRoutePath(href: string | undefined): href is string {
+  if (!href || !href.startsWith('/') || href.startsWith('//')) return false;
+  const last = href.split(/[?#]/)[0].split('/').pop() ?? '';
+  return !last.includes('.');
+}
+
+/**
+ * 본문 안의 내부 링크 — 브라우저에게 맡기면 문서를 통째로 새로 받아 로고부터 다시 그린다.
+ * 라우터로 넘겨 화면만 갈아 끼우고, 헤더·카드 이동과 같은 크로스페이드를 태운다.
+ * 새 탭·새 창(⌘·Ctrl·중클릭)은 브라우저 기본 동작 그대로 둔다.
+ */
+function MdRouteLink({ href, children, ...props }: { href: string; children: ReactNode }) {
+  const navigate = useNavigate();
+  return (
+    <Link
+      to={href}
+      onClick={(event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        startRouteTransition(() => navigate(href));
+      }}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
 }
 
 /** YouTube URL(watch·youtu.be·shorts·embed)에서 11자 영상 ID를 뽑는다. */
@@ -252,6 +287,13 @@ export function Markdown({ children }: MarkdownProps) {
           },
           a({ node: _node, href, children: linkChildren, ...props }) {
             const external = /^https?:/i.test(href ?? '');
+            if (isRoutePath(href)) {
+              return (
+                <MdRouteLink href={href} {...props}>
+                  {linkChildren}
+                </MdRouteLink>
+              );
+            }
             return (
               <a
                 href={href}
