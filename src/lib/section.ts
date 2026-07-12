@@ -34,6 +34,28 @@ export function scrollToHeading(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 }
 
+/**
+ * 컨테이너 내부 스크롤에서 heading으로 이동한다(팝업 본문처럼 자체 스크롤을 갖는 영역용).
+ *
+ * scrollIntoView를 쓰지 않는 이유: .prose heading에는 sticky 헤더(56px)를 피하려고
+ * scroll-margin-top: 5rem이 걸려 있는데, 팝업 안에는 그 헤더가 없어 제목이 80px이나 아래에
+ * 떨어져 멈춘다. 여기서는 컨테이너 상단 기준으로 직접 계산해 제목 바로 위 여백만 남긴다.
+ */
+export function scrollHeadingInContainer(
+  container: HTMLElement | null,
+  id: string,
+  offset = 24,
+  behavior: ScrollBehavior = 'smooth',
+) {
+  const el = document.getElementById(id);
+  if (!container || !el) return;
+  const top =
+    container.scrollTop +
+    (el.getBoundingClientRect().top - container.getBoundingClientRect().top) -
+    offset;
+  container.scrollTo({ top: Math.max(0, top), behavior });
+}
+
 /** 스크롤 스파이 — 뷰포트 중앙선(innerHeight/2)이 지나온 마지막 섹션 id를 반환한다. */
 export function useActiveSection(ids: string[]): string {
   const key = ids.join('|');

@@ -6,7 +6,7 @@ import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
 import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
 import { SideRail } from '@/components/ui/SideRail';
 import { cn } from '@/lib/cn';
-import { scrollToHeading } from '@/lib/section';
+import { scrollHeadingInContainer } from '@/lib/section';
 import type { TocEntry } from '@/lib/toc';
 import { useActiveHeadingId } from '@/lib/useScroll';
 import { DOC_TRANSITION } from '@/lib/viewTransition';
@@ -46,6 +46,11 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   // 마운트 다음 프레임에 켜서 등장 트랜지션(페이드 + 살짝 확대)이 발동하게 한다.
   // 닫을 때는 다시 꺼서 퇴장 트랜지션을 보인 뒤 언마운트한다.
   const [shown, setShown] = useState(false);
+  // 본문은 껍데기가 화면에 그려진 다음에 마운트한다. 청크가 이미 캐시된 두 번째 열기부터는
+  // lazy가 즉시 해소돼 껍데기와 거대한 마크다운이 한 커밋에 함께 렌더되고, 그 렌더가 끝날
+  // 때까지 아무것도 그려지지 않아 팝업이 늦게 뜬 것처럼 보인다. 두 프레임 뒤에 붙여
+  // 껍데기 + 로딩 표시가 먼저 페인트되게 한다.
+  const [bodyMounted, setBodyMounted] = useState(false);
   const titleId = `project-modal-${project.id}`;
 
   // 목차는 본문 청크(ProjectBody)가 렌더되면서 올려 준다 — 여기서 뽑으면 슬러거가 홈 번들에 붙는다.
@@ -56,8 +61,15 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   );
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setShown(true));
-    return () => cancelAnimationFrame(frame);
+    let second = 0;
+    const first = requestAnimationFrame(() => {
+      setShown(true);
+      second = requestAnimationFrame(() => setBodyMounted(true));
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
   }, []);
 
   const requestClose = useCallback(() => {
@@ -185,15 +197,13 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             }}
             className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 pb-28 pt-8"
           >
-            <Suspense
-              fallback={
-                <div className="flex justify-center py-24 text-zinc-600">
-                  <FlickerSpinner className="size-11" />
-                </div>
-              }
-            >
-              <ProjectBody body={project.body} scrollRootRef={bodyRef} onToc={setToc} />
-            </Suspense>
+            {bodyMounted ? (
+              <Suspense fallback={<BodyLoading />}>
+                <ProjectBody body={project.body} scrollRootRef={bodyRef} onToc={setToc} />
+              </Suspense>
+            ) : (
+              <BodyLoading />
+            )}
           </div>
 
           {/* 맨 위로 — 패널 우하단. 상세 페이지와 같은 공용 버튼이다. */}
@@ -214,13 +224,22 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           activeId={activeId}
           onSelect={(id) => {
             select(id);
-            scrollToHeading(id);
+            // 팝업 안에는 sticky 헤더가 없으므로 .prose의 scroll-margin-top(80px)을 쓰지 않는다.
+            scrollHeadingInContainer(bodyRef.current, id);
           }}
           expandedOffsetRem={28}
           className="z-50"
         />
       )}
     </>
+  );
+}
+
+function BodyLoading() {
+  return (
+    <div className="flex justify-center py-24 text-zinc-600">
+      <FlickerSpinner className="size-11" />
+    </div>
   );
 }
 

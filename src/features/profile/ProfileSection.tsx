@@ -14,20 +14,20 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     <section id="profile" aria-label="Profile" className="scroll-mt-11">
       {/* 헤더(44px)를 뺀 첫 화면을 히어로가 채운다 */}
       <Frame className="relative flex min-h-[calc(100svh-2.75rem-env(safe-area-inset-top))] flex-col justify-center overflow-hidden">
-        {/* 액센트 글로우 — 좌상단 그린, 우하단 블루. 크기를 비대칭으로 둬(그린이 크고 블루가 작다)
-            1:1 대칭에서 오는 단조로움을 없애고, 그린이 중앙을 넘어 뻗어 블루와 겹치게 해 두 색이
-            섞이는 구간을 만든다. 색은 color-mix로 @theme 토큰을 직접 끌어와 토큰을 바꾸면 따라온다.
+        {/* 액센트 글로우 — 좌상단 그린, 우하단 블루, 좌하단 로즈. 크기를 비대칭으로 둬(그린이
+            가장 크고 로즈가 가장 작다) 그린이 전체 톤을 잡고 나머지 둘이 모서리에서 거든다.
+            꼬리를 길게 끄는 중간 정지점을 둬 겹치는 구간에서 색이 섞이며 넘어가게 한다(정지점
+            없이 바로 transparent로 빼면 각자 자기 모서리에서 사그라들어 서로 만나지 못한다).
+            색은 color-mix로 @theme 토큰을 직접 끌어와, 토큰을 바꾸면 글로우도 따라온다.
             프레임 밖으로 새지 않도록 Frame이 overflow-hidden으로 잘라낸다. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage: [
-              // 꼬리를 길게 끄는 중간 정지점을 둔다 — 두 색 모두 바깥으로 갈수록 옅게 남아,
-              // 겹치는 대각 구간에서 그린과 블루가 섞이며 넘어간다(정지점 없이 바로 transparent로
-              // 빼면 각자 자기 모서리에서 사그라들어 서로 만나지 못한다).
               'radial-gradient(125% 115% at -6% -8%, color-mix(in srgb, var(--color-accent) 40%, transparent) 0%, color-mix(in srgb, var(--color-accent) 16%, transparent) 45%, transparent 88%)',
               'radial-gradient(80% 88% at 106% 108%, color-mix(in srgb, var(--color-accent-end) 48%, transparent) 0%, color-mix(in srgb, var(--color-accent-end) 18%, transparent) 45%, transparent 88%)',
+              'radial-gradient(52% 58% at -4% 106%, color-mix(in srgb, var(--color-accent-rose) 34%, transparent) 0%, color-mix(in srgb, var(--color-accent-rose) 12%, transparent) 45%, transparent 82%)',
             ].join(','),
           }}
         />
@@ -37,7 +37,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
         <div className="relative grid gap-12 px-6 py-24 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-16 md:px-16">
           <div>
             {/* 역할 — 로고 호버와 같은 그라데이션이 상시 흐른다(breathing) */}
-            <p className="w-fit animate-[logo-flow_4s_linear_infinite] bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-[15px] font-bold tracking-tight text-transparent md:text-lg">
+            <p className="accent-flow w-fit animate-[logo-flow_4s_linear_infinite] bg-size-[200%_auto] bg-clip-text text-[15px] font-bold tracking-tight text-transparent md:text-lg">
               {profile.role}
             </p>
             <h1
