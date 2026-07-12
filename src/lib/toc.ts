@@ -28,7 +28,11 @@ export function extractToc(markdown: string): TocEntry[] {
     if (!match) continue;
 
     const level = match[1].length;
-    const text = match[2].replace(/[*_`]/g, '').trim();
+    // 서식 기호만 걷어내고 글자는 그대로 둔다. 밑줄(_)까지 지우면 안 된다 — 코드 스팬 안의
+    // 식별자(`id_token`)에서 밑줄이 사라져 우리가 만든 id(...idtoken...)가 실제 heading의
+    // id(...id_token...)와 어긋나고, 그 항목만 목차를 눌러도 이동하지 않는다.
+    // 렌더된 heading에는 코드 스팬의 내용이 그대로 남으므로, 여기서도 백틱과 별표만 지운다.
+    const text = match[2].replace(/[*`]/g, '').trim();
     const id = slugger.slug(text); // 모든 heading을 순서대로 슬러깅(상태 동기화)
     if (level === 1) entries.push({ id, text });
   }

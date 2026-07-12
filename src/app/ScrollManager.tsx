@@ -131,10 +131,10 @@ export function ScrollManager() {
     const isInitialLoad = lastHandledKey.current === null;
     lastHandledKey.current = location.key;
 
-    // 상세 → 목록 복귀: 특정 프로젝트 구간으로 되돌리는 건 ProjectsSection이 담당하므로 양보한다.
+    // 상세 → 목록 복귀: 그 문서의 칸으로 되돌리는 건 DocGrid가 담당하므로 양보한다.
     // (여기서 앵커 스크롤을 하면 최상단으로 갔다가 다시 튀는 이중 스크롤이 생긴다)
-    const state = location.state as { focusProjectIndex?: number } | null;
-    if (typeof state?.focusProjectIndex === 'number') {
+    const state = location.state as { focusDocIndex?: number } | null;
+    if (typeof state?.focusDocIndex === 'number') {
       return;
     }
 

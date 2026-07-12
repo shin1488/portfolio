@@ -12,7 +12,8 @@ import { RouteMarker } from './RouteMarker';
 import { ScrollManager } from './ScrollManager';
 
 // markdown 렌더러(react-markdown 체인)가 홈 번들에 포함되지 않도록 라우트 단위로 분리
-const ProjectDetailPage = lazy(() => import('@/features/projects/ProjectDetailPage'));
+const ProjectDetailPage = lazy(() => import('@/features/docs/ProjectDetailPage'));
+const OscDetailPage = lazy(() => import('@/features/docs/OscDetailPage'));
 
 export default function App() {
   return (
@@ -51,6 +52,7 @@ function AppRoutes() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
+            <Route path="/osc/:contributionId" element={<OscDetailPage />} />
             <Route path="*" element={<NotFoundView />} />
           </Routes>
         </Suspense>

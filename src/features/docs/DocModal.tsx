@@ -7,13 +7,15 @@ import { cn } from '@/lib/cn';
 import { scrollHeadingInContainer } from '@/lib/section';
 import type { TocEntry } from '@/lib/toc';
 import { useActiveHeadingId } from '@/lib/useScroll';
-import { pausePopTransition, startRouteTransition } from '@/lib/viewTransition';
-import { ProjectBodySkeleton } from './ProjectBodySkeleton';
+import { pausePopTransition, startRouteTransition, swallowNextPop } from '@/lib/viewTransition';
+import { DocBodySkeleton } from './DocBodySkeleton';
 import { formatPeriod } from './period';
-import type { Project } from '@/types/content';
+import type { Doc } from '@/types/content';
 
-interface ProjectModalProps {
-  project: Project;
+interface DocModalProps {
+  doc: Doc;
+  /** 상세 페이지 URL의 앞부분 — '/projects' 또는 '/osc' */
+  basePath: string;
   onClose: () => void;
 }
 
@@ -24,9 +26,11 @@ const TRANSITION_MS = 260;
  * 무거운 것만 lazy로 뗀다 — 팝업 껍데기는 홈 번들에 있어 클릭 즉시 뜨고, react-markdown 체인
  * (300KB대)과 상세 라우트는 필요할 때 내려받는다. 카드 호버 시 미리 받아 두기도 한다(preload).
  */
-const ProjectBody = lazy(() => import('./ProjectBody'));
-export const preloadProjectBody = () => import('./ProjectBody');
-export const preloadProjectDetail = () => import('./ProjectDetailPage');
+const DocBody = lazy(() => import('./DocBody'));
+export const preloadDocBody = () => import('./DocBody');
+/** 상세 라우트 청크 — 프로젝트와 기여가 같은 화면(DocDetailView)을 쓰지만 라우트는 각각이다. */
+export const preloadDetail = (basePath: string) =>
+  basePath === '/osc' ? import('./OscDetailPage') : import('./ProjectDetailPage');
 
 /**
  * 팝업을 쓸 만한 화면인지 — 좁은 화면에서는 팝업 대신 상세 페이지로 바로 간다.
@@ -38,7 +42,7 @@ export function canUseModal(): boolean {
 }
 
 /**
- * 프로젝트 본문 팝업 — 카드를 누르면 상세 문서의 본문만 이 안에서 읽는다.
+ * 본문 팝업 — 카드를 누르면 그 문서(프로젝트·오픈소스 기여)의 본문만 이 안에서 읽는다.
  * 우측 목차 rail은 상세 페이지와 같은 SideRail이고, 스크롤 복원 같은 나머지 장치는
  * '확대'로 상세 페이지에 넘어갔을 때 제공한다.
  *
@@ -46,7 +50,7 @@ export function canUseModal(): boolean {
  * 본문이 상단 바 위로 흘러 올라가 버린다. 상단 바를 고정 높이로 두고 본문만 스크롤시키면
  * 본문이 바를 넘어설 수 없고, 진행 바·맨 위로 버튼·목차 rail도 이 컨테이너 기준으로 계산한다.
  */
-export function ProjectModal({ project, onClose }: ProjectModalProps) {
+export function DocModal({ doc, basePath, onClose }: DocModalProps) {
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -59,9 +63,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   // 때까지 아무것도 그려지지 않아 팝업이 늦게 뜬 것처럼 보인다. 두 프레임 뒤에 붙여
   // 껍데기 + 로딩 표시가 먼저 페인트되게 한다.
   const [bodyMounted, setBodyMounted] = useState(false);
-  const titleId = `project-modal-${project.id}`;
+  const titleId = `doc-modal-${doc.id}`;
 
-  // 목차는 본문 청크(ProjectBody)가 렌더되면서 올려 준다 — 여기서 뽑으면 슬러거가 홈 번들에 붙는다.
+  // 목차는 본문 청크(DocBody)가 렌더되면서 올려 준다 — 여기서 뽑으면 슬러거가 홈 번들에 붙는다.
   const [toc, setToc] = useState<TocEntry[]>([]);
   const { activeId, select } = useActiveHeadingId(
     toc.map((entry) => entry.id),
@@ -116,13 +120,25 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     };
   }, [closeNow]);
 
-  /** 닫기·ESC·배경 클릭 — 쌓아 둔 히스토리 항목을 빼면서 닫는다(뒤로가기와 같은 경로로 수렴). */
+  /**
+   * 닫기·ESC·배경 클릭 — 화면은 그 자리에서 닫고, 쌓아 둔 히스토리 항목은 따로 걷어낸다.
+   *
+   * 예전에는 history.back()만 부르고 닫기는 popstate가 돌아오면 하도록 맡겼다. 그러면 popstate가
+   * 우리 리스너에 닿지 못하는 상황(다른 리스너가 먼저 이벤트를 세우거나, 개발 서버의 HMR로 모듈이
+   * 두 벌이 되는 경우)에서 배경을 눌러도 아무 일도 일어나지 않고, 두 번째 클릭의 back()이 그 앞
+   * 기록으로 넘어가 버린다. 닫기를 이벤트 순서에 걸지 않으면 그런 경우가 생기지 않는다.
+   *
+   * back()이 뒤늦게 popstate를 몰고 오지만, 그때는 pushedRef가 이미 내려가 있어 onPop이 다시
+   * 닫아도 무해하다(같은 상태를 한 번 더 쓸 뿐이다).
+   */
   const requestClose = useCallback(() => {
-    if (pushedRef.current) {
-      window.history.back();
-      return;
-    }
+    const hadEntry = pushedRef.current;
+    pushedRef.current = false;
     closeNow();
+    if (hadEntry) {
+      swallowNextPop();
+      window.history.back();
+    }
   }, [closeNow]);
 
   /**
@@ -130,9 +146,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
    * 여기서는 상세 라우트 청크를 먼저 받아 두기만 한다(전환 도중에 내려받으면 그만큼 늦어진다).
    */
   const expandToDetail = useCallback(async () => {
-    await preloadProjectDetail();
-    startRouteTransition(() => navigate(`/projects/${project.id}`));
-  }, [navigate, project.id]);
+    await preloadDetail(basePath);
+    startRouteTransition(() => navigate(`${basePath}/${doc.id}`));
+  }, [navigate, basePath, doc.id]);
 
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기. 잠금은 body가 아닌 html(overflowY)에 건다
   // — html에 overflow-x: clip이 있어, body에 걸면 body가 클리핑 컨테이너가 되며 sticky 헤더가
@@ -181,10 +197,10 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           <div className="flex shrink-0 items-center justify-between gap-4 border-b border-divider px-6 py-4">
             <div className="min-w-0">
               <h2 id={titleId} className="truncate text-lg font-bold tracking-tight text-zinc-100">
-                {project.title}
+                {doc.title}
               </h2>
               <p className="mt-0.5 text-[11px] text-zinc-500">
-                {formatPeriod(project.period)}
+                {formatPeriod(doc.period)}
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
@@ -229,11 +245,11 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             className="no-scrollbar flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain px-6 pb-28 pt-8"
           >
             {bodyMounted ? (
-              <Suspense fallback={<ProjectBodySkeleton />}>
-                <ProjectBody body={project.body} scrollRootRef={bodyRef} onToc={setToc} />
+              <Suspense fallback={<DocBodySkeleton />}>
+                <DocBody body={doc.body} scrollRootRef={bodyRef} onToc={setToc} />
               </Suspense>
             ) : (
-              <ProjectBodySkeleton />
+              <DocBodySkeleton />
             )}
           </div>
 

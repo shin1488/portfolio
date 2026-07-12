@@ -7,6 +7,7 @@ export interface NavItem {
 export const NAV_ITEMS = [
   { id: 'profile', label: 'Profile' },
   { id: 'about', label: 'Introduction' },
+  { id: 'osc', label: 'Open Source' },
   { id: 'projects', label: 'Projects' },
   { id: 'skills', label: 'Skills' },
   { id: 'careers', label: 'Careers' },

@@ -3,7 +3,7 @@
  * 문단 줄, 이미지 블록)를 같은 간격으로 흉내 낸다. 스피너와 달리 로드가 끝났을 때 레이아웃이
  * 크게 뒤집히지 않아, 채워지는 느낌으로 이어진다.
  */
-export function ProjectBodySkeleton() {
+export function DocBodySkeleton() {
   return (
     <div aria-hidden="true" className="animate-pulse">
       {/* 섹션 제목 + 액센트 밑줄 */}

@@ -17,17 +17,26 @@ import { Frame } from './Frame';
  * - 모바일(<sm): 햄버거 → 헤더가 아래로 확장되는 드로어(큰 메뉴 + 연락처).
  * 로고·활성 표시·스크롤 이동 로직은 동일(홈은 오프셋 0 스크롤, 그 외엔 /#id로 이동).
  */
+/** 마크다운 한 편을 읽는 상세 화면인지 — 프로젝트와 오픈소스 기여가 같은 화면을 쓴다. */
+function isDocDetail(pathname: string): boolean {
+  return pathname.startsWith('/projects/') || pathname.startsWith('/osc/');
+}
+
 export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const onHome = location.pathname === '/';
   const homeActive = useActiveSection(onHome ? NAV_ITEMS.map((item) => item.id) : []);
+  // 상세 페이지에서는 그 문서가 속한 섹션을 켜 둔다 — /projects/{id}는 Projects, /osc/{id}는
+  // Open Source. 홈이 아니면 스크롤 스파이가 돌지 않으므로 주소로만 판단한다.
   const active = onHome
     ? homeActive
     : location.pathname.startsWith('/projects/')
       ? 'projects'
-      : '';
+      : location.pathname.startsWith('/osc/')
+        ? 'osc'
+        : '';
 
   const go = (id: string) => {
     setMenuOpen(false);
@@ -156,8 +165,9 @@ export function Header() {
       </Frame>
 
       {/* 상세 페이지 읽기 진행 바(lg 미만) — fixed가 아닌 헤더의 absolute 자식으로 붙여,
-          iOS 러버밴드로 헤더가 딸려 움직일 때도 바가 헤더와 한 몸으로 따라간다. */}
-      {location.pathname.startsWith('/projects/') && (
+          iOS 러버밴드로 헤더가 딸려 움직일 때도 바가 헤더와 한 몸으로 따라간다.
+          프로젝트 상세와 기여 상세가 같은 읽기 화면이므로 두 라우트에서 함께 띄운다. */}
+      {isDocDetail(location.pathname) && (
         <ScrollProgressBar className="absolute inset-x-0 top-full lg:hidden" />
       )}
 

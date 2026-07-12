@@ -14,7 +14,7 @@ export function CareersSection({ categories }: CareersSectionProps) {
   if (!categories.length) return null;
 
   return (
-    <Section id="careers" index="04" slug="careers" title="Careers" glow="green" glowSide="left">
+    <Section id="careers" index="05" slug="careers" title="Careers" glow="green" glowSide="left">
       {/* 세로 divider는 절대 위치 선 — 셀에 border-r을 주면 그 칸의 콘텐츠 폭만 1px 좁아진다 */}
       <div className="relative">
         <span

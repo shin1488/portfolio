@@ -1,5 +1,12 @@
-import type { CareerCategory, Profile, Project, SkillCategory } from '@/types/content';
+import type {
+  CareerCategory,
+  Contribution,
+  Profile,
+  Project,
+  SkillCategory,
+} from '@/types/content';
 import { careers } from './mock/careers';
+import { contributions } from './osc/loader';
 import { profile } from './mock/profile';
 import { projects } from './projects/loader';
 import { skillCategories } from './mock/skills';
@@ -14,6 +21,7 @@ import { skillCategories } from './mock/skills';
 export interface ContentSource {
   profile: Profile;
   skillCategories: SkillCategory[];
+  contributions: Contribution[];
   projects: Project[];
   careers: CareerCategory[];
 }
@@ -21,6 +29,7 @@ export interface ContentSource {
 export const content: ContentSource = {
   profile,
   skillCategories,
+  contributions,
   projects,
   careers,
 };

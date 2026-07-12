@@ -5,7 +5,8 @@ import { content } from '@/data';
 import { CareersSection } from '@/features/careers/CareersSection';
 import { IntroductionSection } from '@/features/profile/IntroductionSection';
 import { ProfileSection } from '@/features/profile/ProfileSection';
-import { ProjectsSection } from '@/features/projects/ProjectsSection';
+import { OscSection } from '@/features/docs/OscSection';
+import { ProjectsSection } from '@/features/docs/ProjectsSection';
 import { SkillsSection } from '@/features/skills/SkillsSection';
 import { SITE_NAME } from '@/lib/site';
 import { useDocumentTitle } from '@/lib/useDocumentTitle';
@@ -26,6 +27,8 @@ export function HomePage() {
       <ProfileSection profile={content.profile} headingRef={headingRef} />
       <HatchDivider />
       <IntroductionSection bio={content.profile.bio} />
+      <HatchDivider />
+      <OscSection contributions={content.contributions} onModalOpenChange={setModalOpen} />
       <HatchDivider />
       <ProjectsSection projects={content.projects} onModalOpenChange={setModalOpen} />
       <HatchDivider />

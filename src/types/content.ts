@@ -53,7 +53,11 @@ export interface ProjectLink {
   href: string;
 }
 
-export interface Project {
+/**
+ * markdown 한 편으로 이루어진 글 — 홈에서는 카드로, 눌렀을 때는 팝업·상세 페이지로 읽힌다.
+ * 프로젝트와 오픈소스 기여가 이 골격을 공유하므로, 카드·팝업·상세 화면도 한 벌만 둔다.
+ */
+export interface Doc {
   /** 콘텐츠 파일명(slug) — 상세 페이지 URL에 사용 */
   id: string;
   title: string;
@@ -72,8 +76,24 @@ export interface Project {
   /** 성과·역할 중심의 bullet — 평문 전용(인라인 markdown 미지원) */
   highlights: string[];
   links: ProjectLink[];
+}
+
+export interface Project extends Doc {
   /** 팀 프로젝트 / 개인 프로젝트 구분 — 목록에서 칩으로 표시 */
   kind: 'team' | 'personal';
   /** 썸네일 이미지 경로(public 기준, 예: /content/projects/foo/thumb.png) */
   thumbnail: string;
+}
+
+/** 기여가 지금 어느 단계에 있는지 — 카드·상세의 상태 칩으로 표시한다 */
+export type ContributionStatus = 'proposed' | 'in-review' | 'merged';
+
+/** 오픈소스 기여 — 프로젝트와 달리 썸네일이 없다(이슈·PR에는 보여 줄 화면이 없다). */
+export interface Contribution extends Doc {
+  /** 저장소 소유자 — GitHub 주소의 첫 조각 (예: spring-projects) */
+  organization: string;
+  /** 저장소 이름 — GitHub 주소의 둘째 조각. 원문 표기 그대로 적는다(대문자 포함) */
+  repo: string;
+  /** 제안(이슈 제기) → 리뷰 중(PR 열림) → 병합 */
+  status: ContributionStatus;
 }
