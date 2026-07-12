@@ -75,7 +75,7 @@ export function Header() {
           className="group flex cursor-pointer items-center gap-2 text-[13px] font-semibold tracking-tight"
         >
           <img src="/favicon.svg" alt="" aria-hidden="true" className="size-4" />
-          <span className="bg-linear-to-r from-green-400 via-emerald-200 to-green-400 bg-size-[200%_auto] bg-clip-text text-zinc-100 transition-colors duration-200 group-hover:animate-[logo-flow_3s_linear_infinite] group-hover:text-transparent">
+          <span className="bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-zinc-100 transition-colors duration-200 group-hover:animate-[logo-flow_3s_linear_infinite] group-hover:text-transparent">
             {SITE_NAME}
           </span>
         </button>
@@ -93,7 +93,7 @@ export function Header() {
                     aria-current={isActive}
                     className={cn(
                       'cursor-pointer transition-colors',
-                      isActive ? 'text-green-400' : 'text-zinc-400 hover:text-zinc-100',
+                      isActive ? 'text-accent' : 'text-zinc-400 hover:text-zinc-100',
                     )}
                   >
                     {item.label}
@@ -214,7 +214,7 @@ function MobileDrawer({
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(58% 42% at 8% 4%, rgba(34,197,94,0.13), transparent 70%)',
+              'radial-gradient(58% 42% at 8% 4%, rgba(102,220,126,0.13), transparent 70%)',
           }}
         />
         {/* 큰 메뉴 */}
@@ -236,7 +236,7 @@ function MobileDrawer({
                     <span
                       className={cn(
                         'text-[26px] font-bold tracking-[-0.02em] transition-colors',
-                        isActive ? 'text-green-400' : 'text-zinc-200',
+                        isActive ? 'text-accent' : 'text-zinc-200',
                       )}
                     >
                       {item.label}

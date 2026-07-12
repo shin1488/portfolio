@@ -21,7 +21,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(58% 105% at 2% 0%, rgba(34,197,94,0.16), transparent 100%)',
+              'radial-gradient(58% 105% at 2% 0%, rgba(102,220,126,0.16), transparent 100%)',
           }}
         />
 
@@ -92,7 +92,7 @@ function Avatar({ profile }: { profile: Profile }) {
     <div
       role="img"
       aria-label={`${profile.name} 프로필 사진 자리`}
-      className={`${box} flex items-center justify-center bg-zinc-900 font-mono text-2xl font-bold text-green-400`}
+      className={`${box} flex items-center justify-center bg-zinc-900 font-mono text-2xl font-bold text-accent`}
     >
       {profile.avatarInitials}
     </div>

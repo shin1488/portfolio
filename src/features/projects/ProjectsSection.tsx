@@ -1,6 +1,7 @@
 import { useLayoutEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import { Section } from '@/components/layout/Section';
+import { Badge } from '@/components/ui/Badge';
 import { Reveal } from '@/components/ui/Reveal';
 import { formatPeriod } from './period';
 import { HighlightText } from './HighlightText';
@@ -81,7 +82,7 @@ function ProjectCell({ project, delay }: { project: Project; delay: number }) {
 
         <div className="px-5 py-7 md:px-8 md:py-8">
           <div className="flex items-baseline justify-between gap-4">
-            <h3 className="text-xl font-bold tracking-tight text-zinc-100 transition-colors group-hover:text-green-400">
+            <h3 className="text-xl font-bold tracking-tight text-zinc-100 transition-colors group-hover:text-accent">
               {project.title}
             </h3>
             <span className="shrink-0 font-mono text-[11px] text-zinc-500">
@@ -91,17 +92,15 @@ function ProjectCell({ project, delay }: { project: Project; delay: number }) {
 
           <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">{project.summary}</p>
 
+          {/* 기술 칩은 상세 페이지와 같은 Badge를 쓴다 — 두 화면의 칩 규격이 어긋나지 않게. */}
           <ul className="mt-5 flex flex-wrap gap-1.5">
             {shownTech.map((tech) => (
-              <li
-                key={tech}
-                className="border border-divider px-2 py-1 font-mono text-[11px] text-zinc-400"
-              >
-                {tech}
+              <li key={tech}>
+                <Badge>{tech}</Badge>
               </li>
             ))}
             {hiddenCount > 0 && (
-              <li className="border border-transparent px-2 py-1 font-mono text-[11px] text-zinc-600">
+              <li className="inline-flex items-center border border-transparent px-2 py-1 font-mono text-[11px] text-zinc-600">
                 +{hiddenCount}
               </li>
             )}
@@ -110,7 +109,7 @@ function ProjectCell({ project, delay }: { project: Project; delay: number }) {
           <ul className="mt-5 flex flex-col gap-2">
             {project.highlights.map((highlight, i) => (
               <li key={i} className="flex gap-2.5 text-[13px] leading-[1.65] text-zinc-400">
-                <span aria-hidden="true" className="mt-2 size-1 shrink-0 bg-green-400" />
+                <span aria-hidden="true" className="mt-2 size-1 shrink-0 bg-accent" />
                 <span>
                   <HighlightText text={highlight} />
                 </span>
@@ -119,7 +118,7 @@ function ProjectCell({ project, delay }: { project: Project; delay: number }) {
           </ul>
 
           <div className="relative z-2 mt-7 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-green-400">
+            <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent">
               View Details
               <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
                 ›

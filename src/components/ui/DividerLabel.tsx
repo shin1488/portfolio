@@ -9,7 +9,7 @@ export function DividerLabel({ label }: DividerLabelProps) {
   return (
     <div className="flex items-center gap-4" role="presentation">
       <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-      <span className="shrink-0 text-sm font-semibold text-green-600 dark:text-green-400">
+      <span className="shrink-0 text-sm font-semibold text-accent">
         {label}
       </span>
       <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />

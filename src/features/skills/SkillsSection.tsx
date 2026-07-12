@@ -46,7 +46,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
                       className={cn(
                         'text-[15px]',
                         skill.highlight
-                          ? 'font-semibold text-green-400'
+                          ? 'font-semibold text-accent'
                           : 'font-medium text-zinc-300',
                       )}
                     >

@@ -28,7 +28,7 @@ export function SectionRail() {
             <span
               className={cn(
                 'absolute right-full mr-3 whitespace-nowrap font-mono text-[11px] transition-opacity duration-250 group-hover:opacity-100',
-                isActive ? 'text-green-400 opacity-100' : 'text-zinc-400 opacity-0',
+                isActive ? 'text-accent opacity-100' : 'text-zinc-400 opacity-0',
               )}
             >
               {item.label}
@@ -37,7 +37,7 @@ export function SectionRail() {
               aria-hidden="true"
               className={cn(
                 'h-px transition-all duration-250',
-                isActive ? 'w-6.5 bg-green-400' : 'w-3.5 bg-zinc-700',
+                isActive ? 'w-6.5 bg-accent' : 'w-3.5 bg-zinc-700',
               )}
             />
           </button>

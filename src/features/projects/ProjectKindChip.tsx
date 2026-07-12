@@ -18,7 +18,7 @@ export function ProjectKindChip({ kind, className }: ProjectKindChipProps) {
     <span
       className={cn(
         'inline-flex items-center border bg-[#111113]/92 px-2 py-0.5 font-mono text-[11px]',
-        isTeam ? 'border-green-400/60 text-green-300' : 'border-zinc-500/60 text-zinc-300',
+        isTeam ? 'border-accent/60 text-accent' : 'border-zinc-500/60 text-zinc-300',
         className,
       )}
     >
