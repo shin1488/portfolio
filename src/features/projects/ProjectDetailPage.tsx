@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { Link, useParams } from 'react-router';
 import { Badge } from '@/components/ui/Badge';
 import { Markdown } from '@/components/ui/Markdown';
-import { Frame } from '@/components/layout/Frame';
 import { NotFoundView } from '@/components/layout/NotFoundView';
 import { content } from '@/data';
 import { SITE_NAME } from '@/lib/site';
@@ -39,8 +38,8 @@ function ProjectDetailView({ project }: { project: Project }) {
   return (
     <>
       <ReadingAids entries={toc} />
-      {/* 홈과 같은 프레임 — 헤더에서 시작한 좌우 세로선이 상세 본문에서도 끊기지 않고 이어진다 */}
-      <Frame>
+      {/* 상세 본문에는 홈의 프레임(좌우 세로선)을 두지 않는다 — 좌측 진행 바와 우측 미니 목차가
+          이미 본문 양옆을 잡고 있어, 세로선까지 더하면 읽는 화면이 번잡해진다. */}
       <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 코드 바로가기를 둔다(제목 줄이 빽빽해지지 않게) */}
       <div className="flex items-center justify-between gap-3">
@@ -110,7 +109,6 @@ function ProjectDetailView({ project }: { project: Project }) {
         <Markdown>{project.body}</Markdown>
       </div>
       </article>
-      </Frame>
     </>
   );
 }
