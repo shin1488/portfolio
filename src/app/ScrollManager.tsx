@@ -6,6 +6,55 @@ import { scrollElementToTop } from '@/lib/section';
 // 새로고침 시 사라지므로, 새로고침 복원만 세션 스토리지로 따로 유지한다.
 const SESSION_PREFIX = 'sm-scroll:';
 
+/** 복원을 포기하는 시점(ms) — 이 안에 문서가 목표 높이까지 자라지 않으면 그만둔다. */
+const RESTORE_TIMEOUT_MS = 2000;
+/** 복원 시도 간격(ms) — 화면 한 프레임과 비슷하게 둔다. */
+const RESTORE_STEP_MS = 16;
+
+/**
+ * 저장해 둔 위치로 스크롤을 되돌린다. 한 번에 끝나지 않으므로 문서가 목표 높이에 이를 때까지
+ * 되풀이한다: 되돌아온 직후의 문서는 이미지·지연 청크가 아직 붙기 전이라 짧고, 그 상태에서
+ * scrollTo를 부르면 브라우저가 문서 끝으로 값을 깎는다(clamp). 그래서 어느 프로젝트에서
+ * 돌아오든 늘 같은 자리(짧은 문서의 끝)에 서 버린다.
+ *
+ * rAF가 아니라 setTimeout으로 되도는 이유: 되돌아가기는 View Transition 안에서 일어나는데,
+ * 그 콜백 구간에는 렌더링이 멈춰 rAF가 아예 호출되지 않는다. 그동안 재시도가 한 번도 못 도는
+ * 사이에 시도 횟수만 소진되면 복원이 그대로 실패한다.
+ *
+ * 사용자가 스크롤·터치·키로 개입하면 즉시 그만둔다 — 사용자와 스크롤을 두고 다투지 않는다.
+ */
+function restoreScroll(saved: number) {
+  if (saved <= 0) {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    return;
+  }
+  let cancelled = false;
+  const abort = () => {
+    cancelled = true;
+  };
+  const passiveOnce = { once: true, passive: true } as const;
+  window.addEventListener('wheel', abort, passiveOnce);
+  window.addEventListener('touchstart', abort, passiveOnce);
+  window.addEventListener('keydown', abort, { once: true });
+  const cleanup = () => {
+    window.removeEventListener('wheel', abort);
+    window.removeEventListener('touchstart', abort);
+    window.removeEventListener('keydown', abort);
+  };
+
+  const deadline = Date.now() + RESTORE_TIMEOUT_MS;
+  const step = () => {
+    if (cancelled) return cleanup();
+    window.scrollTo({ top: saved, behavior: 'instant' });
+    if (window.scrollY < saved - 1 && Date.now() < deadline) {
+      window.setTimeout(step, RESTORE_STEP_MS);
+    } else {
+      cleanup();
+    }
+  };
+  step();
+}
+
 /**
  * 라우트 이동 시 스크롤·포커스를 관리한다.
  * - hash 앵커가 있으면 그 섹션으로, 없으면(라우트 전환) 최상단으로 이동한다.
@@ -104,30 +153,7 @@ export function ScrollManager() {
         }
       }
       if (saved > 0) {
-        let cancelled = false;
-        const abort = () => {
-          cancelled = true;
-        };
-        const passiveOnce = { once: true, passive: true } as const;
-        window.addEventListener('wheel', abort, passiveOnce);
-        window.addEventListener('touchstart', abort, passiveOnce);
-        window.addEventListener('keydown', abort, { once: true });
-        const cleanup = () => {
-          window.removeEventListener('wheel', abort);
-          window.removeEventListener('touchstart', abort);
-          window.removeEventListener('keydown', abort);
-        };
-        const restore = (attempt: number) => {
-          if (cancelled) return cleanup();
-          window.scrollTo({ top: saved, behavior: 'instant' });
-          // 아직 문서가 짧으면(청크 로딩 전) 목표에 못 미침 — 커질 때까지 최대 ~1.5s 재시도.
-          if (window.scrollY < saved - 1 && attempt < 90) {
-            requestAnimationFrame(() => restore(attempt + 1));
-          } else {
-            cleanup();
-          }
-        };
-        restore(0);
+        restoreScroll(saved);
         return;
       }
     }
@@ -136,15 +162,7 @@ export function ScrollManager() {
     // 최초 진입도 POP으로 보고되므로 진짜 히스토리 이동만 복원한다.
     if (navigationType === 'POP' && !isInitialLoad) {
       const saved = positions.current.get(location.key) ?? 0;
-      // 핀 트랙 높이 계산 전이라 문서가 아직 짧으면 목표에 못 미칠 수 있어 몇 프레임 재시도한다.
-      const restore = (attempt: number) => {
-        window.scrollTo({ top: saved, behavior: 'instant' });
-        if (window.scrollY < saved - 1 && attempt < 10) {
-          requestAnimationFrame(() => restore(attempt + 1));
-        }
-      };
-      restore(0);
-      return;
+      return restoreScroll(saved);
     }
 
     if (location.hash) {

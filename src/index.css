@@ -100,29 +100,34 @@ html {
    두 요소를 짝지어 박스를 이어 붙이는 모프(view-transition-name 공유)도 만들어 봤지만, 확대되는
    모양이 어색한 데다 대상이 768 × 43,000px짜리 문서라 매 프레임 통째로 래스터화돼 무거웠다.
    여기서는 root 스냅샷(뷰포트 크기)만 겹쳐 넘긴다 — 훨씬 가볍고 전환도 차분하다. */
-/* 두 스냅샷을 동시에 반투명하게 겹치면(기본 크로스페이드) 중간 구간에서 합성 결과가 배경까지
-   비쳐 한 번 어두워졌다 밝아진다. 브라우저는 이를 mix-blend-mode: plus-lighter로 막지만
-   iOS Safari에서는 그 보정이 듣지 않아 뒤로가기 때 화면이 깜빡였다(밝음 → 어두움 → 밝음).
-   그래서 blend에 기대지 않는 방식으로 바꾼다: 옛 화면은 끝까지 불투명하게 깔아 두고, 새 화면만
-   그 위에서 서서히 나타난다. 어느 시점에도 화면이 완전히 덮여 있어 밝기가 꺼지지 않는다. */
+/* 전환은 '새 화면을 띄우는' 것이 아니라 '옛 화면을 걷어내는' 방향으로 만든다.
+   새 화면(new)을 처음부터 불투명하게 깔고, 옛 화면(old)을 그 위에 얹어 서서히 지운다.
+
+   반대 방향(새 화면을 0에서 키우기)은 화면이 덜 덮이는 순간을 만든다. 기본 크로스페이드가 그런
+   식인데, 브라우저는 두 겹이 반투명하게 겹칠 때 합성이 어두워지는 것을 mix-blend-mode:
+   plus-lighter로 막는다. iOS Safari에서는 그 보정이 듣지 않아 뒤로가기 때 화면 전체가 한 번
+   어두워졌다 밝아졌다(밝음 → 어두움 → 밝음). 이 방향에서는 어느 시점에도 불투명한 새 화면이
+   바닥에 깔려 있어 밝기가 꺼질 구간 자체가 없고, 옛 스냅샷이 비더라도 새 화면이 곧장 보일 뿐이다. */
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-old(root),
   ::view-transition-new(root) {
     mix-blend-mode: normal;
     animation: none;
   }
-  ::view-transition-old(root) {
+  ::view-transition-new(root) {
     opacity: 1;
   }
-  ::view-transition-new(root) {
-    animation: vt-fade-in 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  ::view-transition-old(root) {
+    /* 옛 화면이 위에 와야 '걷어내기'가 된다 — 기본 순서는 새 화면이 위다. */
+    z-index: 1;
+    animation: vt-fade-out 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  @keyframes vt-fade-in {
+  @keyframes vt-fade-out {
     from {
-      opacity: 0;
+      opacity: 1;
     }
     to {
-      opacity: 1;
+      opacity: 0;
     }
   }
 }
