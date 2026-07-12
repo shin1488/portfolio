@@ -32,8 +32,23 @@ export function Header() {
   const go = (id: string) => {
     setMenuOpen(false);
     // 홈에선 스크롤만(라우트 그대로), 다른 페이지에선 홈으로 넘어가며 크로스페이드.
-    if (onHome && document.getElementById(id)) scrollToSection(id);
-    else startRouteTransition(() => navigate(`/#${id}`));
+    if (onHome && document.getElementById(id)) {
+      scrollToSection(id);
+      // 히어로(=문서 최상단)로 돌아갈 때는 주소에 남아 있던 섹션 해시를 지운다. 상세에서 헤더
+      // 버튼으로 넘어오면 주소가 /#projects로 남는데, 그대로 두면 로고를 눌러 최상단에 와도
+      // 주소는 여전히 그 섹션을 가리켜 새로고침·공유 시 다시 그리로 튄다.
+      // navigate() 대신 replaceState를 쓰는 이유: 라우터로 주소를 바꾸면 location.key가 바뀌어
+      // ScrollManager가 라우트 전환으로 보고 instant로 최상단에 꽂아 버린다. 그러면 방금 건
+      // 부드러운 스크롤이 사라진다. 주소만 갈아 끼우면 렌더도 스크롤도 건드리지 않는다.
+      if (id === 'profile' && window.location.hash) {
+        const { pathname, search } = window.location;
+        window.history.replaceState(window.history.state, '', pathname + search);
+      }
+    } else {
+      // 상세에서 넘어올 때도 히어로는 해시 없는 홈(/)이다. 최상단은 문서의 기본 위치이므로
+      // 굳이 /#profile로 표시할 이유가 없고, 그렇게 두면 로고를 눌러 온 주소와 달라진다.
+      startRouteTransition(() => navigate(id === 'profile' ? '/' : `/#${id}`));
+    }
   };
 
   // 드로어가 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기.
