@@ -55,7 +55,7 @@ function ProjectDetailView({ project }: { project: Project }) {
           >
             ←
           </span>
-          <span className="bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-accent transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent">
+          <span className="bg-linear-to-r from-accent to-accent-end bg-clip-text text-accent transition-colors group-hover:text-transparent">
             프로젝트 목록
           </span>
         </Link>

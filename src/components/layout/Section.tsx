@@ -4,13 +4,13 @@ import type { SectionId } from '@/lib/nav';
 import { Frame } from './Frame';
 
 /**
- * 섹션 제목 뒤에 깔리는 글로우 색 — PSR 타임라인(문제·해결·결과)이 쓰는 세 색을 그대로 가져온다.
- * 액센트 두 색은 브랜드용이고, 이 세 색은 섹션을 구분하는 표식으로만 쓴다.
+ * 섹션 제목 뒤에 깔리는 글로우 색 — PSR 타임라인(문제·해결·결과)과 같은 세 색이다.
+ * 블루·그린은 사이트 액센트 토큰을 그대로 참조하고, rose만 액센트 밖의 색으로 남는다.
  */
 export const SECTION_GLOW = {
   rose: '#fb7185',
-  indigo: '#818cf8',
-  emerald: '#6ee7b7',
+  blue: 'var(--color-accent-end)',
+  green: 'var(--color-accent)',
 } as const;
 
 export type SectionGlow = keyof typeof SECTION_GLOW;

@@ -19,7 +19,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
   const rowB = all.filter((_, i) => i % 2 === 1);
 
   return (
-    <Section id="skills" index="03" slug="skills" title="Skills" glow="indigo" glowSide="right">
+    <Section id="skills" index="03" slug="skills" title="Skills" glow="blue" glowSide="right">
       <div className="marquee relative overflow-hidden border-b border-divider py-7">
         <MarqueeRow skills={rowA} seconds={44} />
         <MarqueeRow skills={rowB} seconds={52} reverse />

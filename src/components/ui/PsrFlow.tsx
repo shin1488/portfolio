@@ -6,7 +6,8 @@ import { Children, isValidElement, type ReactElement, type ReactNode } from 'rea
  * 바꿔 두면, Markdown.tsx 의 div 오버라이드가 이 두 컴포넌트로 렌더한다.
  *
  * 시각: 왼쪽에 아이콘 뱃지(⚠ 문제 / ⚙ 해결 / ✓ 결과) + 다음 스텝으로 이어지는
- * 세로 그라데이션 선, 오른쪽에 라벨 + 본문. 문제=rose, 해결=indigo, 결과=emerald.
+ * 세로 그라데이션 선, 오른쪽에 라벨 + 본문. 문제만 rose(액센트 밖의 경고색)이고,
+ * 해결·결과는 사이트 액센트 블루·그린을 그대로 쓴다.
  * 결과 본문만 살짝 밝게/굵게(도착점 강조). not-prose 로 본문 prose와 충돌 방지.
  */
 
@@ -31,9 +32,10 @@ const PSR: Record<
   },
   solution: {
     label: '해결',
-    dot: '#818cf8', // indigo-400 (dot·연결선)
-    labelClass: 'text-indigo-300',
-    tint: 'bg-indigo-500/12',
+    // 사이트 액센트 블루와 같은 값 — @theme 토큰을 직접 참조해 색이 따로 놀지 않게 한다
+    dot: 'var(--color-accent-end)',
+    labelClass: 'text-accent-end',
+    tint: 'bg-accent-end/12',
     icon: (
       <>
         <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
@@ -47,9 +49,10 @@ const PSR: Record<
   },
   result: {
     label: '결과',
-    dot: '#6ee7b7', // emerald-300 (dot·연결선)
-    labelClass: 'text-emerald-300',
-    tint: 'bg-emerald-400/12',
+    // 사이트 액센트 그린과 같은 값
+    dot: 'var(--color-accent)',
+    labelClass: 'text-accent',
+    tint: 'bg-accent/12',
     icon: <path d="M20 6 9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />,
   },
 };
