@@ -1,7 +1,8 @@
-import { useEffect, useState, type Ref } from 'react';
+import { useEffect, useMemo, useState, type Ref } from 'react';
 import { Frame } from '@/components/layout/Frame';
 import { cn } from '@/lib/cn';
 import type { Profile } from '@/types/content';
+import { typingFrames } from './typing';
 
 interface ProfileSectionProps {
   profile: Profile;
@@ -9,11 +10,7 @@ interface ProfileSectionProps {
   headingRef?: Ref<HTMLHeadingElement>;
 }
 
-/**
- * 첫 등장 연출의 단계 — 글로우 셋이 좌상단 → 우하단 → 좌하단 순으로 켜지고, 이어서 좌측 텍스트가
- * 역할 → 이름 → 소개 → 위치 순으로 수면 위로 떠오르듯 올라온다. 소개 문장은 그 위에 타이핑이 얹히고,
- * 프로필 사진은 마지막 단계에서 함께 떠오른다.
- */
+/** 첫 등장 연출의 단계 */
 const GLOW_GREEN = 1;
 const GLOW_BLUE = 2;
 const GLOW_ROSE = 3;
@@ -22,10 +19,24 @@ const NAME = 5;
 const TAGLINE = 6;
 const LOCATION = 7; // 프로필 사진도 이 단계에서 함께
 const LAST = LOCATION;
-/** 단계 간격(ms) — 지루하지 않게 아주 빠르게 지나간다 */
-const STEP_MS = 75;
-/** 소개 문장 타이핑 속도(글자당 ms) */
-const TYPE_MS = 16;
+
+/**
+ * 단계별 등장 시각(ms). 글로우 셋은 하나씩 켜지는 게 눈에 보이도록 넉넉히 벌리고(좌상단 그린 →
+ * 우하단 블루 → 좌하단 로즈), 텍스트는 그 뒤에 촘촘히 이어 붙여 지루해지지 않게 한다.
+ */
+const STEP_AT = [0, 260, 520, 700, 790, 880, 970];
+
+/**
+ * 소개 문장 타이핑 속도(입력 한 번당 ms) — 한글은 자·모 단위로 조합되므로 글자당 2~3번이다.
+ * 화면 한 프레임(약 17ms)보다 짧게 잡으면 조합 중간 단계('ㅈ' → '주')가 그려지기 전에 다음
+ * 단계로 넘어가 버려 조합이 눈에 안 보인다. 그래서 한 프레임보다 살짝 길게 둔다.
+ */
+const TYPE_MS = 24;
+/**
+ * 타이핑이 끝난 뒤 캐럿이 세 번 깜빡이는 시간(ms) — 이 시간이 지나면 캐럿을 걷어낸다.
+ * .caret-outro의 한 주기(1.1s) × 3회와 맞춰 둔다. 어긋나면 깜빡임 도중에 캐럿이 사라진다.
+ */
+const CARET_OUTRO_MS = 3300;
 
 /**
  * 연출은 문서를 새로 연 첫 렌더에서만 한다. 모듈 스코프 플래그라 SPA 안에서 홈으로 되돌아올 때는
@@ -35,9 +46,10 @@ let introPlayed = false;
 
 /** 히어로 — 프레임 안 좌측 정렬 인트로. 액센트 3색 글로우가 모서리에서 번진다. */
 export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
-  const tagline = profile.tagline;
+  const frames = useMemo(() => typingFrames(profile.tagline), [profile.tagline]);
   const [step, setStep] = useState(introPlayed ? LAST : 0);
-  const [typed, setTyped] = useState(introPlayed ? tagline.length : 0);
+  const [typed, setTyped] = useState(introPlayed ? frames.length : 0);
+  const [caretGone, setCaretGone] = useState(introPlayed);
 
   useEffect(() => {
     if (introPlayed) return;
@@ -45,12 +57,11 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       introPlayed = true;
       setStep(LAST);
-      setTyped(tagline.length);
+      setTyped(frames.length);
+      setCaretGone(true);
       return;
     }
-    const timers = Array.from({ length: LAST }, (_, i) =>
-      window.setTimeout(() => setStep(i + 1), (i + 1) * STEP_MS),
-    );
+    const timers = STEP_AT.map((at, i) => window.setTimeout(() => setStep(i + 1), at));
     // '재생 완료' 표시는 연출이 끝난 뒤에 세운다. effect 진입 시점에 세우면, StrictMode가 개발
     // 모드에서 effect를 mount → cleanup → mount로 두 번 돌릴 때 두 번째 실행이 "이미 재생함"으로
     // 판정해 곧장 빠져나가고, 첫 실행의 타이머는 cleanup에서 지워져 화면에 아무것도 안 뜬다.
@@ -58,39 +69,55 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
       () => {
         introPlayed = true;
       },
-      LAST * STEP_MS + tagline.length * TYPE_MS + 400,
+      STEP_AT[LAST - 1] + frames.length * TYPE_MS + CARET_OUTRO_MS,
     );
     return () => {
       timers.forEach(window.clearTimeout);
       window.clearTimeout(done);
     };
-  }, [tagline.length]);
+  }, [frames.length]);
 
-  // 소개 문장 타이핑 — 해당 단계에 닿으면 한 번만 시작한다(글자마다 effect를 다시 걸지 않도록
-  // 인터벌 안에서 카운터를 직접 굴린다).
+  // 소개 문장 타이핑 — 시작 신호(typing)에만 반응해 한 번 걸고, 진행은 rAF 안에서 경과 시간으로
+  // 계산한다. 프레임마다 setInterval을 새로 거는 대신 이렇게 하면 렌더가 화면 주사율을 넘지 않는다.
   const typing = step >= TAGLINE;
   useEffect(() => {
-    if (!typing || typed >= tagline.length) return;
-    let n = typed;
-    const id = window.setInterval(() => {
-      n += 1;
-      setTyped(n);
-      if (n >= tagline.length) window.clearInterval(id);
-    }, TYPE_MS);
-    return () => window.clearInterval(id);
-    // typed를 의존성에 넣으면 글자마다 인터벌이 새로 걸린다 — 시작 신호(typing)만 본다.
+    if (!typing || typed >= frames.length) return;
+    const from = typed;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const next = Math.min(frames.length, from + Math.floor((now - start) / TYPE_MS));
+      setTyped(next); // 같은 값이면 React가 렌더를 건너뛴다
+      if (next < frames.length) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // typed를 의존성에 넣으면 프레임마다 루프가 새로 걸린다 — 시작 신호만 본다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typing, tagline.length]);
+  }, [typing, frames.length]);
+
+  // 다 치고 나면 캐럿이 두 번 깜빡인 뒤 사라진다.
+  const typedDone = typed >= frames.length;
+  useEffect(() => {
+    if (!typedDone || caretGone) return;
+    const timer = window.setTimeout(() => setCaretGone(true), CARET_OUTRO_MS);
+    return () => window.clearTimeout(timer);
+  }, [typedDone, caretGone]);
 
   const shown = (at: number) => step >= at;
   /**
-   * 수면 위로 떠오르는 등장 — 아래에서 올라오면서 흐릿함이 걷히고 또렷해진다.
-   * blur는 전환 중에만 걸리고 끝나면 0이라 상시 비용이 없다.
+   * 등장 — 아래에 있던 요소가 제자리로 올라온다. 세로 축 이동과 페이드만 쓰고 블러는 걸지 않는다:
+   * 흐릿함이 걷히는 연출은 시선이 옆에 있다는 전제라, 아래에서 올라오는 움직임과 결이 어긋난다.
+   * 이동 폭은 24px로 과하지 않게 두고, 끝에서 부드럽게 감속하도록 easeOutQuint를 쓴다.
+   *
+   * 트랜지션 대상에 transform이 아니라 translate를 적는다: Tailwind v4의 translate-y-*는
+   * transform이 아니라 독립 속성 translate로 컴파일된다. transform만 걸면 이동은 트랜지션 대상이
+   * 아니라 위치가 즉시 튀고 페이드만 돌아, 올라오는 움직임이 화면에 남지 않는다.
    */
-  const surface = (at: number) =>
+  const rise = (at: number) =>
     cn(
-      'transition-[opacity,transform,filter] duration-[600ms] ease-out',
-      shown(at) ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-4 opacity-0 blur-[5px]',
+      'transition-[opacity,translate] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+      shown(at) ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0',
     );
 
   return (
@@ -124,7 +151,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
             <p
               className={cn(
                 'w-fit animate-[logo-flow_4s_linear_infinite] bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-[15px] font-bold tracking-tight text-transparent md:text-lg',
-                surface(ROLE),
+                rise(ROLE),
               )}
             >
               {profile.role}
@@ -134,28 +161,30 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
               tabIndex={-1}
               className={cn(
                 'mt-4 text-[64px] font-bold leading-[1.02] tracking-[-0.05em] text-zinc-100 outline-none sm:text-[96px] lg:text-[124px]',
-                surface(NAME),
+                rise(NAME),
               )}
             >
               {profile.name}
             </h1>
 
             <Tagline
-              text={tagline}
-              typed={typed}
-              className={cn('mt-6 max-w-xl', surface(TAGLINE))}
+              text={profile.tagline}
+              partial={typed > 0 ? frames[typed - 1] : ''}
+              caret={!caretGone}
+              caretOutro={typedDone}
+              className={cn('mt-6 max-w-xl', rise(TAGLINE))}
             />
 
             {/* 연락처는 하단 독이 상시 노출하므로 여기서는 위치만 둔다 */}
             {profile.location && (
-              <p className={cn('mt-9 text-[11px] text-zinc-500', surface(LOCATION))}>
+              <p className={cn('mt-9 text-[11px] text-zinc-500', rise(LOCATION))}>
                 {profile.location}
               </p>
             )}
           </div>
 
-          {/* 사진도 텍스트와 같은 방식으로 떠오른다 */}
-          <div className={surface(LOCATION)}>
+          {/* 사진도 텍스트와 같은 방식으로 올라온다 */}
+          <div className={rise(LOCATION)}>
             <Avatar profile={profile} />
           </div>
         </div>
@@ -166,7 +195,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           aria-hidden="true"
           className={cn(
             'pointer-events-none absolute bottom-6 right-5 flex items-center gap-2.5 text-zinc-300 md:right-8',
-            surface(LAST),
+            rise(LAST),
           )}
         >
           <span className="text-[11px] font-medium uppercase tracking-[0.2em]">Scroll</span>
@@ -178,7 +207,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
 }
 
 /**
- * 소개 문장 — 한 글자씩 타이핑된다.
+ * 소개 문장 — 자판을 치듯 조합된다(한글은 'ㅇ' → '아' → '안').
  *
  * 완성된 문장을 투명하게 한 벌 깔아 높이를 먼저 확보하고, 그 위에 타이핑 중인 문장을 겹친다.
  * 그러지 않으면 쉼표에서 줄바꿈이 생기는 순간 한 줄에서 두 줄로 늘어나며 아래 요소들이 밀린다.
@@ -186,21 +215,32 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
  */
 function Tagline({
   text,
-  typed,
+  partial,
+  caret,
+  caretOutro,
   className,
 }: {
   text: string;
-  typed: number;
+  partial: string;
+  caret: boolean;
+  /** 타이핑이 끝난 뒤의 캐럿 — 두 번 깜빡이고 꺼진다 */
+  caretOutro: boolean;
   className?: string;
 }) {
-  const done = typed >= text.length;
   return (
     <p className={cn('relative text-[15px] leading-[1.75] text-zinc-400 md:text-lg', className)}>
       <span className="invisible">{withBreaks(text)}</span>
       <span aria-hidden="true" className="absolute inset-0">
-        {withBreaks(text.slice(0, typed))}
-        {!done && (
-          <span className="caret-blink ml-0.5 inline-block h-[0.95em] w-[2px] translate-y-[0.12em] bg-accent align-middle" />
+        {withBreaks(partial)}
+        {caret && (
+          <span
+            className={cn(
+              // align-middle이 잡는 위치(베이스라인 + x-높이 절반)는 글자 상자의 중심보다 아래라,
+              // 글자와 캐럿의 중심선을 맞추려면 0.1em을 되올려야 한다(계측값 1.73px / 18px).
+              'ml-0.5 inline-block h-[0.95em] w-[2px] -translate-y-[0.1em] bg-accent align-middle',
+              caretOutro ? 'caret-outro' : 'caret-blink',
+            )}
+          />
         )}
       </span>
     </p>
@@ -227,7 +267,7 @@ function Glow({ on, image }: { on: boolean; image: string }) {
     <div
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute inset-0 transition-opacity duration-500 ease-out',
+        'pointer-events-none absolute inset-0 transition-opacity duration-700 ease-out',
         on ? 'opacity-100' : 'opacity-0',
       )}
       style={{ backgroundImage: image }}
