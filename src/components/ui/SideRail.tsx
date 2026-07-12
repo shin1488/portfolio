@@ -12,9 +12,11 @@ interface SideRailProps {
   ariaLabel: string;
   /**
    * 확장형 rail을 화면 중앙에서 얼마나(rem) 오른쪽에 놓을지. 본문 폭이 화면마다 다르므로
-   * (홈 프레임 72rem, 상세 본문 48rem) 본문 우측 경계 바깥에 붙도록 호출부가 정한다.
+   * (홈 프레임 72rem, 상세 본문·팝업 48rem) 본문 우측 경계 바깥에 붙도록 호출부가 정한다.
    */
   expandedOffsetRem: number;
+  /** 두 형태의 nav에 함께 얹을 클래스(z-index 등) */
+  className?: string;
 }
 
 /**
@@ -31,12 +33,16 @@ export function SideRail({
   onSelect,
   ariaLabel,
   expandedOffsetRem,
+  className,
 }: SideRailProps) {
   return (
     <>
       <nav
         aria-label={ariaLabel}
-        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto py-3 pl-8 pr-3 lg:flex 2xl:hidden"
+        className={cn(
+          'group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto py-3 pl-8 pr-3 lg:flex 2xl:hidden',
+          className,
+        )}
       >
         {items.map((item) => (
           <CollapsedItem
@@ -51,7 +57,10 @@ export function SideRail({
       <nav
         aria-label={ariaLabel}
         style={{ left: `calc(50% + ${expandedOffsetRem}rem)` }}
-        className="fixed top-1/2 z-30 hidden max-h-[76vh] -translate-y-1/2 overflow-y-auto 2xl:block"
+        className={cn(
+          'fixed top-1/2 z-30 hidden max-h-[76vh] -translate-y-1/2 overflow-y-auto 2xl:block',
+          className,
+        )}
       >
         <ul className="space-y-0.5">
           {items.map((item) => (

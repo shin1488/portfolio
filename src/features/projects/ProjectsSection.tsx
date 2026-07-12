@@ -1,24 +1,28 @@
-import { lazy, Suspense, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { Section } from '@/components/layout/Section';
 import { ProjectCard } from './ProjectCard';
+import { ProjectModal, preloadProjectBody } from './ProjectModal';
 import type { Project } from '@/types/content';
 
 interface ProjectsSectionProps {
   projects: Project[];
+  /** 팝업 열림 여부 — 홈이 섹션 rail을 접을지 판단한다(팝업이 자기 목차 rail을 띄우므로). */
+  onModalOpenChange?: (open: boolean) => void;
 }
-
-// 팝업은 열 때 처음 내려받는다 — react-markdown 체인이 홈 초기 번들에 들어가지 않게.
-const ProjectModal = lazy(() => import('./ProjectModal'));
 
 /**
  * Projects — 프레임 안 2열 격자. 여섯 칸 모두 ProjectCard 하나로 렌더하고, 칸 사이 여백·라운드
  * 없이 hairline만 둬 카드가 아니라 도면의 칸처럼 붙는다. 칸을 누르면 본문 팝업이 열린다.
  */
-export function ProjectsSection({ projects }: ProjectsSectionProps) {
+export function ProjectsSection({ projects, onModalOpenChange }: ProjectsSectionProps) {
   const location = useLocation();
   const [openId, setOpenId] = useState<string | null>(null);
   const n = projects.length;
+
+  useEffect(() => {
+    onModalOpenChange?.(openId !== null);
+  }, [openId, onModalOpenChange]);
 
   // 상세 페이지에서 "목록으로"를 눌러 돌아왔을 때 보고 있던 프로젝트 카드로 복귀시킨다.
   const restoreRaw = (location.state as { focusProjectIndex?: number } | null)?.focusProjectIndex;
@@ -60,16 +64,15 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
               project={project}
               delay={(i % 2) * 90}
               onOpen={() => setOpenId(project.id)}
+              // 마우스를 올린 순간 본문 청크(react-markdown 체인)를 미리 받아 둔다 —
+              // 클릭 후에 내려받으면 본문이 많은 프로젝트에서 팝업이 한참 늦게 채워진다.
+              onPrefetch={preloadProjectBody}
             />
           ))}
         </div>
       </div>
 
-      {openProject && (
-        <Suspense fallback={null}>
-          <ProjectModal project={openProject} onClose={() => setOpenId(null)} />
-        </Suspense>
-      )}
+      {openProject && <ProjectModal project={openProject} onClose={() => setOpenId(null)} />}
     </Section>
   );
 }

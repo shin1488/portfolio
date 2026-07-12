@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { HatchDivider } from '@/components/layout/Frame';
 import { SectionRail } from '@/components/layout/SectionRail';
 import { content } from '@/data';
@@ -17,18 +18,21 @@ import { useRouteFocus } from '@/lib/useRouteFocus';
 export function HomePage() {
   useDocumentTitle(SITE_NAME);
   const headingRef = useRouteFocus();
+  // 본문 팝업이 열리면 섹션 rail을 접는다 — 팝업이 그 자리에 자기 목차 rail을 띄우므로,
+  // 그대로 두면 우측에 rail이 두 개 겹친다.
+  const [modalOpen, setModalOpen] = useState(false);
   return (
     <>
       <ProfileSection profile={content.profile} headingRef={headingRef} />
       <HatchDivider />
       <IntroductionSection bio={content.profile.bio} />
       <HatchDivider />
-      <ProjectsSection projects={content.projects} />
+      <ProjectsSection projects={content.projects} onModalOpenChange={setModalOpen} />
       <HatchDivider />
       <SkillsSection categories={content.skillCategories} />
       <HatchDivider />
       <CareersSection categories={content.careers} />
-      <SectionRail />
+      {!modalOpen && <SectionRail />}
     </>
   );
 }

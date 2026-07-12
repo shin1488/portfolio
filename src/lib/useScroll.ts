@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 
 /**
  * 문서를 threshold 이상 내렸는지만 반환한다(맨 위로 버튼 노출용).
@@ -32,8 +32,15 @@ export function useScrolledPast(threshold = 400): boolean {
   return scrolled;
 }
 
-/** 주어진 heading id들 중 현재 읽고 있는 섹션 id를 반환한다(미니 목차 강조용). */
-export function useActiveHeadingId(ids: string[]): {
+/**
+ * 주어진 heading id들 중 현재 읽고 있는 섹션 id를 반환한다(목차 rail 강조용).
+ * containerRef를 주면 그 컨테이너의 내부 스크롤을, 없으면 문서 스크롤을 기준으로 삼는다
+ * (상세 페이지는 문서, 팝업은 패널 본문이 스크롤 주체다).
+ */
+export function useActiveHeadingId(
+  ids: string[],
+  containerRef?: RefObject<HTMLElement | null>,
+): {
   activeId: string;
   select: (id: string) => void;
 } {
@@ -50,18 +57,29 @@ export function useActiveHeadingId(ids: string[]): {
   useEffect(() => {
     if (!ids.length) return;
     pinnedRef.current = null; // 페이지(목차)가 바뀌면 고정 해제
+    const container = containerRef?.current ?? null;
+    // 스크롤 이벤트를 받을 대상 — 컨테이너 스크롤이면 그 요소, 아니면 window.
+    const scroller: HTMLElement | Window = container ?? window;
+
     // 매 스크롤마다 헤딩의 실제 위치를 동기적으로 다시 읽어 활성 섹션을 정한다.
     // IntersectionObserver를 쓰지 않는 이유: 첫 방문 시 지연 로딩 이미지 디코딩으로 콜백 전달이
     // 지연·병합되면 빠르게 지나간 중간 섹션의 교차 변화를 놓쳐 강조를 건너뛰기 때문.
     const compute = () => {
       if (pinnedRef.current !== null) return; // 클릭 고정 중엔 스파이 무시
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const y = window.scrollY;
+      const viewH = container ? container.clientHeight : window.innerHeight;
+      const maxScroll = container
+        ? container.scrollHeight - container.clientHeight
+        : document.documentElement.scrollHeight - window.innerHeight;
+      const y = container ? container.scrollTop : window.scrollY;
+      // 헤딩의 '스크롤 좌표'는 뷰포트 좌표에서 컨테이너 상단을 빼고 현재 스크롤을 더해 얻는다.
+      const originTop = container ? container.getBoundingClientRect().top : 0;
       // 활성선(뷰포트 상단에서 약 28% 지점)에 헤딩 top이 닿는 스크롤 위치 = 그 헤딩의 활성 시작점.
-      const line = Math.max(88, window.innerHeight * 0.28);
+      const line = Math.max(88, viewH * 0.28);
       const thresholds = ids.map((id) => {
         const el = document.getElementById(id);
-        return el ? y + el.getBoundingClientRect().top - line : Number.POSITIVE_INFINITY;
+        return el
+          ? y + (el.getBoundingClientRect().top - originTop) - line
+          : Number.POSITIVE_INFINITY;
       });
 
       // 문서 끝이라 활성선까지 못 올라오는 뒤쪽 헤딩들은 threshold가 maxScroll을 넘어 한 점에 뭉친다
@@ -92,16 +110,16 @@ export function useActiveHeadingId(ids: string[]): {
     };
 
     compute();
-    window.addEventListener('scroll', compute, { passive: true });
+    scroller.addEventListener('scroll', compute, { passive: true });
     window.addEventListener('resize', compute, { passive: true });
     window.addEventListener('wheel', unpin, { passive: true });
     window.addEventListener('touchmove', unpin, { passive: true });
     window.addEventListener('keydown', unpin);
-    // 지연 로딩 이미지가 로드돼 문서 높이가 바뀌면(스크롤 이벤트 없이도) 다시 계산한다.
+    // 지연 로딩 이미지가 로드돼 문서(또는 컨테이너) 높이가 바뀌면 스크롤 이벤트 없이도 다시 계산한다.
     const ro = new ResizeObserver(compute);
-    ro.observe(document.body);
+    ro.observe(container ?? document.body);
     return () => {
-      window.removeEventListener('scroll', compute);
+      scroller.removeEventListener('scroll', compute);
       window.removeEventListener('resize', compute);
       window.removeEventListener('wheel', unpin);
       window.removeEventListener('touchmove', unpin);
@@ -109,7 +127,7 @@ export function useActiveHeadingId(ids: string[]): {
       ro.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, [key, containerRef]);
 
   return { activeId, select };
 }

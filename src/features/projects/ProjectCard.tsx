@@ -16,6 +16,8 @@ interface ProjectCardProps {
   delay?: number;
   /** 카드를 눌렀을 때 본문 팝업을 여는 콜백 */
   onOpen: () => void;
+  /** 마우스를 올리거나 포커스가 닿았을 때 본문 청크를 미리 받아 두는 콜백 */
+  onPrefetch?: () => void;
 }
 
 /**
@@ -26,13 +28,18 @@ interface ProjectCardProps {
  * 카드 전체가 오버레이 링크다. 평범한 클릭은 본문 팝업을 열고, 새 탭·새 창(⌘·Ctrl·중클릭)과
  * 크롤러에는 상세 페이지 링크 그대로 남는다.
  */
-export function ProjectCard({ project, delay = 0, onOpen }: ProjectCardProps) {
+export function ProjectCard({ project, delay = 0, onOpen, onPrefetch }: ProjectCardProps) {
   const shownTech = project.techStack.slice(0, TECH_VISIBLE);
   const hiddenCount = project.techStack.length - shownTech.length;
 
   return (
     // scroll-mt: 상세에서 목록으로 복귀할 때 sticky 헤더(44px)에 카드 상단이 가리지 않게.
-    <article id={`project-${project.id}`} className="group relative scroll-mt-16">
+    <article
+      id={`project-${project.id}`}
+      onMouseEnter={onPrefetch}
+      onFocus={onPrefetch}
+      className="group relative scroll-mt-16"
+    >
       <Link
         to={`/projects/${project.id}`}
         aria-label={`${project.title} 본문 보기`}
