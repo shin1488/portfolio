@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router';
+import { isEnabled } from '@/lib/debugFlags';
 import { scrollElementToTop } from '@/lib/section';
 
 // 새로고침 스크롤 복원용 sessionStorage 키 접두사(경로별로 저장). in-memory Map은
@@ -24,6 +25,7 @@ const RESTORE_STEP_MS = 16;
  * 사용자가 스크롤·터치·키로 개입하면 즉시 그만둔다 — 사용자와 스크롤을 두고 다투지 않는다.
  */
 function restoreScroll(saved: number) {
+  if (!isEnabled('restore')) return; // 실기기 원인 추적용 스위치(?restore=off)
   if (saved <= 0) {
     window.scrollTo({ top: 0, behavior: 'instant' });
     return;

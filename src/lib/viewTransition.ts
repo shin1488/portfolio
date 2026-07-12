@@ -1,4 +1,5 @@
 import { flushSync } from 'react-dom';
+import { isEnabled } from './debugFlags';
 
 /**
  * 라우트 전환을 크로스페이드로 감싸는 유틸(View Transitions).
@@ -35,6 +36,7 @@ function startAndIgnoreAbort(update: () => void | Promise<void>) {
 
 function canTransition(): boolean {
   return (
+    isEnabled('vt') &&
     typeof document.startViewTransition === 'function' &&
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
