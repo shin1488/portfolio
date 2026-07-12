@@ -98,8 +98,12 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
    */
   const pushedRef = useRef(false);
   useEffect(() => {
-    window.history.pushState({ ...window.history.state, modal: true }, '');
-    pushedRef.current = true;
+    // 이미 쌓았으면 다시 쌓지 않는다 — StrictMode가 개발 모드에서 effect를 두 번 돌리면
+    // 항목이 두 개 쌓여 뒤로가기를 두 번 눌러야 나가게 된다(ref는 재마운트에도 유지된다).
+    if (!pushedRef.current) {
+      window.history.pushState({ ...window.history.state, modal: true }, '');
+      pushedRef.current = true;
+    }
     pausePopTransition(true);
     const onPop = () => {
       pushedRef.current = false; // 우리가 쌓은 항목이 이미 빠졌다

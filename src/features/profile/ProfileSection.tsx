@@ -10,9 +10,9 @@ interface ProfileSectionProps {
 }
 
 /**
- * 첫 등장 연출의 단계 — 글로우 셋이 좌상단 → 우하단 → 좌하단 순으로 켜지고,
- * 이어서 좌측 텍스트가 역할 → 이름 → 소개 → 위치 순으로 탁탁 올라온다.
- * 마지막 단계에서 프로필 사진이 함께 뜬다.
+ * 첫 등장 연출의 단계 — 글로우 셋이 좌상단 → 우하단 → 좌하단 순으로 켜지고, 이어서 좌측 텍스트가
+ * 역할 → 이름 → 소개 → 위치 순으로 수면 위로 떠오르듯 올라온다. 소개 문장은 그 위에 타이핑이 얹히고,
+ * 프로필 사진은 마지막 단계에서 함께 떠오른다.
  */
 const GLOW_GREEN = 1;
 const GLOW_BLUE = 2;
@@ -22,8 +22,10 @@ const NAME = 5;
 const TAGLINE = 6;
 const LOCATION = 7; // 프로필 사진도 이 단계에서 함께
 const LAST = LOCATION;
-/** 단계 간격(ms) — 지루하지 않게 아주 빠르게 지나간다(총 ~500ms) */
+/** 단계 간격(ms) — 지루하지 않게 아주 빠르게 지나간다 */
 const STEP_MS = 75;
+/** 소개 문장 타이핑 속도(글자당 ms) */
+const TYPE_MS = 16;
 
 /**
  * 연출은 문서를 새로 연 첫 렌더에서만 한다. 모듈 스코프 플래그라 SPA 안에서 홈으로 되돌아올 때는
@@ -33,18 +35,17 @@ let introPlayed = false;
 
 /** 히어로 — 프레임 안 좌측 정렬 인트로. 액센트 3색 글로우가 모서리에서 번진다. */
 export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
+  const tagline = profile.tagline;
   const [step, setStep] = useState(introPlayed ? LAST : 0);
+  const [typed, setTyped] = useState(introPlayed ? tagline.length : 0);
 
   useEffect(() => {
-    // 이미 재생한 뒤의 재마운트(SPA 안에서 홈 복귀)라면 곧바로 전부 보인다.
-    if (introPlayed) {
-      setStep(LAST);
-      return;
-    }
+    if (introPlayed) return;
     // 동작 줄이기 설정이면 연출 없이 즉시 전부 보인다.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       introPlayed = true;
       setStep(LAST);
+      setTyped(tagline.length);
       return;
     }
     const timers = Array.from({ length: LAST }, (_, i) =>
@@ -57,20 +58,39 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
       () => {
         introPlayed = true;
       },
-      LAST * STEP_MS + 400,
+      LAST * STEP_MS + tagline.length * TYPE_MS + 400,
     );
     return () => {
       timers.forEach(window.clearTimeout);
       window.clearTimeout(done);
     };
-  }, []);
+  }, [tagline.length]);
+
+  // 소개 문장 타이핑 — 해당 단계에 닿으면 한 번만 시작한다(글자마다 effect를 다시 걸지 않도록
+  // 인터벌 안에서 카운터를 직접 굴린다).
+  const typing = step >= TAGLINE;
+  useEffect(() => {
+    if (!typing || typed >= tagline.length) return;
+    let n = typed;
+    const id = window.setInterval(() => {
+      n += 1;
+      setTyped(n);
+      if (n >= tagline.length) window.clearInterval(id);
+    }, TYPE_MS);
+    return () => window.clearInterval(id);
+    // typed를 의존성에 넣으면 글자마다 인터벌이 새로 걸린다 — 시작 신호(typing)만 본다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typing, tagline.length]);
 
   const shown = (at: number) => step >= at;
-  /** 텍스트 한 덩어리 — 아래에서 살짝 올라오며 뜬다 */
-  const rise = (at: number) =>
+  /**
+   * 수면 위로 떠오르는 등장 — 아래에서 올라오면서 흐릿함이 걷히고 또렷해진다.
+   * blur는 전환 중에만 걸리고 끝나면 0이라 상시 비용이 없다.
+   */
+  const surface = (at: number) =>
     cn(
-      'transition-[opacity,transform] duration-300 ease-out',
-      shown(at) ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
+      'transition-[opacity,transform,filter] duration-[600ms] ease-out',
+      shown(at) ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-4 opacity-0 blur-[5px]',
     );
 
   return (
@@ -104,7 +124,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
             <p
               className={cn(
                 'w-fit animate-[logo-flow_4s_linear_infinite] bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-[15px] font-bold tracking-tight text-transparent md:text-lg',
-                rise(ROLE),
+                surface(ROLE),
               )}
             >
               {profile.role}
@@ -114,40 +134,28 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
               tabIndex={-1}
               className={cn(
                 'mt-4 text-[64px] font-bold leading-[1.02] tracking-[-0.05em] text-zinc-100 outline-none sm:text-[96px] lg:text-[124px]',
-                rise(NAME),
+                surface(NAME),
               )}
             >
               {profile.name}
             </h1>
-            {/* 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */}
-            <p
-              className={cn(
-                'mt-6 max-w-xl text-[15px] leading-[1.75] text-zinc-400 md:text-lg',
-                rise(TAGLINE),
-              )}
-            >
-              {profile.tagline.split(/,\s*/).map((part, i, arr) => (
-                <span key={i}>
-                  {part}
-                  {i < arr.length - 1 && (
-                    <>
-                      ,<br />
-                    </>
-                  )}
-                </span>
-              ))}
-            </p>
+
+            <Tagline
+              text={tagline}
+              typed={typed}
+              className={cn('mt-6 max-w-xl', surface(TAGLINE))}
+            />
 
             {/* 연락처는 하단 독이 상시 노출하므로 여기서는 위치만 둔다 */}
             {profile.location && (
-              <p className={cn('mt-9 text-[11px] text-zinc-500', rise(LOCATION))}>
+              <p className={cn('mt-9 text-[11px] text-zinc-500', surface(LOCATION))}>
                 {profile.location}
               </p>
             )}
           </div>
 
-          {/* 사진은 마지막 텍스트와 함께 뜬다 */}
-          <div className={rise(LOCATION)}>
+          {/* 사진도 텍스트와 같은 방식으로 떠오른다 */}
+          <div className={surface(LOCATION)}>
             <Avatar profile={profile} />
           </div>
         </div>
@@ -158,7 +166,7 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
           aria-hidden="true"
           className={cn(
             'pointer-events-none absolute bottom-6 right-5 flex items-center gap-2.5 text-zinc-300 md:right-8',
-            rise(LAST),
+            surface(LAST),
           )}
         >
           <span className="text-[11px] font-medium uppercase tracking-[0.2em]">Scroll</span>
@@ -167,6 +175,50 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
       </Frame>
     </section>
   );
+}
+
+/**
+ * 소개 문장 — 한 글자씩 타이핑된다.
+ *
+ * 완성된 문장을 투명하게 한 벌 깔아 높이를 먼저 확보하고, 그 위에 타이핑 중인 문장을 겹친다.
+ * 그러지 않으면 쉼표에서 줄바꿈이 생기는 순간 한 줄에서 두 줄로 늘어나며 아래 요소들이 밀린다.
+ * 낭독기에는 완성된 문장 한 벌만 읽힌다.
+ */
+function Tagline({
+  text,
+  typed,
+  className,
+}: {
+  text: string;
+  typed: number;
+  className?: string;
+}) {
+  const done = typed >= text.length;
+  return (
+    <p className={cn('relative text-[15px] leading-[1.75] text-zinc-400 md:text-lg', className)}>
+      <span className="invisible">{withBreaks(text)}</span>
+      <span aria-hidden="true" className="absolute inset-0">
+        {withBreaks(text.slice(0, typed))}
+        {!done && (
+          <span className="caret-blink ml-0.5 inline-block h-[0.95em] w-[2px] translate-y-[0.12em] bg-accent align-middle" />
+        )}
+      </span>
+    </p>
+  );
+}
+
+/** 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */
+function withBreaks(text: string) {
+  return text.split(/,\s*/).map((part, i, arr) => (
+    <span key={i}>
+      {part}
+      {i < arr.length - 1 && (
+        <>
+          ,<br />
+        </>
+      )}
+    </span>
+  ));
 }
 
 /** 히어로 모서리 글로우 한 겹 — 켜질 때 서서히 번진다 */

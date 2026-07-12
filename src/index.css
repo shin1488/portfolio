@@ -136,6 +136,23 @@ body {
   display: none; /* Chrome/Safari */
 }
 
+/* Hero 소개 문장의 타이핑 캐럿 — steps(1)로 페이드 없이 딱딱 켜졌다 꺼진다 */
+@media (prefers-reduced-motion: no-preference) {
+  .caret-blink {
+    animation: caret-blink 0.9s steps(1) infinite;
+  }
+  @keyframes caret-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
 /* Hero 스크롤 힌트 화살표 — 아래로 살짝 바운스 */
 @media (prefers-reduced-motion: no-preference) {
   .scroll-hint-arrow {
