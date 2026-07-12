@@ -179,6 +179,12 @@ html[data-no-blur] *::after {
   display: none; /* Chrome/Safari */
 }
 
+/* Hero 소개 문장 — 글자 크기를 최소치까지 줄여도 한 줄이 안 들어가는 좁은 화면에서는 줄을 접는다.
+   잘려 나가는 것보다 세 줄로 읽히는 편이 낫다(판정은 ProfileSection이 하고, 여기서는 표시만 한다). */
+p[data-wrap] [data-line] {
+  white-space: normal;
+}
+
 /* Hero 소개 문장의 타이핑 캐럿 — steps(1)로 페이드 없이 딱딱 켜졌다 꺼진다.
    치는 동안(.caret-blink)은 계속 깜빡이고, 다 치면(.caret-outro) 치는 동안보다 느린 간격으로
    세 번 깜빡인 뒤 꺼진 채로 남는다(both: 마지막 키프레임 opacity 0을 유지).

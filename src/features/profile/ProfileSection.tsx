@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type Ref } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type Ref } from 'react';
 import { Frame } from '@/components/layout/Frame';
 import { cn } from '@/lib/cn';
 import type { Profile } from '@/types/content';
@@ -146,7 +146,10 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
         {/* 좌측 여백은 다른 섹션(px-8)보다 넉넉하게 — 초대형 이름이 프레임 선에 붙지 않게 한다.
             사진은 텍스트 블록과 세로 중앙을 맞춘다. */}
         <div className="relative grid gap-12 px-6 py-24 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-16 md:px-16">
-          <div>
+          {/* min-w-0 — 그리드 칸의 최소 폭은 기본값이 내용 폭(auto)이다. 소개 문장의 줄은 접히지
+              않으므로(whitespace-nowrap) 그대로 두면 칸이 문장 길이만큼 벌어져 화면 밖으로 나가고,
+              문단이 늘 제 폭에 들어간 것으로 측정돼 글자 크기가 줄지 않는다. */}
+          <div className="min-w-0">
             {/* 역할 — 로고 호버와 같은 그라데이션이 상시 흐른다(breathing) */}
             <p
               className={cn(
@@ -183,8 +186,11 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
             )}
           </div>
 
-          {/* 사진도 텍스트와 같은 방식으로 올라온다 */}
-          <div className={rise(LOCATION)}>
+          {/* 사진도 텍스트와 같은 방식으로 올라온다.
+              좁은 화면에서는 텍스트 아래 왼쪽에 두면 글과 겹쳐 읽혀 어느 쪽도 자기 자리를 갖지
+              못한다. 오른쪽 끝으로 보내 좌측 텍스트와 무게를 나누고, 텍스트와의 간격도 줄인다
+              (넓은 화면은 그대로 텍스트 옆 두 번째 칸이다). */}
+          <div className={cn('-mt-6 justify-self-end md:mt-0 md:justify-self-auto', rise(LOCATION))}>
             <Avatar profile={profile} />
           </div>
         </div>
@@ -207,11 +213,21 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
 }
 
 /**
+ * 글자 크기를 줄이더라도 이 값 밑으로는 내려가지 않는다(px). 두 줄을 지키는 것이 우선이라 꽤
+ * 낮게 잡되(소형 폰에서 10px), 이보다 더 줄여야 하는 폭에서는 크기 대신 줄을 접는다.
+ */
+const TAGLINE_MIN_PX = 10;
+
+/**
  * 소개 문장 — 자판을 치듯 조합된다(한글은 'ㅇ' → '아' → '안').
  *
+ * 줄은 쉼표에서만 끊는다. 화면이 좁아 한 줄이 안 들어가면 줄을 접는 대신 글자 크기를 줄여, 폭과
+ * 무관하게 언제나 두 줄로 읽히게 한다. 접히도록 두면 마지막 '입니다.'만 셋째 줄로 떨어져 문장이
+ * 부서져 보인다.
+ *
  * 완성된 문장을 투명하게 한 벌 깔아 높이를 먼저 확보하고, 그 위에 타이핑 중인 문장을 겹친다.
- * 그러지 않으면 쉼표에서 줄바꿈이 생기는 순간 한 줄에서 두 줄로 늘어나며 아래 요소들이 밀린다.
- * 낭독기에는 완성된 문장 한 벌만 읽힌다.
+ * 그러지 않으면 타이핑이 둘째 줄에 닿는 순간 아래 요소들이 밀린다. 낭독기에는 완성된 문장 한 벌만
+ * 읽힌다.
  */
 function Tagline({
   text,
@@ -227,12 +243,97 @@ function Tagline({
   caretOutro: boolean;
   className?: string;
 }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+
+  // 폭에 맞춰 글자 크기를 정한다. 클래스가 정한 크기(모바일 15px, md 18px)를 상한으로 두고,
+  // 가장 긴 줄이 문단 폭을 넘으면 넘는 비율만큼 줄인다. 폭이 바뀔 때마다 다시 잰다.
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const fit = () => {
+      // 재기 전에 앞선 판정을 모두 되돌린다 — 줄을 접은 상태(data-wrap)로 재면 줄이 이미 접혀
+      // 있어 "폭에 들어간다"고 나오고, 그러면 크기를 원래대로 키웠다가 다시 넘쳐 두 상태를
+      // 오간다(폭 310px에서 한 프레임씩 깜빡이던 원인).
+      element.removeAttribute('data-wrap');
+      element.style.fontSize = ''; // 상한(클래스가 정한 크기)으로 되돌려 놓고 잰다
+
+      const base = parseFloat(getComputedStyle(element).fontSize);
+      const lines = element.querySelectorAll<HTMLElement>('[data-line]');
+      let longest = 0;
+      lines.forEach((line) => {
+        longest = Math.max(longest, line.scrollWidth);
+      });
+      if (!longest) return;
+
+      const room = element.clientWidth;
+      if (longest <= room) return; // 상한 그대로 들어간다
+
+      const needed = (base * room) / longest;
+      let size = Math.max(TAGLINE_MIN_PX, needed);
+      element.style.fontSize = `${size}px`;
+
+      // 글자 폭은 크기에 정확히 비례하지 않는다(글리프 폭이 정수 픽셀로 떨어진다). 한 번 더 재서
+      // 남은 넘침만큼 마저 줄인다 — 폭은 그대로이므로 이 보정이 다시 관측을 부르지는 않는다.
+      let after = 0;
+      lines.forEach((line) => {
+        after = Math.max(after, line.scrollWidth);
+      });
+      if (after > room) {
+        size = Math.max(TAGLINE_MIN_PX, (size * room) / after);
+        element.style.fontSize = `${size}px`;
+      }
+
+      // 가장 작은 크기로도 안 들어가는 폭(구형 소형 폰 등)에서는 글자를 더 줄이는 대신 줄을 접는다.
+      // 세 줄이 되더라도 잘려 나가는 것보다는 읽힌다.
+      let final = 0;
+      lines.forEach((line) => {
+        final = Math.max(final, line.scrollWidth);
+      });
+      if (final > room) element.setAttribute('data-wrap', '');
+    };
+
+    fit();
+    // 폭이 바뀐 경우에만 다시 잰다. 글자 크기를 바꾸면 문단 높이가 따라 바뀌는데, 그 높이 변화까지
+    // 다시 재기 시작하면 잰다 → 바꾼다 → 또 잰다로 되돌아 돌게 된다.
+    let lastWidth = element.clientWidth;
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0].contentRect.width;
+      if (width === lastWidth) return;
+      lastWidth = width;
+      fit();
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [text]);
+
   return (
-    <p className={cn('relative text-[15px] leading-[1.75] text-zinc-400 md:text-lg', className)}>
-      <span className="invisible">{withBreaks(text)}</span>
+    <p
+      ref={ref}
+      className={cn('relative text-[15px] leading-[1.75] text-zinc-400 md:text-lg', className)}
+    >
+      <span className="invisible">{asLines(text)}</span>
       <span aria-hidden="true" className="absolute inset-0">
-        {withBreaks(partial)}
-        {caret && (
+        {asLines(partial, caret, caretOutro)}
+      </span>
+    </p>
+  );
+}
+
+/**
+ * 쉼표에서만 줄을 끊는다 — 어색한 중간 지점 대신 문장 호흡 단위로. 각 줄은 접히지 않으므로
+ * (whitespace-nowrap) 줄 수는 쉼표 개수로 고정되고, 폭이 모자라면 Tagline이 글자 크기를 줄인다.
+ * 캐럿은 마지막 줄 끝에 붙인다.
+ */
+function asLines(text: string, caret = false, caretOutro = false) {
+  const parts = text.split(/,\s*/);
+  return parts.map((part, i, arr) => {
+    const last = i === arr.length - 1;
+    return (
+      <span key={i} data-line className="block whitespace-nowrap">
+        {part}
+        {!last && ','}
+        {last && caret && (
           <span
             className={cn(
               // align-middle이 잡는 위치(베이스라인 + x-높이 절반)는 글자 상자의 중심보다 아래라,
@@ -243,22 +344,8 @@ function Tagline({
           />
         )}
       </span>
-    </p>
-  );
-}
-
-/** 쉼표에서 줄바꿈 — 어색한 중간 지점 대신 문장 호흡 단위로 끊는다 */
-function withBreaks(text: string) {
-  return text.split(/,\s*/).map((part, i, arr) => (
-    <span key={i}>
-      {part}
-      {i < arr.length - 1 && (
-        <>
-          ,<br />
-        </>
-      )}
-    </span>
-  ));
+    );
+  });
 }
 
 /** 히어로 모서리 글로우 한 겹 — 켜질 때 서서히 번진다 */
