@@ -38,7 +38,7 @@ export function TableOfContents({ entries, defaultOpen = false }: TableOfContent
         <span className="flex items-center gap-2.5">
           <svg
             viewBox="0 0 24 24"
-            className="size-6 text-green-700"
+            className="size-6 text-accent"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -91,10 +91,10 @@ export function TableOfContents({ entries, defaultOpen = false }: TableOfContent
                   }}
                   className="group flex items-baseline gap-3.5 py-2.5"
                 >
-                  <span className="w-4.5 shrink-0 font-mono text-[13px] tabular-nums text-zinc-400 transition-colors group-hover:text-green-700 dark:text-zinc-500">
+                  <span className="w-4.5 shrink-0 font-mono text-[13px] tabular-nums text-zinc-400 transition-colors group-hover:text-accent dark:text-zinc-500">
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-[15px] text-zinc-700 group-hover:bg-linear-to-r group-hover:from-green-700 group-hover:to-blue-800 group-hover:bg-clip-text group-hover:text-transparent dark:text-zinc-300">
+                  <span className="text-[15px] text-zinc-700 group-hover:bg-linear-to-r group-hover:from-accent group-hover:to-accent-end group-hover:bg-clip-text group-hover:text-transparent dark:text-zinc-300">
                     {entry.text}
                   </span>
                 </a>

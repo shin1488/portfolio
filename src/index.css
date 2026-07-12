@@ -23,6 +23,11 @@
   /* 페이지 전체를 관통하는 hairline 격자의 단일 색. 모든 프레임·셀 경계가 이 값을 쓴다. */
   --color-divider: #27272a;
 
+  /* 상세 페이지 액센트 한 쌍 — 그린에서 출발해 딥블루로 잠긴다. 밑줄·진행 바·강조 글자·틱이
+     모두 이 두 값만 쓰고, 단색으로 쓰는 아이콘·불릿은 시작색(accent)을 쓴다. */
+  --color-accent: #66dc7e;
+  --color-accent-end: #1c1ca0;
+
   /* 호버 등 상태 전환이 뚝 끊기지 않도록 기본 트랜지션을 길고 완만하게(easeOutQuint) */
   --default-transition-duration: 250ms;
   --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
@@ -170,15 +175,15 @@ body {
   scroll-margin-top: 5rem;
 }
 
-/* 마크다운 섹션 제목 — 제목 '텍스트 폭'에 딱 맞춘 그린→다크블루 밑줄(하단 배경 3px), 섹션 사이
-   넉넉한 간격. width:fit-content로 박스를 글자에 맞춰 줄여, 밑줄이 헤더 텍스트 길이에 정확히 맞는다.
-   그라데이션은 사이트 액센트인 그린에서 출발해 다크블루로 잠기며, 상세 페이지(prose)에서만 쓴다. */
+/* 마크다운 섹션 제목 — 제목 '텍스트 폭'에 딱 맞춘 액센트 밑줄(하단 배경 3px), 섹션 사이 넉넉한 간격.
+   width:fit-content로 박스를 글자에 맞춰 줄여, 밑줄이 헤더 텍스트 길이에 정확히 맞는다.
+   색은 @theme의 accent 한 쌍과 같고, 상세 페이지(prose)에서만 쓴다. */
 .prose :where(h1) {
   width: fit-content;
   max-width: 100%;
   margin-bottom: 2.4rem;
   padding-bottom: 0.5rem;
-  background-image: linear-gradient(to right, #15803d, #1e40af);
+  background-image: linear-gradient(to right, #66dc7e, #1c1ca0);
   background-repeat: no-repeat;
   background-size: 100% 3px;
   background-position: left bottom;

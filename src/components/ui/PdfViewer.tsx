@@ -232,7 +232,7 @@ export default function PdfViewer({ href, title }: PdfViewerProps) {
             aria-label={`${title} 슬라이드 보기`}
             className="group absolute inset-0 flex items-center justify-center bg-black/10 transition hover:bg-black/25"
           >
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-800/90 shadow-lg backdrop-blur-sm transition group-hover:scale-105">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-end/90 shadow-lg backdrop-blur-sm transition group-hover:scale-105">
               <svg viewBox="0 0 24 24" className="ml-0.5 h-7 w-7 fill-white" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
               </svg>
@@ -270,7 +270,7 @@ export default function PdfViewer({ href, title }: PdfViewerProps) {
             className="relative h-1.5 flex-1 cursor-pointer rounded-full bg-zinc-300 dark:bg-zinc-700"
           >
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-linear-to-r from-green-700 to-blue-800 transition-[width] duration-200"
+              className="absolute inset-y-0 left-0 rounded-full bg-linear-to-r from-accent to-accent-end transition-[width] duration-200"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -307,7 +307,7 @@ export default function PdfViewer({ href, title }: PdfViewerProps) {
           )}
         >
           <div
-            className="h-full bg-linear-to-r from-green-700 to-blue-800 transition-[width] duration-200"
+            className="h-full bg-linear-to-r from-accent to-accent-end transition-[width] duration-200"
             style={{ width: `${progressPct}%` }}
           />
         </div>

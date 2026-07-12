@@ -155,9 +155,9 @@ function ReadingProgressBar() {
       aria-hidden="true"
       className="absolute inset-x-0 top-full h-0.75 overflow-hidden bg-zinc-800/60 lg:hidden"
     >
-      {/* 상세 페이지 액센트는 다크그린→다크블루 그라데이션 — 사이트 전역에서 이 한 쌍만 쓴다 */}
+      {/* 상세 페이지의 강조는 전부 accent → accent-end 한 쌍으로 통일한다(index.css @theme) */}
       <div
-        className="h-full bg-linear-to-r from-green-700 to-blue-800"
+        className="h-full bg-linear-to-r from-accent to-accent-end"
         style={{ width: `${progress * 100}%` }}
       />
     </div>
