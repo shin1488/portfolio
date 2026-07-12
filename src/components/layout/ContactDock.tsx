@@ -5,12 +5,15 @@ interface ContactDockProps {
   links: SocialLink[];
 }
 
-/** 화면 하단 중앙에 고정되는 연락처 독 — 스크롤 위치와 무관하게 연락 수단에 바로 접근한다 */
+/**
+ * 화면 하단 중앙에 고정되는 연락처 독 — 스크롤 위치와 무관하게 연락 수단에 바로 접근한다.
+ * 좁은 화면(<md)에서는 숨긴다: 화면이 짧아 본문을 계속 가리고, 연락처는 헤더 드로어가 이미 담는다.
+ */
 export function ContactDock({ links }: ContactDockProps) {
   return (
     <nav
       aria-label="연락처"
-      className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2"
+      className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-20 hidden -translate-x-1/2 md:block"
     >
       {/* 배경은 fixed 요소 자체가 아닌 absolute 자식에 — iOS 26 Safari는 하단에 보이는
           fixed 요소의 배경색으로 하단 바를 칠하는데, absolute 자식은 샘플링에서 무시된다.
@@ -29,7 +32,7 @@ export function ContactDock({ links }: ContactDockProps) {
               <a
                 href={link.href}
                 {...(opensNewTab ? { target: '_blank', rel: 'noreferrer' } : {})}
-                className="glow-hover inline-flex items-center gap-1.5 px-4 py-2.5 text-[11px] text-zinc-400"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 text-[11px] text-zinc-400 transition-colors duration-500 ease-out hover:text-accent"
               >
                 <SocialIcon kind={link.kind} />
                 {link.label}

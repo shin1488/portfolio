@@ -1,6 +1,5 @@
 @import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 @import 'tailwindcss';
-@import 'highlight.js/styles/github-dark.css';
 @plugin "@tailwindcss/typography";
 
 /* 테마는 상시 다크 — OS 설정 대신 html.dark 클래스로 고정한다(index.html).
@@ -194,19 +193,109 @@ body {
   overflow-wrap: break-word;
 }
 
-/* 코드블록은 라이트/다크 모두 어두운 배경 위에서 렌더링 —
-   토큰 색은 github-dark 테마가, 배경·테두리는 여기서 담당한다. */
-.hljs {
-  background: transparent;
-}
-
+/* 코드블록 — 배경·테두리는 여기서, 토큰 색은 아래 하이라이트 팔레트가 담당한다.
+   highlight.js가 제공하는 기성 테마(github-dark)는 키워드·문자열·주석 정도만 칠해 Java 코드가
+   서너 색으로 밋밋했다. 새 라이브러리를 붙이지 않고, highlight.js가 이미 붙여 주는 .hljs-* 클래스에
+   IntelliJ Darcula 팔레트를 직접 매핑한다(어노테이션·필드·메서드명·숫자까지 따로 색이 붙는다). */
 .prose pre {
   @apply border border-zinc-700/60 bg-zinc-900;
 }
 
-/* 인라인 코드: 백틱 문자 대신 배경 칩으로 코드임을 드러낸다 */
+.hljs {
+  background: transparent;
+  color: #a9b7c6; /* 기본 식별자 */
+}
+
+/* 키워드·제어문 */
+.hljs-keyword,
+.hljs-literal,
+.hljs-type,
+.hljs-selector-tag {
+  color: #cc7832;
+}
+
+/* 문자열·정규식 */
+.hljs-string,
+.hljs-regexp,
+.hljs-char,
+.hljs-template-variable,
+.hljs-addition {
+  color: #6a8759;
+}
+
+/* 숫자·상수 */
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: #6897bb;
+}
+
+/* 주석 */
+.hljs-comment,
+.hljs-quote {
+  color: #808080;
+  font-style: italic;
+}
+.hljs-doctag {
+  color: #629755;
+  font-style: italic;
+}
+
+/* 어노테이션·전처리기(@Override, @Service …) */
+.hljs-meta,
+.hljs-meta-keyword {
+  color: #bbb529;
+}
+
+/* 메서드·함수 이름 */
+.hljs-title,
+.hljs-title.function_,
+.hljs-section {
+  color: #ffc66d;
+}
+
+/* 클래스·타입 이름은 기본색을 유지한다(Darcula와 동일) */
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-params {
+  color: #a9b7c6;
+}
+
+/* 필드·속성·변수 */
+.hljs-attr,
+.hljs-attribute,
+.hljs-property,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #9876aa;
+}
+
+/* 내장 식별자·태그 */
+.hljs-built_in,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: #8888c6;
+}
+.hljs-name,
+.hljs-tag {
+  color: #e8bf6a;
+}
+
+.hljs-deletion {
+  color: #cc7832;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* 인라인 코드: 백틱 문자 대신 배경 칩으로 코드임을 드러낸다. 글자는 액센트 로즈 —
+   본문 흐름 안에서 코드 조각임을 색으로 짚어 준다. */
 .prose :not(pre) > code {
-  @apply rounded-md bg-zinc-200/70 px-1.5 py-0.5 font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200;
+  @apply rounded-md bg-zinc-800 px-1.5 py-0.5 font-medium text-accent-rose;
 }
 
 .prose :not(pre) > code::before,

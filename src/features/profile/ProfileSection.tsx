@@ -36,17 +36,33 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
   const [step, setStep] = useState(introPlayed ? LAST : 0);
 
   useEffect(() => {
-    if (introPlayed) return;
-    introPlayed = true;
+    // 이미 재생한 뒤의 재마운트(SPA 안에서 홈 복귀)라면 곧바로 전부 보인다.
+    if (introPlayed) {
+      setStep(LAST);
+      return;
+    }
     // 동작 줄이기 설정이면 연출 없이 즉시 전부 보인다.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      introPlayed = true;
       setStep(LAST);
       return;
     }
     const timers = Array.from({ length: LAST }, (_, i) =>
       window.setTimeout(() => setStep(i + 1), (i + 1) * STEP_MS),
     );
-    return () => timers.forEach(window.clearTimeout);
+    // '재생 완료' 표시는 연출이 끝난 뒤에 세운다. effect 진입 시점에 세우면, StrictMode가 개발
+    // 모드에서 effect를 mount → cleanup → mount로 두 번 돌릴 때 두 번째 실행이 "이미 재생함"으로
+    // 판정해 곧장 빠져나가고, 첫 실행의 타이머는 cleanup에서 지워져 화면에 아무것도 안 뜬다.
+    const done = window.setTimeout(
+      () => {
+        introPlayed = true;
+      },
+      LAST * STEP_MS + 400,
+    );
+    return () => {
+      timers.forEach(window.clearTimeout);
+      window.clearTimeout(done);
+    };
   }, []);
 
   const shown = (at: number) => step >= at;

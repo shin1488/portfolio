@@ -219,7 +219,10 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               const next = event.currentTarget.scrollTop > 240;
               setScrolled((prev) => (prev === next ? prev : next));
             }}
-            className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 pb-28 pt-8"
+            // overscroll은 세로만 격리한다 — overscroll-contain(양축)이면 가로 오버스크롤까지
+            // 붙잡아 트랙패드 두 손가락 뒤로가기 제스처가 팝업에 먹혀 버린다.
+            // 가로 스크롤은 아예 막는다(코드블록 등은 자기 안에서 스크롤한다).
+            className="no-scrollbar flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain px-6 pb-28 pt-8"
           >
             {bodyMounted ? (
               <Suspense fallback={<ProjectBodySkeleton />}>
