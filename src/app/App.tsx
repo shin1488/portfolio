@@ -8,6 +8,7 @@ import { NotFoundView } from '@/components/layout/NotFoundView';
 import { content } from '@/data';
 import { ErrorBoundary } from './ErrorBoundary';
 import { HomePage } from './HomePage';
+import { RouteMarker } from './RouteMarker';
 import { ScrollManager } from './ScrollManager';
 
 // markdown 렌더러(react-markdown 체인)가 홈 번들에 포함되지 않도록 라우트 단위로 분리
@@ -17,6 +18,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
+      <RouteMarker />
       <div className="flex min-h-dvh flex-col">
         <Header />
         <AppRoutes />

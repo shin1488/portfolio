@@ -19,7 +19,7 @@ interface SectionProps {
   id: SectionId;
   /** 도면 좌표처럼 붙는 두 자리 순번 — '01', '02' */
   index: string;
-  /** 우측 모노 라벨에 쓰는 영문 슬러그 — 'about'이면 `01 · about/`으로 표시된다 */
+  /** 우측 인덱스 라벨에 쓰는 영문 슬러그 — 'about'이면 `01 · about/`으로 표시된다 */
   slug: string;
   title: string;
   description?: string;
@@ -31,7 +31,7 @@ interface SectionProps {
 }
 
 /**
- * 프레임 안에 놓이는 본문 섹션 — 좌측 제목·설명과 우측 모노 인덱스로 이루어진 헤더 아래,
+ * 프레임 안에 놓이는 본문 섹션 — 좌측 제목·설명과 우측 인덱스로 이루어진 헤더 아래,
  * 가로 hairline을 경계로 콘텐츠 격자가 붙는다. 모든 섹션이 이 골격을 공유하므로
  * 페이지 전체가 하나의 도면처럼 이어져 읽힌다.
  */
@@ -78,7 +78,7 @@ export function Section({
             </div>
             <span
               aria-hidden="true"
-              className="mt-1.5 shrink-0 font-mono text-[11px] text-zinc-500"
+              className="mt-1.5 shrink-0 text-[11px] text-zinc-500"
             >
               {index} · {slug}/
             </span>

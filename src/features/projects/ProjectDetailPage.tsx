@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { Badge } from '@/components/ui/Badge';
 import { Markdown } from '@/components/ui/Markdown';
 import { NotFoundView } from '@/components/layout/NotFoundView';
@@ -13,7 +13,7 @@ import { formatPeriod } from './period';
 import { HighlightText } from './HighlightText';
 import { ProjectKindChip } from './ProjectKindChip';
 import { ProjectLinks } from './ProjectLinks';
-import { DOC_TRANSITION_ATTR } from '@/lib/viewTransition';
+import { startRouteTransition } from '@/lib/viewTransition';
 import { ReadingAids } from './ReadingAids';
 import { TableOfContents } from './TableOfContents';
 import type { Project } from '@/types/content';
@@ -30,6 +30,7 @@ export default function ProjectDetailPage() {
 }
 
 function ProjectDetailView({ project }: { project: Project }) {
+  const navigate = useNavigate();
   useDocumentTitle(`${SITE_NAME} - ${project.title}`);
   const headingRef = useRouteFocus();
   // 목차는 마크다운 본문에서 매번 파생 — 본문이 바뀌면 목차·미니목차·진행바가 자동 갱신된다.
@@ -47,13 +48,21 @@ function ProjectDetailView({ project }: { project: Project }) {
 
       {/* 읽기 화면이라 폭은 프레임(72rem)까지 넓히지 않는다 — 한 줄이 길어지면 눈이 줄을 되짚기
           어렵다. 좌우 세로선도 두지 않는다(진행 바와 목차 rail이 이미 양옆을 잡고 있다).
-          data 표식: 팝업의 전환 콜백이 '상세 본문이 DOM에 붙었는지'를 이걸로 판단한다. */}
-      <article {...{ [DOC_TRANSITION_ATTR]: '' }} className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+          */}
+      <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 코드 바로가기를 둔다(제목 줄이 빽빽해지지 않게) */}
       <div className="flex items-center justify-between gap-3">
+        {/* 평범한 클릭은 크로스페이드로 넘긴다. 새 탭·새 창(⌘·Ctrl·중클릭)은 Link 그대로 둔다. */}
         <Link
           to="/#projects"
           state={{ focusProjectIndex: projectIndex }}
+          onClick={(event) => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            startRouteTransition(() =>
+              navigate('/#projects', { state: { focusProjectIndex: projectIndex } }),
+            );
+          }}
           className="group inline-flex items-center text-sm font-medium"
         >
           {/* 화살표는 클립 밖 솔리드 색 — transform 이동 시 사라지지 않게. 텍스트만 breathing. */}

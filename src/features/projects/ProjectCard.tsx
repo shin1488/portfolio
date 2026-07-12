@@ -68,7 +68,7 @@ export function ProjectCard({ project, delay = 0, onOpen, onPrefetch }: ProjectC
             <h3 className="bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-xl font-bold tracking-tight text-zinc-100 transition-colors group-hover:animate-[logo-flow_2.5s_linear_infinite] group-hover:text-transparent">
               {project.title}
             </h3>
-            <span className="shrink-0 font-mono text-[11px] text-zinc-500">
+            <span className="shrink-0 text-[11px] text-zinc-500">
               {formatPeriod(project.period)}
             </span>
           </div>
@@ -83,7 +83,7 @@ export function ProjectCard({ project, delay = 0, onOpen, onPrefetch }: ProjectC
               </li>
             ))}
             {hiddenCount > 0 && (
-              <li className="inline-flex items-center border border-transparent px-2 py-1 font-mono text-[11px] text-zinc-600">
+              <li className="inline-flex items-center border border-transparent px-2 py-1 text-[11px] text-zinc-600">
                 +{hiddenCount}
               </li>
             )}

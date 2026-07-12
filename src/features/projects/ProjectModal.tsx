@@ -1,5 +1,4 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
-import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
 import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
@@ -8,7 +7,7 @@ import { cn } from '@/lib/cn';
 import { scrollHeadingInContainer } from '@/lib/section';
 import type { TocEntry } from '@/lib/toc';
 import { useActiveHeadingId } from '@/lib/useScroll';
-import { DOC_TRANSITION_ATTR, waitForElement } from '@/lib/viewTransition';
+import { startRouteTransition } from '@/lib/viewTransition';
 import { ProjectBodySkeleton } from './ProjectBodySkeleton';
 import { formatPeriod } from './period';
 import type { Project } from '@/types/content';
@@ -78,29 +77,12 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   }, [onClose]);
 
   /**
-   * '확대' — 팝업이 사그라들고 상세 페이지가 떠오르며 라우트가 바뀐다(크로스페이드).
-   *
-   * react-router의 navigate({ viewTransition: true })는 Data/Framework 모드 전용이라
-   * 우리 <BrowserRouter>(선언형 모드)에선 무시된다. 그래서 직접 startViewTransition으로 감싼다.
-   * 콜백 안에서 flushSync로 라우트를 동기 렌더시키되, 상세 라우트는 lazy라 그 순간엔 아직
-   * Suspense 폴백이다 — 그래서 상세 본문이 실제로 DOM에 붙을 때까지 기다린 뒤 콜백 프로미스를
-   * 푼다. 그래야 '새 화면' 스냅샷이 로딩 화면이 아니라 실제 본문을 잡는다.
-   * 미지원 브라우저와 동작 줄이기 설정에서는 애니메이션 없이 즉시 이동한다.
+   * '확대' — 팝업이 사그라들고 상세 페이지가 떠오른다. 전환 자체는 startRouteTransition이 담당하고,
+   * 여기서는 상세 라우트 청크를 먼저 받아 두기만 한다(전환 도중에 내려받으면 그만큼 늦어진다).
    */
   const expandToDetail = useCallback(async () => {
-    const path = `/projects/${project.id}`;
-    const start = document.startViewTransition?.bind(document);
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // 청크를 먼저 받아 둔다 — 전환 도중에 내려받으면 스냅샷이 로딩 화면을 잡는다.
     await preloadProjectDetail();
-    if (!start || reduce) {
-      navigate(path);
-      return;
-    }
-    start(async () => {
-      flushSync(() => navigate(path));
-      await waitForElement(`[${DOC_TRANSITION_ATTR}]`);
-    });
+    startRouteTransition(() => navigate(`/projects/${project.id}`));
   }, [navigate, project.id]);
 
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기. 잠금은 body가 아닌 html(overflowY)에 건다
@@ -152,7 +134,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               <h2 id={titleId} className="truncate text-lg font-bold tracking-tight text-zinc-100">
                 {project.title}
               </h2>
-              <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+              <p className="mt-0.5 text-[11px] text-zinc-500">
                 {formatPeriod(project.period)}
               </p>
             </div>

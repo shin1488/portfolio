@@ -44,7 +44,7 @@ export function SkillsSection({ categories }: SkillsSectionProps) {
           {categories.map((category, i) => (
             <div key={category.id} className="px-5 py-7 md:px-8">
             <Reveal delay={(i % 2) * 90}>
-              <p className="font-mono text-[11px] text-zinc-500">{category.title}/</p>
+              <p className="text-[11px] text-zinc-500">{category.title}/</p>
               <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2.5">
                 {category.skills.map((skill) => (
                   <li key={skill.name}>

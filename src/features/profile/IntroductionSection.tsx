@@ -23,7 +23,7 @@ export function IntroductionSection({ bio }: IntroductionSectionProps) {
               <div className="grid gap-3 px-5 py-8 md:grid-cols-[5rem_minmax(0,1fr)] md:gap-6 md:px-8 md:py-10">
                 <span
                   aria-hidden="true"
-                  className="font-mono text-[11px] leading-8 text-zinc-600"
+                  className="text-[11px] leading-8 text-zinc-600"
                 >
                   {String(i + 1).padStart(2, '0')}
                 </span>

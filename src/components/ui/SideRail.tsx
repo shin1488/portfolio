@@ -97,7 +97,7 @@ function CollapsedItem({
       <span className="max-w-0 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-w-60 group-hover:opacity-100">
         <span
           className={cn(
-            'block truncate pr-2.5 font-mono text-[11px]',
+            'block truncate pr-2.5 text-[11px]',
             active ? `font-medium ${ACTIVE_LABEL}` : 'text-zinc-400',
           )}
         >
@@ -130,7 +130,7 @@ function ExpandedItem({
       type="button"
       onClick={() => onSelect(item.id)}
       aria-current={active}
-      className="group/item flex cursor-pointer items-center gap-2.5 rounded-md py-1 pl-3 pr-2 font-mono text-[11px]"
+      className="group/item flex cursor-pointer items-center gap-2.5 rounded-md py-1 pl-3 pr-2 text-[11px]"
     >
       {/* 틱 — 라벨의 왼쪽에 붙으므로 그라데이션 시작색(accent)으로 둔다 */}
       <span

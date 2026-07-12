@@ -8,11 +8,12 @@ import { cn } from '@/lib/cn';
 import { NAV_ITEMS } from '@/lib/nav';
 import { scrollToSection, useActiveSection } from '@/lib/section';
 import { SITE_NAME } from '@/lib/site';
+import { startRouteTransition } from '@/lib/viewTransition';
 import { Frame } from './Frame';
 
 /**
  * 반응형 헤더 — 프레임 폭에 맞춘 44px 바.
- * - 데스크톱(sm+): 모노 라벨 인라인 내비. 활성 섹션만 그린으로 켜진다.
+ * - 데스크톱(sm+): 인라인 내비. 활성 섹션만 액센트 그라데이션으로 켜진다.
  * - 모바일(<sm): 햄버거 → 헤더가 아래로 확장되는 드로어(큰 메뉴 + 연락처).
  * 로고·활성 표시·스크롤 이동 로직은 동일(홈은 오프셋 0 스크롤, 그 외엔 /#id로 이동).
  */
@@ -30,8 +31,9 @@ export function Header() {
 
   const go = (id: string) => {
     setMenuOpen(false);
+    // 홈에선 스크롤만(라우트 그대로), 다른 페이지에선 홈으로 넘어가며 크로스페이드.
     if (onHome && document.getElementById(id)) scrollToSection(id);
-    else navigate(`/#${id}`);
+    else startRouteTransition(() => navigate(`/#${id}`));
   };
 
   // 드로어가 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기.
@@ -80,9 +82,9 @@ export function Header() {
           </span>
         </button>
 
-        {/* 데스크톱 내비 (sm+) — 도면 라벨처럼 모노로 조판한다 */}
+        {/* 데스크톱 내비 (sm+) */}
         <nav aria-label="주요 섹션" className="hidden sm:block">
-          <ul className="flex items-center gap-6 font-mono text-[11px]">
+          <ul className="flex items-center gap-6 text-[11px]">
             {NAV_ITEMS.map((item) => {
               const isActive = item.id === active;
               return (
@@ -207,7 +209,7 @@ function MobileDrawer({
         />
         {/* 큰 메뉴 */}
         <nav aria-label="주요 섹션" className="px-5 pt-6">
-          <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-600">
+          <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-zinc-600">
             Menu
           </p>
           <ul>
@@ -229,7 +231,7 @@ function MobileDrawer({
                     >
                       {item.label}
                     </span>
-                    <span aria-hidden="true" className="font-mono text-[11px] text-zinc-600">
+                    <span aria-hidden="true" className="text-[11px] text-zinc-600">
                       {String(i).padStart(2, '0')}
                     </span>
                   </button>
@@ -241,7 +243,7 @@ function MobileDrawer({
 
         {/* 연락처 */}
         <div className="px-5 pt-9">
-          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-600">
+          <p className="mb-3 text-[11px] uppercase tracking-[0.16em] text-zinc-600">
             Contact
           </p>
           <ul className="flex flex-col gap-1">
