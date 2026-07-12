@@ -35,7 +35,11 @@ function AppRoutes() {
   // 네비게이션으로 정상 화면으로 빠져나올 수 있게 한다.
   const location = useLocation();
   return (
-    <main className="flex-1">
+    // overflow-x-clip — 가로 넘침을 본문 안에서 끊는다. 루트(html)에만 걸면 iOS Safari에서
+    // 잠기지 않는다: 루트의 overflow를 뷰포트로 승격하는 규칙이 clip에서는 엔진마다 갈리기
+    // 때문이다. 일반 요소의 clip은 어느 엔진에서나 그 자리에서 잘라내고, 스크롤 컨테이너를
+    // 만들지 않아 sticky 헤더나 fixed 레일의 기준(뷰포트)도 그대로다.
+    <main className="flex-1 overflow-x-clip">
       <ErrorBoundary resetKey={location.pathname}>
         <Suspense
           fallback={
