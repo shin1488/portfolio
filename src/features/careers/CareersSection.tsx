@@ -14,7 +14,7 @@ export function CareersSection({ categories }: CareersSectionProps) {
   if (!categories.length) return null;
 
   return (
-    <Section id="careers" index="04" slug="careers" title="Education & Certification">
+    <Section id="careers" index="04" slug="careers" title="Careers">
       <div className="grid [&>*:first-child]:border-t-0 [&>*]:border-t [&>*]:border-divider md:grid-cols-2 md:[&>*:nth-child(2)]:border-t-0 md:[&>*:nth-child(odd)]:border-r">
         {categories.map((category, i) => (
           <div key={category.id} className="px-5 py-7 md:px-8 md:py-9">
