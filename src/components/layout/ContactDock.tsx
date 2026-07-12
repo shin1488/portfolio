@@ -19,7 +19,7 @@ export function ContactDock({ links }: ContactDockProps) {
           못하고 불투명 단색(다크모드=검정)으로 플래튼시켜 검은 띠가 된다. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 border border-divider bg-[#111113]/85 backdrop-blur-md supports-[-webkit-touch-callout:none]:bg-[#111113] supports-[-webkit-touch-callout:none]:backdrop-blur-none"
+        className="absolute inset-0 rounded-sm border border-divider bg-[#111113]/85 backdrop-blur-md supports-[-webkit-touch-callout:none]:bg-[#111113] supports-[-webkit-touch-callout:none]:backdrop-blur-none"
       />
       <ul className="relative flex items-center">
         {links.map((link, index) => {

@@ -170,14 +170,15 @@ body {
   scroll-margin-top: 5rem;
 }
 
-/* 마크다운 섹션 제목 — 제목 '텍스트 폭'에 딱 맞춘 그린 밑줄(하단 배경 3px), 섹션 사이 넉넉한 간격.
-   width:fit-content로 박스를 글자에 맞춰 줄여, 밑줄이 헤더 텍스트 길이에 정확히 맞는다. */
+/* 마크다운 섹션 제목 — 제목 '텍스트 폭'에 딱 맞춘 시안→스카이 밑줄(하단 배경 3px), 섹션 사이
+   넉넉한 간격. width:fit-content로 박스를 글자에 맞춰 줄여, 밑줄이 헤더 텍스트 길이에 정확히 맞는다.
+   상세 페이지(prose)만 시안 계열을 쓰고, 홈은 그린을 유지해 읽기 화면과 시각적으로 갈라 둔다. */
 .prose :where(h1) {
   width: fit-content;
   max-width: 100%;
   margin-bottom: 2.4rem;
   padding-bottom: 0.5rem;
-  background-image: linear-gradient(to right, #4ade80, #15803d);
+  background-image: linear-gradient(to right, #22d3ee, #0284c7);
   background-repeat: no-repeat;
   background-size: 100% 3px;
   background-position: left bottom;

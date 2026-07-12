@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link, useParams } from 'react-router';
 import { Badge } from '@/components/ui/Badge';
 import { Markdown } from '@/components/ui/Markdown';
+import { Frame } from '@/components/layout/Frame';
 import { NotFoundView } from '@/components/layout/NotFoundView';
 import { content } from '@/data';
 import { SITE_NAME } from '@/lib/site';
@@ -38,6 +39,8 @@ function ProjectDetailView({ project }: { project: Project }) {
   return (
     <>
       <ReadingAids entries={toc} />
+      {/* 홈과 같은 프레임 — 헤더에서 시작한 좌우 세로선이 상세 본문에서도 끊기지 않고 이어진다 */}
+      <Frame>
       <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 코드 바로가기를 둔다(제목 줄이 빽빽해지지 않게) */}
       <div className="flex items-center justify-between gap-3">
@@ -49,11 +52,11 @@ function ProjectDetailView({ project }: { project: Project }) {
           {/* 화살표는 클립 밖 솔리드 색 — transform 이동 시 사라지지 않게. 텍스트만 breathing. */}
           <span
             aria-hidden="true"
-            className="mr-1 text-green-600 transition-transform group-hover:-translate-x-1 dark:text-green-400"
+            className="mr-1 text-cyan-500 transition-transform group-hover:-translate-x-1 dark:text-cyan-400"
           >
             ←
           </span>
-          <span className="bg-linear-to-r from-green-400 via-emerald-300 to-green-400 bg-size-[200%_auto] bg-clip-text text-green-600 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-green-400">
+          <span className="bg-linear-to-r from-cyan-400 via-sky-300 to-cyan-400 bg-size-[200%_auto] bg-clip-text text-cyan-500 transition-colors group-hover:animate-[logo-flow_2s_linear_infinite] group-hover:text-transparent dark:text-cyan-400">
             프로젝트 목록
           </span>
         </Link>
@@ -89,7 +92,7 @@ function ProjectDetailView({ project }: { project: Project }) {
           <ul className="mt-5 flex flex-col gap-2">
             {project.highlights.map((highlight, i) => (
               <li key={i} className="flex gap-2.5 text-sm leading-[1.65] text-zinc-600 dark:text-zinc-400">
-                <span aria-hidden="true" className="mt-1.75 size-1.25 shrink-0 bg-green-400" />
+                <span aria-hidden="true" className="mt-1.75 size-1.25 shrink-0 bg-cyan-400" />
                 <span>
                   <HighlightText text={highlight} />
                 </span>
@@ -103,10 +106,11 @@ function ProjectDetailView({ project }: { project: Project }) {
         <TableOfContents entries={toc} />
       </div>
 
-      <div className="mt-5 border-t border-zinc-200 pt-5 dark:border-zinc-800">
+      <div className="mt-5 border-t border-divider pt-5">
         <Markdown>{project.body}</Markdown>
       </div>
       </article>
+      </Frame>
     </>
   );
 }

@@ -1,8 +1,21 @@
 import { useEffect, useState } from 'react';
 
-/** 요소 top을 뷰포트 top(오프셋 0)에 맞춰 스크롤 — 헤더·rail·앵커 이동이 공유하는 로직. */
+/**
+ * sticky 헤더가 실제로 차지하는 높이(px). 상수로 박아 두면 safe-area 여백이 있는 기기에서
+ * 어긋나므로 DOM에서 실측한다. 헤더가 없는 화면(렌더 전 등)이면 0.
+ */
+function headerHeight(): number {
+  const header = document.querySelector('header');
+  return header ? header.getBoundingClientRect().height : 0;
+}
+
+/**
+ * 요소 top을 헤더 바로 아래에 맞춰 스크롤 — 헤더·rail·앵커 이동이 공유하는 로직.
+ * 오프셋 0으로 두면 섹션 제목이 sticky 헤더에 가려지므로 헤더 높이만큼 덜 내려간다.
+ */
 export function scrollElementToTop(el: HTMLElement, behavior: ScrollBehavior = 'smooth') {
-  window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().top, behavior });
+  const top = window.scrollY + el.getBoundingClientRect().top - headerHeight();
+  window.scrollTo({ top: Math.max(0, top), behavior });
 }
 
 export function scrollToSection(id: string, behavior: ScrollBehavior = 'smooth') {

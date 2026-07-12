@@ -155,7 +155,11 @@ function ReadingProgressBar() {
       aria-hidden="true"
       className="absolute inset-x-0 top-full h-0.75 overflow-hidden bg-zinc-800/60 lg:hidden"
     >
-      <div className="h-full bg-green-400" style={{ width: `${progress * 100}%` }} />
+      {/* 상세 페이지 액센트는 시안→스카이 — 홈(그린)과 읽기 화면을 색으로 구분한다 */}
+      <div
+        className="h-full bg-linear-to-r from-cyan-400 to-sky-500"
+        style={{ width: `${progress * 100}%` }}
+      />
     </div>
   );
 }

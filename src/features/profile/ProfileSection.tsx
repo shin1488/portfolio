@@ -51,24 +51,10 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
               ))}
             </p>
 
-            <ul className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[11px] text-zinc-500">
-              {profile.location && <li>{profile.location}</li>}
-              {profile.links.map((link, i) => {
-                const opensNewTab = /^https?:/i.test(link.href);
-                return (
-                  <li key={i}>
-                    <a
-                      href={link.href}
-                      {...(opensNewTab ? { target: '_blank', rel: 'noreferrer' } : {})}
-                      className="transition-colors hover:text-green-400"
-                    >
-                      {link.label} <span aria-hidden="true">↗</span>
-                      {opensNewTab && <span className="sr-only"> (새 탭에서 열림)</span>}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
+            {/* 연락처는 하단 독이 상시 노출하므로 여기서는 위치만 둔다 */}
+            {profile.location && (
+              <p className="mt-9 font-mono text-[11px] text-zinc-500">{profile.location}</p>
+            )}
           </div>
 
           <Avatar profile={profile} />
