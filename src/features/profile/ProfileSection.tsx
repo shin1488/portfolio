@@ -14,11 +14,10 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     <section id="profile" aria-label="Profile" className="scroll-mt-11">
       {/* 헤더(44px)를 뺀 첫 화면을 히어로가 채운다 */}
       <Frame className="relative flex min-h-[calc(100svh-2.75rem-env(safe-area-inset-top))] flex-col justify-center overflow-hidden">
-        {/* 액센트 글로우 — 좌상단 그린, 우하단 블루, 좌하단 로즈. 크기를 비대칭으로 둬(그린이
-            가장 크고 로즈가 가장 작다) 그린이 전체 톤을 잡고 나머지 둘이 모서리에서 거든다.
-            꼬리를 길게 끄는 중간 정지점을 둬 겹치는 구간에서 색이 섞이며 넘어가게 한다(정지점
-            없이 바로 transparent로 빼면 각자 자기 모서리에서 사그라들어 서로 만나지 못한다).
-            색은 color-mix로 @theme 토큰을 직접 끌어와, 토큰을 바꾸면 글로우도 따라온다.
+        {/* 액센트 글로우 — 좌상단 그린, 우하단 블루. 크기를 비대칭으로 둬(그린이 크고 블루가 작다)
+            그린이 전체 톤을 잡게 하고, 꼬리를 길게 끄는 중간 정지점을 둬 겹치는 대각 구간에서 두 색이
+            섞이며 넘어가게 한다(정지점 없이 바로 transparent로 빼면 각자 자기 모서리에서 사그라들어
+            서로 만나지 못한다). 색은 color-mix로 @theme 토큰을 직접 끌어와, 토큰을 바꾸면 따라온다.
             프레임 밖으로 새지 않도록 Frame이 overflow-hidden으로 잘라낸다. */}
         <div
           aria-hidden="true"
@@ -27,7 +26,6 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
             backgroundImage: [
               'radial-gradient(125% 115% at -6% -8%, color-mix(in srgb, var(--color-accent) 40%, transparent) 0%, color-mix(in srgb, var(--color-accent) 16%, transparent) 45%, transparent 88%)',
               'radial-gradient(80% 88% at 106% 108%, color-mix(in srgb, var(--color-accent-end) 48%, transparent) 0%, color-mix(in srgb, var(--color-accent-end) 18%, transparent) 45%, transparent 88%)',
-              'radial-gradient(52% 58% at -4% 106%, color-mix(in srgb, var(--color-accent-rose) 34%, transparent) 0%, color-mix(in srgb, var(--color-accent-rose) 12%, transparent) 45%, transparent 82%)',
             ].join(','),
           }}
         />

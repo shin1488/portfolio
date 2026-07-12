@@ -13,7 +13,7 @@ import { formatPeriod } from './period';
 import { HighlightText } from './HighlightText';
 import { ProjectKindChip } from './ProjectKindChip';
 import { ProjectLinks } from './ProjectLinks';
-import { DOC_TRANSITION, DOC_TRANSITION_ATTR } from '@/lib/viewTransition';
+import { DOC_TRANSITION_ATTR } from '@/lib/viewTransition';
 import { ReadingAids } from './ReadingAids';
 import { TableOfContents } from './TableOfContents';
 import type { Project } from '@/types/content';
@@ -44,22 +44,11 @@ function ProjectDetailView({ project }: { project: Project }) {
     <>
       <ReadingAids entries={toc} />
 
-      {/* '확대' 전환의 도착 지점 — 팝업 패널과 같은 view-transition-name을 가진 '표면'이다.
-          브라우저는 팝업 패널 박스를 이 박스로 이어 붙이므로, 팝업이 화면 전체로 늘어나 보인다.
-          이름을 article에 걸지 않는 이유: article은 768 × 43,000px가 넘고, ::view-transition-new는
-          그 요소를 살아 있는 레이어로 매 프레임 래스터화한다. 3천만 픽셀짜리 레이어를 그리느라
-          전환이 37fps로 끊겼다. 뷰포트 크기의 빈 요소로 바꾸면 그 비용이 사라지고, 본문 자체는
-          root 크로스페이드(뷰포트 크기 스냅샷)가 저렴하게 처리한다. */}
-      <div
-        aria-hidden="true"
-        {...{ [DOC_TRANSITION_ATTR]: '' }}
-        style={{ viewTransitionName: DOC_TRANSITION }}
-        className="pointer-events-none fixed inset-0 -z-10"
-      />
 
       {/* 읽기 화면이라 폭은 프레임(72rem)까지 넓히지 않는다 — 한 줄이 길어지면 눈이 줄을 되짚기
-          어렵다. 좌우 세로선도 두지 않는다(진행 바와 목차 rail이 이미 양옆을 잡고 있다). */}
-      <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+          어렵다. 좌우 세로선도 두지 않는다(진행 바와 목차 rail이 이미 양옆을 잡고 있다).
+          data 표식: 팝업의 전환 콜백이 '상세 본문이 DOM에 붙었는지'를 이걸로 판단한다. */}
+      <article {...{ [DOC_TRANSITION_ATTR]: '' }} className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 코드 바로가기를 둔다(제목 줄이 빽빽해지지 않게) */}
       <div className="flex items-center justify-between gap-3">
         <Link

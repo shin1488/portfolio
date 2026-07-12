@@ -29,7 +29,7 @@ export function ContactDock({ links }: ContactDockProps) {
               <a
                 href={link.href}
                 {...(opensNewTab ? { target: '_blank', rel: 'noreferrer' } : {})}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 font-mono text-[11px] text-zinc-400 transition-colors hover:text-accent"
+                className="glow-hover inline-flex items-center gap-1.5 px-4 py-2.5 font-mono text-[11px] text-zinc-400"
               >
                 <SocialIcon kind={link.kind} />
                 {link.label}

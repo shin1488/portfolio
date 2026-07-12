@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { highResSrc } from '@/lib/image';
-import { FlickerSpinner } from './FlickerSpinner';
+import { Skeleton } from './Skeleton';
 
 interface LightboxProps {
   src: string;
@@ -125,8 +125,8 @@ export function Lightbox({ src, alt, onClose }: LightboxProps) {
         </button>
       </div>
       {!loaded && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-zinc-300">
-          <FlickerSpinner className="size-11" />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <Skeleton className="h-40 w-64 rounded-xl" />
         </div>
       )}
       <img

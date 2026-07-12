@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router';
 import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
@@ -8,7 +8,7 @@ import { cn } from '@/lib/cn';
 import { scrollHeadingInContainer } from '@/lib/section';
 import type { TocEntry } from '@/lib/toc';
 import { useActiveHeadingId } from '@/lib/useScroll';
-import { DOC_TRANSITION, DOC_TRANSITION_ATTR, waitForElement } from '@/lib/viewTransition';
+import { DOC_TRANSITION_ATTR, waitForElement } from '@/lib/viewTransition';
 import { ProjectBodySkeleton } from './ProjectBodySkeleton';
 import { formatPeriod } from './period';
 import type { Project } from '@/types/content';
@@ -78,13 +78,13 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   }, [onClose]);
 
   /**
-   * '확대' — 팝업 패널이 상세 본문으로 늘어나며 라우트가 바뀐다.
+   * '확대' — 팝업이 사그라들고 상세 페이지가 떠오르며 라우트가 바뀐다(크로스페이드).
    *
    * react-router의 navigate({ viewTransition: true })는 Data/Framework 모드 전용이라
    * 우리 <BrowserRouter>(선언형 모드)에선 무시된다. 그래서 직접 startViewTransition으로 감싼다.
    * 콜백 안에서 flushSync로 라우트를 동기 렌더시키되, 상세 라우트는 lazy라 그 순간엔 아직
    * Suspense 폴백이다 — 그래서 상세 본문이 실제로 DOM에 붙을 때까지 기다린 뒤 콜백 프로미스를
-   * 푼다. 그래야 '새 화면' 스냅샷에 짝이 될 요소가 들어 있어 팝업 → 본문 모프가 성립한다.
+   * 푼다. 그래야 '새 화면' 스냅샷이 로딩 화면이 아니라 실제 본문을 잡는다.
    * 미지원 브라우저와 동작 줄이기 설정에서는 애니메이션 없이 즉시 이동한다.
    */
   const expandToDetail = useCallback(async () => {
@@ -144,9 +144,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             'relative flex max-h-[88vh] w-full max-w-3xl flex-col border border-divider bg-[#111113] outline-none transition-[opacity,transform,scale] ease-[cubic-bezier(0.22,1,0.36,1)]',
             shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-3 scale-97 opacity-0',
           )}
-          // viewTransitionName: '확대'로 상세 페이지에 넘어갈 때 이 패널이 상세 본문 박스로
-          // 늘어나는 모프의 짝이 된다(상세 페이지의 article이 같은 이름을 쓴다).
-          style={{ transitionDuration: `${TRANSITION_MS}ms`, viewTransitionName: DOC_TRANSITION }}
+          style={{ transitionDuration: `${TRANSITION_MS}ms` }}
         >
           {/* 상단 바 — 높이가 고정된 flex 항목이라 본문이 이 위로 올라오지 못한다 */}
           <div className="flex shrink-0 items-center justify-between gap-4 border-b border-divider px-6 py-4">
@@ -163,7 +161,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 type="button"
                 onClick={expandToDetail}
                 aria-label="상세 페이지에서 보기"
-                className="inline-flex size-8 cursor-pointer items-center justify-center border border-divider text-zinc-400 transition-colors hover:border-accent/60 hover:text-accent"
+                className="glow-hover inline-flex size-8 cursor-pointer items-center justify-center border border-divider text-zinc-400"
               >
                 <ExpandIcon />
               </button>
@@ -171,7 +169,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 type="button"
                 onClick={requestClose}
                 aria-label="닫기"
-                className="inline-flex size-8 cursor-pointer items-center justify-center border border-divider text-zinc-400 transition-colors hover:text-zinc-100"
+                // 닫기만 로즈 — 되돌리는 동작이라 액센트(진행)와 색을 갈라 둔다
+                style={{ '--glow': 'var(--color-accent-rose)' } as CSSProperties}
+                className="glow-hover inline-flex size-8 cursor-pointer items-center justify-center border border-divider text-zinc-400"
               >
                 <CloseIcon />
               </button>

@@ -6,7 +6,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
 import { imageDimensions } from 'virtual:image-dimensions';
 import { buildSrcSet } from '@/lib/image';
-import { FlickerSpinner } from './FlickerSpinner';
+import { Skeleton } from './Skeleton';
 import { Lightbox } from './Lightbox';
 import { PsrFlow } from './PsrFlow';
 import rehypePsr from './rehype-psr';
@@ -216,11 +216,7 @@ function MdImage({
         className="cursor-zoom-in transition-opacity hover:opacity-90"
         {...props}
       />
-      {!loaded && (
-        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-zinc-500">
-          <FlickerSpinner />
-        </span>
-      )}
+      {!loaded && <Skeleton className="pointer-events-none absolute inset-0 rounded-xl" />}
     </span>
   );
 }
