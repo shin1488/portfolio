@@ -14,14 +14,17 @@ export function ProfileSection({ profile, headingRef }: ProfileSectionProps) {
     <section id="profile" aria-label="Profile" className="scroll-mt-11">
       {/* 헤더(44px)를 뺀 첫 화면을 히어로가 채운다 */}
       <Frame className="relative flex min-h-[calc(100svh-2.75rem-env(safe-area-inset-top))] flex-col justify-center overflow-hidden">
-        {/* 액센트 글로우 — 좌상단 모서리에서 대각으로 번지는 단일 라디얼. 프레임 밖으로
-            새지 않도록 Frame이 overflow-hidden으로 잘라낸다. */}
+        {/* 액센트 글로우 — 좌상단 그린, 우하단 블루. 액센트 두 색이 히어로를 대각으로 가로지른다.
+            색은 color-mix로 @theme 토큰에서 직접 끌어와, 토큰을 바꾸면 글로우도 따라온다.
+            프레임 밖으로 새지 않도록 Frame이 overflow-hidden으로 잘라낸다. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              'radial-gradient(58% 105% at 2% 0%, rgba(102,220,126,0.16), transparent 100%)',
+            backgroundImage: [
+              'radial-gradient(62% 62% at 0% 0%, color-mix(in srgb, var(--color-accent) 20%, transparent), transparent 72%)',
+              'radial-gradient(62% 62% at 100% 100%, color-mix(in srgb, var(--color-accent-end) 26%, transparent), transparent 72%)',
+            ].join(','),
           }}
         />
 

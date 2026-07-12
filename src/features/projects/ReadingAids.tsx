@@ -62,7 +62,7 @@ export function ReadingAids({ entries }: ReadingAidsProps) {
          큰 화면(2xl+)에선 아래의 펼쳐진 미니 목차가 대신 뜬다. */}
       <nav
         aria-label="섹션 바로가기"
-        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto rounded-l-2xl border border-transparent py-3 pl-8 pr-3 transition-colors group-hover:border-zinc-200 group-hover:bg-white/80 group-hover:shadow-xl group-hover:backdrop-blur-md lg:flex 2xl:hidden dark:group-hover:border-zinc-800 dark:group-hover:bg-zinc-950/80"
+        className="group fixed right-0 top-1/2 z-30 hidden max-h-[85vh] -translate-y-1/2 flex-col items-end gap-0.5 overflow-y-auto rounded-l-2xl border border-transparent py-3 pl-8 pr-3 transition-colors hover:border-divider hover:bg-zinc-950/80 hover:shadow-xl hover:backdrop-blur-md lg:flex 2xl:hidden"
       >
         {entries.map((entry) => {
           const active = entry.id === activeId;

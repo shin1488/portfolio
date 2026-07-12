@@ -26,7 +26,7 @@
   /* 상세 페이지 액센트 한 쌍 — 그린에서 출발해 딥블루로 잠긴다. 밑줄·진행 바·강조 글자·틱이
      모두 이 두 값만 쓰고, 단색으로 쓰는 아이콘·불릿은 시작색(accent)을 쓴다. */
   --color-accent: #66dc7e;
-  --color-accent-end: #3737dc;
+  --color-accent-end: #5050e0;
 
   /* 호버 등 상태 전환이 뚝 끊기지 않도록 기본 트랜지션을 길고 완만하게(easeOutQuint) */
   --default-transition-duration: 250ms;
@@ -183,7 +183,7 @@ body {
   max-width: 100%;
   margin-bottom: 2.4rem;
   padding-bottom: 0.5rem;
-  background-image: linear-gradient(to right, #66dc7e, #3737dc);
+  background-image: linear-gradient(to right, #66dc7e, #5050e0);
   background-repeat: no-repeat;
   background-size: 100% 3px;
   background-position: left bottom;

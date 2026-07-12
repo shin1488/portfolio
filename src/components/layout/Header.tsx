@@ -214,7 +214,8 @@ function MobileDrawer({
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(58% 42% at 8% 4%, rgba(102,220,126,0.13), transparent 70%)',
+              'radial-gradient(58% 42% at 0% 0%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 72%),' +
+              'radial-gradient(58% 42% at 100% 100%, color-mix(in srgb, var(--color-accent-end) 22%, transparent), transparent 72%)',
           }}
         />
         {/* 큰 메뉴 */}
