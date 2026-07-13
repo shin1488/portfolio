@@ -1,19 +1,20 @@
-import { useMemo, useRef, type ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { Badge } from '@/components/ui/Badge';
-import { Markdown } from '@/components/ui/Markdown';
-import { SITE_NAME } from '@/lib/site';
-import { extractToc } from '@/lib/toc';
-import { useDocumentTitle } from '@/lib/useDocumentTitle';
-import { useRevealOnScroll } from '@/lib/useRevealOnScroll';
-import { useRouteFocus } from '@/lib/useRouteFocus';
-import { startRouteTransition } from '@/lib/viewTransition';
-import { formatPeriod } from './period';
-import { DocLinks } from './DocLinks';
-import { HighlightText } from './HighlightText';
-import { ReadingAids } from './ReadingAids';
-import { TableOfContents } from './TableOfContents';
-import type { Doc } from '@/types/content';
+import { useMemo, useRef, type ReactNode } from "react";
+import { Link, useNavigate } from "react-router";
+import { Frame } from "@/components/layout/Frame";
+import { Badge } from "@/components/ui/Badge";
+import { Markdown } from "@/components/ui/Markdown";
+import { SITE_NAME } from "@/lib/site";
+import { extractToc } from "@/lib/toc";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
+import { useRevealOnScroll } from "@/lib/useRevealOnScroll";
+import { useRouteFocus } from "@/lib/useRouteFocus";
+import { startRouteTransition } from "@/lib/viewTransition";
+import { formatPeriod } from "./period";
+import { DocLinks } from "./DocLinks";
+import { HighlightText } from "./HighlightText";
+import { ReadingAids } from "./ReadingAids";
+import { TableOfContents } from "./TableOfContents";
+import type { Doc } from "@/types/content";
 
 interface DocDetailViewProps {
   doc: Doc;
@@ -57,102 +58,118 @@ export function DocDetailView({
   const backTo = `/${listHash}`;
   // 본문 블록을 스크롤 진입 시 하나씩 떠오르게 한다(홈의 Reveal과 같은 효과).
   const bodyRef = useRef<HTMLDivElement>(null);
-  useRevealOnScroll(bodyRef, '.prose > *');
+  useRevealOnScroll(bodyRef, ".prose > *");
 
   return (
     <>
       <ReadingAids entries={toc} />
 
-      {/* 읽기 화면이라 폭은 프레임(72rem)까지 넓히지 않는다 — 한 줄이 길어지면 눈이 줄을 되짚기
-          어렵다. 좌우 세로선도 두지 않는다(진행 바와 목차 rail이 이미 양옆을 잡고 있다). */}
-      <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
-        {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 바로가기 링크를 둔다(제목 줄이 빽빽해지지 않게) */}
-        <div className="flex items-center justify-between gap-3">
-          {/* 평범한 클릭은 크로스페이드로 넘긴다. 새 탭·새 창(⌘·Ctrl·중클릭)은 Link 그대로 둔다. */}
-          <Link
-            to={backTo}
-            state={backState}
-            onClick={(event) => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-              event.preventDefault();
-              startRouteTransition(() => navigate(backTo, { state: backState }));
-            }}
-            className="group inline-flex items-center text-sm font-medium"
-          >
-            {/* 화살표는 클립 밖 솔리드 색 — transform 이동 시 사라지지 않게. 텍스트만 breathing. */}
-            <span
-              aria-hidden="true"
-              className="mr-1 text-accent transition-transform group-hover:-translate-x-1"
+      {/* 좁은 화면에서만 프레임 세로선을 잇는다 — 헤더가 화면 끝까지 그린 선이 상세에서 끊기면
+          홈과 다른 문서처럼 보인다. 넓은 화면에서는 좌우에 진행 바와 목차 rail이 이미 서 있어
+          선까지 두면 번잡해지므로 그리지 않는다. */}
+      <Frame className="md:border-x-0">
+        {/* 읽기 화면이라 폭은 프레임(72rem)까지 넓히지 않는다 — 한 줄이 길어지면 눈이 줄을 되짚기
+            어렵다. */}
+        <article className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+          {/* 뒤로가기 줄 — 모바일에선 이 줄 맨 우측에 바로가기 링크를 둔다(제목 줄이 빽빽해지지 않게) */}
+          <div className="flex items-center justify-between gap-3">
+            {/* 평범한 클릭은 크로스페이드로 넘긴다. 새 탭·새 창(⌘·Ctrl·중클릭)은 Link 그대로 둔다. */}
+            <Link
+              to={backTo}
+              state={backState}
+              onClick={(event) => {
+                if (
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                )
+                  return;
+                event.preventDefault();
+                startRouteTransition(() =>
+                  navigate(backTo, { state: backState }),
+                );
+              }}
+              className="group inline-flex items-center text-sm font-medium"
             >
-              ←
-            </span>
-            <span className="bg-linear-to-r from-accent to-accent-end bg-clip-text text-accent transition-colors group-hover:text-transparent">
-              {backLabel}
-            </span>
-          </Link>
-          {/* 모바일(<sm)만: 바로가기 링크를 뒤로가기 줄 우측에 */}
-          <div className="sm:hidden">
-            <DocLinks doc={doc} />
-          </div>
-        </div>
-
-        <header className="mt-6">
-          <div className="flex items-start justify-between gap-3">
-            {/* 제목 + 바로가기 — 데스크톱(sm+)만 제목 옆 베이스라인 정렬(모바일은 위 뒤로가기 줄에 있음) */}
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-              <h1
-                ref={headingRef}
-                tabIndex={-1}
-                className="text-2xl font-bold tracking-tight outline-none sm:text-3xl"
+              {/* 화살표는 클립 밖 솔리드 색 — transform 이동 시 사라지지 않게. 텍스트만 breathing. */}
+              <span
+                aria-hidden="true"
+                className="mr-1 text-accent transition-transform group-hover:-translate-x-1"
               >
-                {doc.title}
-              </h1>
-              <div className="hidden sm:block">
-                <DocLinks doc={doc} />
-              </div>
+                ←
+              </span>
+              <span className="bg-linear-to-r from-accent to-accent-end bg-clip-text text-accent transition-colors group-hover:text-transparent">
+                {backLabel}
+              </span>
+            </Link>
+            {/* 모바일(<sm)만: 바로가기 링크를 뒤로가기 줄 우측에 */}
+            <div className="sm:hidden">
+              <DocLinks doc={doc} />
             </div>
-            {titleAside}
           </div>
-          <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-zinc-500 dark:text-zinc-400">
-            {periodPrefix && (
-              <>
-                {periodPrefix}
-                <span aria-hidden="true">·</span>
-              </>
-            )}
-            <span>{formatPeriod(doc.period)}</span>
-          </p>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {doc.techStack.map((tech) => (
-              <Badge key={tech}>{tech}</Badge>
-            ))}
-          </div>
-          {/* 핵심 요약(highlights) — 홈 카드를 거치지 않고 직링크로 온 독자를 위한 요약 */}
-          {doc.highlights.length > 0 && (
-            <ul className="mt-5 flex flex-col gap-2">
-              {doc.highlights.map((highlight, i) => (
-                <li
-                  key={i}
-                  className="flex gap-2.5 text-sm leading-[1.65] text-zinc-600 dark:text-zinc-400"
+
+          <header className="mt-6">
+            <div className="flex items-start justify-between gap-3">
+              {/* 제목 + 바로가기 — 데스크톱(sm+)만 제목 옆 베이스라인 정렬(모바일은 위 뒤로가기 줄에 있음) */}
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                <h1
+                  ref={headingRef}
+                  tabIndex={-1}
+                  className="text-2xl font-bold tracking-tight outline-none sm:text-3xl"
                 >
-                  <span aria-hidden="true" className="mt-1.75 size-1.25 shrink-0 bg-accent" />
-                  <span>
-                    <HighlightText text={highlight} />
-                  </span>
-                </li>
+                  {doc.title}
+                </h1>
+                <div className="hidden sm:block">
+                  <DocLinks doc={doc} />
+                </div>
+              </div>
+              {titleAside}
+            </div>
+            <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-zinc-500 dark:text-zinc-400">
+              {periodPrefix && (
+                <>
+                  {periodPrefix}
+                  <span aria-hidden="true">·</span>
+                </>
+              )}
+              <span>{formatPeriod(doc.period)}</span>
+            </p>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {doc.techStack.map((tech) => (
+                <Badge key={tech}>{tech}</Badge>
               ))}
-            </ul>
-          )}
-        </header>
+            </div>
+            {/* 핵심 요약(highlights) — 홈 카드를 거치지 않고 직링크로 온 독자를 위한 요약 */}
+            {doc.highlights.length > 0 && (
+              <ul className="mt-5 flex flex-col gap-2">
+                {doc.highlights.map((highlight, i) => (
+                  <li
+                    key={i}
+                    className="flex gap-2.5 text-sm leading-[1.65] text-zinc-600 dark:text-zinc-400"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-1.75 size-1.25 shrink-0 bg-accent"
+                    />
+                    <span>
+                      <HighlightText text={highlight} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </header>
 
-        <div className="mt-5">
-          <TableOfContents entries={toc} />
-        </div>
+          <div className="mt-5">
+            <TableOfContents entries={toc} />
+          </div>
 
-        <div ref={bodyRef} className="mt-5 border-t border-divider pt-5">
-          <Markdown>{doc.body}</Markdown>
-        </div>
-      </article>
+          <div ref={bodyRef} className="mt-5 border-t border-divider pt-5">
+            <Markdown>{doc.body}</Markdown>
+          </div>
+        </article>
+      </Frame>
     </>
   );
 }

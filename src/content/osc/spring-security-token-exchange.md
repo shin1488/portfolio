@@ -33,15 +33,18 @@ order: 1
 
 ---
 
-token exchange 요청은 사용자 토큰을 subject token으로 제출하면서, 그것이 어떤 종류의 토큰인지를 `subject_token_type`으로 함께 알립니다. [RFC 8693 3절](https://www.rfc-editor.org/rfc/rfc8693#section-3)이 `subject_token_type`에 쓸 수 있는 식별자를 정의합니다.
+token exchange 요청은 사용자 토큰을 subject token으로 제출하면서, 그것이 어떤 종류의 토큰인지를 `subject_token_type`으로 함께 알립니다. [RFC 8693 3절](https://www.rfc-editor.org/rfc/rfc8693#section-3)이 이 자리에 쓸 수 있는 식별자를 다섯 가지 정의하고, JWT를 가리키는 값 하나를 [RFC 7519 9절](https://www.rfc-editor.org/rfc/rfc7519#section-9)에서 가져다 씁니다.
 
 | 식별자 | 무엇을 가리키나 | 축 |
 |---|---|---|
-| `...:access_token` | 호출 대상 인가 서버가 발급한 access token | 역할 |
-| `...:id_token` | OIDC ID 토큰 | 역할 |
-| `...:jwt` | JWT를 다른 인가 서버에 authorization grant로 보내는 경우 | 형식 |
+| `...:access_token` | 호출 대상 인가 서버가 발급한 access token | 발급 목적 |
+| `...:refresh_token` | 호출 대상 인가 서버가 발급한 refresh token | 발급 목적 |
+| `...:id_token` | OpenID Connect Core 2절이 정의한 ID 토큰 | 발급 목적 |
+| `...:saml1` | base64url로 인코딩된 SAML 1.1 assertion | 구문 |
+| `...:saml2` | base64url로 인코딩된 SAML 2.0 assertion | 구문 |
+| `...:jwt` | JWT | 구문 |
 
-세 식별자 가운데 둘은 토큰의 **역할**을, 하나는 **형식**을 가리킵니다. 두 축은 서로 독립입니다. access token은 JWT로 발급될 수도, 발급자에게 물어봐야 내용을 알 수 있는 불투명한 문자열일 수도 있습니다. 반대로 ID 토큰은 정의상 언제나 JWT이지만 access token은 아닙니다. RFC 8693 3절이 이 구분을 직접 서술합니다.
+[IANA OAuth URI 레지스트리](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#uri)에 등록된 token type 식별자는 이 여섯 개가 전부입니다. 두 축은 3절 첫 문단이 직접 가릅니다. 다른 곳이 발급한 토큰이라면 식별자는 인가 서버가 그것을 파싱할 수 있도록 **구문**을 알리고, 호출 대상 인가 서버가 발급한 토큰이라면 **그 인가 서버가 무엇을 위해 발급했는지**를 알립니다. 두 축은 서로 독립입니다. access token은 JWT로 발급될 수도, 발급자에게 물어봐야 내용을 알 수 있는 불투명한 문자열일 수도 있습니다. 반대로 ID 토큰은 정의상 언제나 JWT이지만 access token은 아닙니다. 3절이 이 구분을 직접 서술합니다.
 
 > access token은 위임된 인가 결정을 나타내고, JWT는 토큰 포맷이다. access token은 JWT로 포맷될 수 있으나 반드시 그럴 필요는 없다. JWT가 access token일 수도 있으나, 모든 JWT가 access token인 것은 아니다.
 
