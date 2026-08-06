@@ -1,4 +1,13 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  lazy,
+  memo,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { Link, useNavigate } from 'react-router';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
@@ -256,8 +265,12 @@ function MdImage({
   );
 }
 
-/** markdown 본문 렌더러 — 외부 링크는 새 탭, 이미지는 지연 로딩 + 클릭 시 확대 보기 */
-export function Markdown({ children }: MarkdownProps) {
+/**
+ * markdown 본문 렌더러 — 외부 링크는 새 탭, 이미지는 지연 로딩 + 클릭 시 확대 보기.
+ * memo로 감싼다: 본문 문자열이 그대로면 다시 파싱할 이유가 없는데, 부모가 다른 이유로 렌더되면
+ * 수만 자를 매번 다시 훑게 된다(팝업 스크롤에서 실제로 그랬다).
+ */
+export const Markdown = memo(function Markdown({ children }: MarkdownProps) {
   const [zoomed, setZoomed] = useState<{ src: string; alt: string } | null>(null);
 
   // 렌더러 정체성 고정 — 인라인 객체로 넘기면 렌더마다 새 함수 타입이 되어 React가 본문
@@ -369,4 +382,4 @@ export function Markdown({ children }: MarkdownProps) {
       )}
     </div>
   );
-}
+});

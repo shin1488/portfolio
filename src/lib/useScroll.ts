@@ -109,22 +109,36 @@ export function useActiveHeadingId(
       pinnedRef.current = null;
     };
 
+    // 스크롤 이벤트마다 곧바로 계산하지 않고 다음 프레임으로 모은다. compute는 헤딩 수만큼
+    // getBoundingClientRect를 읽어 레이아웃을 강제하므로, 한 프레임에 여러 번 돌면 그만큼
+    // 프레임이 밀린다(브라우저는 한 프레임에 스크롤 이벤트를 여러 번 보낼 수 있다).
+    let frame = 0;
+    const schedule = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          compute();
+        });
+      }
+    };
+
     compute();
-    scroller.addEventListener('scroll', compute, { passive: true });
-    window.addEventListener('resize', compute, { passive: true });
+    scroller.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
     window.addEventListener('wheel', unpin, { passive: true });
     window.addEventListener('touchmove', unpin, { passive: true });
     window.addEventListener('keydown', unpin);
     // 지연 로딩 이미지가 로드돼 문서(또는 컨테이너) 높이가 바뀌면 스크롤 이벤트 없이도 다시 계산한다.
-    const ro = new ResizeObserver(compute);
+    const ro = new ResizeObserver(schedule);
     ro.observe(container ?? document.body);
     return () => {
-      scroller.removeEventListener('scroll', compute);
-      window.removeEventListener('resize', compute);
+      scroller.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
       window.removeEventListener('wheel', unpin);
       window.removeEventListener('touchmove', unpin);
       window.removeEventListener('keydown', unpin);
       ro.disconnect();
+      if (frame) cancelAnimationFrame(frame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, containerRef]);

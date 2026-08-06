@@ -22,7 +22,7 @@ interface DocModalProps {
 /** 여닫이 트랜지션 길이(ms) — 닫을 때 이 시간만큼 기다렸다가 언마운트한다. */
 const TRANSITION_MS = 260;
 
-/** 본문 스크롤을 히스토리 항목에 적는 간격(ms) — 스크롤할 때마다 쓰면 너무 잦다. */
+/** 스크롤이 멎었다고 보는 시간(ms) — 이만큼 조용하면 읽던 위치를 히스토리에 적는다. */
 const SAVE_TOP_MS = 200;
 /** 되돌아왔을 때 스크롤을 되돌리길 포기하는 시점(ms) — 본문이 그때까지 안 자라면 그만둔다. */
 const RESTORE_TIMEOUT_MS = 1500;
@@ -81,10 +81,10 @@ export function canUseModal(): boolean {
 export function DocModal({ doc, basePath, onClose }: DocModalProps) {
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
+  /** 배경 딤 — 오버레이의 형제라 바깥 클릭 판정에 함께 넣는다 */
+  const dimRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
-  /** 본문 스크롤을 히스토리에 적은 마지막 시각 — 너무 잦게 쓰지 않기 위한 스로틀 */
-  const lastSaveRef = useRef(0);
   /** 스크롤이 멎은 뒤 마지막 위치를 한 번 더 적기 위한 타이머 */
   const saveTimerRef = useRef(0);
   // 마운트 다음 프레임에 켜서 등장 트랜지션(페이드 + 살짝 확대)이 발동하게 한다.
@@ -257,16 +257,32 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
     <>
       <div
         className={cn(
-          'fixed inset-0 z-50 flex items-center justify-center bg-[#111113]/85 p-4 backdrop-blur-sm transition-opacity',
+          'fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity',
           shown ? 'opacity-100' : 'opacity-0',
         )}
         style={{ transitionDuration: `${TRANSITION_MS}ms` }}
         onClick={(event) => {
-          // 패널 바깥(배경)을 눌렀을 때만 닫는다
-          if (event.target === event.currentTarget) requestClose();
+          // 패널 바깥(배경 또는 그 위의 딤)을 눌렀을 때만 닫는다
+          if (event.target === event.currentTarget || event.target === dimRef.current) {
+            requestClose();
+          }
         }}
       >
-        {/* 폭은 상세 본문(max-w-3xl)과 동일 — 같은 글을 같은 줄 길이로 읽게 한다 */}
+        {/* 배경 딤 — 오버레이 자체가 아니라 별도의 형제 요소로 둔다.
+            backdrop-filter가 걸린 요소는 자손을 자기 렌더링 맥락 안으로 끌어들여, 그 안의
+            스크롤 영역이 컴포지터가 아니라 메인 스레드에서 스크롤된다. 본문이 수만 픽셀인 팝업에서는
+            스크롤 프레임마다 그 영역을 다시 그리게 되어 프레임이 떨어진다(같은 글을 문서 스크롤로
+            읽는 상세 페이지는 멀쩡한 이유가 이것이다). 딤을 패널의 형제로 빼면 스크롤 영역이
+            backdrop-filter 바깥에 놓여 원래의 합성 스크롤로 돌아온다. */}
+        <div
+          ref={dimRef}
+          aria-hidden="true"
+          className="absolute inset-0 bg-[#111113]/85 backdrop-blur-sm"
+        />
+
+        {/* 폭은 상세 본문(max-w-3xl)과 동일 — 같은 글을 같은 줄 길이로 읽게 한다.
+            트랜지션 대상에 transform이 아니라 translate를 적는다: Tailwind v4의 translate-y-*·
+            scale-*는 transform이 아니라 독립 속성으로 컴파일된다. */}
         <div
           ref={panelRef}
           role="dialog"
@@ -274,7 +290,7 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
           aria-labelledby={titleId}
           tabIndex={-1}
           className={cn(
-            'relative flex max-h-[88vh] w-full max-w-3xl flex-col border border-divider bg-[#111113] outline-none transition-[opacity,transform,scale] ease-[cubic-bezier(0.22,1,0.36,1)]',
+            'relative flex max-h-[88vh] w-full max-w-3xl flex-col border border-divider bg-[#111113] outline-none transition-[opacity,translate,scale] ease-[cubic-bezier(0.22,1,0.36,1)]',
             shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-3 scale-97 opacity-0',
           )}
           style={{ transitionDuration: `${TRANSITION_MS}ms` }}
@@ -324,14 +340,9 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
               // 렌더를 일으켜, 스크롤 중 팝업 전체가 매 프레임 다시 렌더되지 않게 한다.
               const next = event.currentTarget.scrollTop > 240;
               setScrolled((prev) => (prev === next ? prev : next));
-              // 읽던 위치는 히스토리 항목에 스로틀해 적되, 스크롤이 멎은 뒤에 한 번 더 적는다.
-              // 스로틀만 두면 마지막 구간(특히 맨 아래까지 한 번에 굴린 경우)이 빠져, 되돌아왔을 때
-              // 조금 위에 서게 된다.
-              const now = Date.now();
-              if (now - lastSaveRef.current > SAVE_TOP_MS) {
-                lastSaveRef.current = now;
-                saveTop();
-              }
+              // 읽던 위치는 스크롤이 멎은 뒤에 한 번만 적는다. history.replaceState는 스크롤
+              // 프레임 안에서 부르기에 무거운 호출이라, 스크롤 도중에는 부르지 않는다.
+              // 멎기 전에 화면을 떠나는 경우(링크 클릭)는 아래 onClickCapture가 맡는다.
               window.clearTimeout(saveTimerRef.current);
               saveTimerRef.current = window.setTimeout(saveTop, SAVE_TOP_MS);
             }}

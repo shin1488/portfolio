@@ -132,15 +132,17 @@ export function DocCard({ doc, basePath, index, delay = 0, onOpen, onPrefetch }:
           </ul>
 
           {/* 카드의 발 — View Details · 바로가기 · 순번이 한 줄이다.
-              mt-auto로 칸 바닥에 붙여, 본문 길이가 달라도 옆 칸과 같은 줄에 선다. */}
-          <div className="relative z-2 mt-auto flex flex-wrap items-center gap-x-6 gap-y-2 pt-7">
+              mt-auto로 칸 바닥에 붙여, 본문 길이가 달라도 옆 칸과 같은 줄에 선다.
+              z는 이 줄 전체가 아니라 바로가기 링크에만 준다. 줄 전체를 올리면 그 아래 깔린
+              오버레이 링크(카드 전체)가 가려져, View Details를 눌러도 본문이 열리지 않는다. */}
+          <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-2 pt-7">
             <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent">
               View Details
               <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
                 ›
               </span>
             </span>
-            <DocLinks doc={doc} />
+            <DocLinks doc={doc} className="relative z-2" />
             {/* 칸 순번 — 섹션 헤더의 '03 · projects/'와 같은 두 자리 규격. 줄의 마지막 항목이라
                 링크가 몇 개든 오른쪽 끝에 붙는다. */}
             <span aria-hidden="true" className="ml-auto text-[11px] text-zinc-600">
