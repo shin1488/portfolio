@@ -1,4 +1,13 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type RefObject,
+} from 'react';
 import { useNavigate } from 'react-router';
 import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
 import { ScrollTopButton } from '@/components/ui/ScrollTopButton';
@@ -70,6 +79,32 @@ export function canUseModal(): boolean {
 }
 
 /**
+ * 팝업이 떠 있는 동안 뒤에 깔린 화면의 애니메이션을 멈춘다.
+ *
+ * 홈에는 끝나지 않는 애니메이션이 넷 돌고 있다(로고 그라데이션·타이핑 커서·스크롤 힌트·스킬 마퀴
+ * 두 줄). 딤에 가려 보이지도 않는데 프레임마다 다시 그려지고, 그만큼을 본문 스크롤과 한 스레드에서
+ * 나눠 쓴다. 실측(120프레임 스크롤): 멈추기 전 총 작업 174ms → 멈춘 뒤 90ms.
+ *
+ * 끝이 정해진 것(여닫이 트랜지션 등)은 건드리지 않는다. 재생을 되돌릴 때 남은 구간이 다시
+ * 재생돼, 팝업을 닫는 순간 뒤 화면에서 끝난 연출이 되살아난다.
+ */
+function usePauseBackgroundAnimations(panelRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    if (typeof document.getAnimations !== 'function') return;
+    const panel = panelRef.current;
+    const paused = document.getAnimations().filter((animation) => {
+      const effect = animation.effect;
+      if (animation.playState !== 'running' || !(effect instanceof KeyframeEffect)) return false;
+      if (effect.getTiming().iterations !== Infinity) return false;
+      // 팝업 안에서 도는 것은 남겨 둔다 — 보이는 화면이다.
+      return effect.target instanceof Element && !panel?.contains(effect.target);
+    });
+    paused.forEach((animation) => animation.pause());
+    return () => paused.forEach((animation) => animation.play());
+  }, [panelRef]);
+}
+
+/**
  * 본문 팝업 — 카드를 누르면 그 문서(프로젝트·오픈소스 기여)의 본문만 이 안에서 읽는다.
  * 우측 목차 rail은 상세 페이지와 같은 SideRail이고, 스크롤 복원 같은 나머지 장치는
  * '확대'로 상세 페이지에 넘어갔을 때 제공한다.
@@ -81,8 +116,6 @@ export function canUseModal(): boolean {
 export function DocModal({ doc, basePath, onClose }: DocModalProps) {
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
-  /** 배경 딤 — 오버레이의 형제라 바깥 클릭 판정에 함께 넣는다 */
-  const dimRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
   /** 스크롤이 멎은 뒤 마지막 위치를 한 번 더 적기 위한 타이머 */
@@ -96,6 +129,8 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
   // 껍데기 + 로딩 표시가 먼저 페인트되게 한다.
   const [bodyMounted, setBodyMounted] = useState(false);
   const titleId = `doc-modal-${doc.id}`;
+
+  usePauseBackgroundAnimations(panelRef);
 
   // 목차는 본문 청크(DocBody)가 렌더되면서 올려 준다 — 여기서 뽑으면 슬러거가 홈 번들에 붙는다.
   const [toc, setToc] = useState<TocEntry[]>([]);
@@ -255,31 +290,25 @@ export function DocModal({ doc, basePath, onClose }: DocModalProps) {
 
   return (
     <>
+      {/* 배경 딤 — 불투명도만으로 어둡게 덮고, backdrop-filter(블러)는 걸지 않는다.
+          블러를 걸면 그 아래 깔린 홈 화면 전체가 딤의 배경으로 잡히는데, 홈에는 끝나지 않는
+          애니메이션(로고 그라데이션·스크롤 힌트·스킬 마퀴)이 계속 돌고 있다. 배경이 매 프레임
+          달라지면 블러 결과를 재사용할 수 없어 화면 전체를 프레임마다 다시 블러하게 되고,
+          그 비용이 본문 스크롤과 겹쳐 프레임이 절반으로 떨어진다. 실측(1440x900, 120프레임 스크롤):
+          블러 있음 33.7ms/프레임(30fps) → 블러 제거 16.6ms/프레임(60fps).
+          문서 스크롤로 같은 글을 읽는 상세 페이지에는 블러도 뒤에 깔린 화면도 없어 멀쩡했다.
+          딤 색이 이미 90%라 블러가 보태던 것도 거의 없다. */}
       <div
         className={cn(
-          'fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity',
+          'fixed inset-0 z-50 flex items-center justify-center bg-[#111113]/90 p-4 transition-opacity',
           shown ? 'opacity-100' : 'opacity-0',
         )}
         style={{ transitionDuration: `${TRANSITION_MS}ms` }}
         onClick={(event) => {
-          // 패널 바깥(배경 또는 그 위의 딤)을 눌렀을 때만 닫는다
-          if (event.target === event.currentTarget || event.target === dimRef.current) {
-            requestClose();
-          }
+          // 패널 바깥(딤)을 눌렀을 때만 닫는다
+          if (event.target === event.currentTarget) requestClose();
         }}
       >
-        {/* 배경 딤 — 오버레이 자체가 아니라 별도의 형제 요소로 둔다.
-            backdrop-filter가 걸린 요소는 자손을 자기 렌더링 맥락 안으로 끌어들여, 그 안의
-            스크롤 영역이 컴포지터가 아니라 메인 스레드에서 스크롤된다. 본문이 수만 픽셀인 팝업에서는
-            스크롤 프레임마다 그 영역을 다시 그리게 되어 프레임이 떨어진다(같은 글을 문서 스크롤로
-            읽는 상세 페이지는 멀쩡한 이유가 이것이다). 딤을 패널의 형제로 빼면 스크롤 영역이
-            backdrop-filter 바깥에 놓여 원래의 합성 스크롤로 돌아온다. */}
-        <div
-          ref={dimRef}
-          aria-hidden="true"
-          className="absolute inset-0 bg-[#111113]/85 backdrop-blur-sm"
-        />
-
         {/* 폭은 상세 본문(max-w-3xl)과 동일 — 같은 글을 같은 줄 길이로 읽게 한다.
             트랜지션 대상에 transform이 아니라 translate를 적는다: Tailwind v4의 translate-y-*·
             scale-*는 transform이 아니라 독립 속성으로 컴파일된다. */}
