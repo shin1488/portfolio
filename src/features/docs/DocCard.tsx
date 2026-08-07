@@ -96,7 +96,10 @@ export function DocCard({ doc, basePath, index, delay = 0, onOpen, onPrefetch }:
               <ContributionStatusChip status={doc.status} />
             </div>
           )}
-          <div className="flex items-baseline justify-between gap-4">
+          {/* 제목이 두 줄로 접히는 칸이 섞이면 아래 블록이 통째로 밀린다. 칸이 좁아 접힘을 피할 수
+              없는 구간(md~lg)에서만 두 줄 자리를 비워 두고, 제목이 한 줄에 들어오는 넓은 화면에서는
+              그 자리를 거둔다. */}
+          <div className="flex items-baseline justify-between gap-4 md:min-h-14 xl:min-h-0">
             {/* 호버 시 로고와 같은 그라데이션이 흐른다 — 단색 그린 대신 액센트 두 색을 모두 쓴다 */}
             <h3 className="bg-linear-to-r from-accent via-accent-end to-accent bg-size-[200%_auto] bg-clip-text text-xl font-bold tracking-tight text-zinc-100 transition-colors group-hover:animate-[logo-flow_2.5s_linear_infinite] group-hover:text-transparent">
               {doc.title}
@@ -104,10 +107,18 @@ export function DocCard({ doc, basePath, index, delay = 0, onOpen, onPrefetch }:
             <span className="shrink-0 text-[11px] text-zinc-500">{formatPeriod(doc.period)}</span>
           </div>
 
-          <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">{doc.summary}</p>
+          {/* 아래 세 블록의 최소 높이는 칸마다 다른 글 길이 때문에 줄이 어긋나는 것을 막는다.
+              값은 가장 긴 칸이 차지하는 높이를 폭별로 재서 잡았다(요약 3~4줄 · 칩 1~2줄 ·
+              하이라이트 3항목). 칸 폭이 좁아질수록 같은 글이 더 접히므로 md·lg·xl로 나눠 둔다.
+              내용이 그보다 짧아도 자리를 지키므로 두 칸의 제목·요약·칩·하이라이트가 같은 줄에 선다. */}
+          {/* 제목과의 간격은 아래 칩과 같은 mt-5로 둔다 — 요약이 짧아 자리가 남을 때 여백이 아래로만
+              몰리는데, 위가 좁으면 요약이 제목에 붙어 보인다. 위아래를 같은 값으로 두면 덜 치우친다. */}
+          <p className="mt-5 text-sm leading-relaxed text-zinc-400 md:min-h-[5.75rem] lg:min-h-[4.25rem]">
+            {doc.summary}
+          </p>
 
           {/* 기술 칩은 상세 페이지와 같은 Badge를 쓴다 — 두 화면의 칩 규격이 어긋나지 않게. */}
-          <ul className="mt-5 flex flex-wrap gap-1.5">
+          <ul className="mt-5 flex flex-wrap gap-1.5 md:min-h-[3.875rem] xl:min-h-[1.75rem]">
             {shownTech.map((tech) => (
               <li key={tech}>
                 <Badge>{tech}</Badge>
@@ -120,7 +131,7 @@ export function DocCard({ doc, basePath, index, delay = 0, onOpen, onPrefetch }:
             )}
           </ul>
 
-          <ul className="mt-5 flex flex-col gap-2">
+          <ul className="mt-5 flex flex-col gap-2 md:min-h-[13.125rem] lg:min-h-[10.5rem] xl:min-h-[9.125rem]">
             {doc.highlights.map((highlight, i) => (
               <li key={i} className="flex gap-2.5 text-[13px] leading-[1.65] text-zinc-400">
                 <span aria-hidden="true" className="mt-2 size-1 shrink-0 bg-accent" />
@@ -135,7 +146,7 @@ export function DocCard({ doc, basePath, index, delay = 0, onOpen, onPrefetch }:
               mt-auto로 칸 바닥에 붙여, 본문 길이가 달라도 옆 칸과 같은 줄에 선다.
               z는 이 줄 전체가 아니라 바로가기 링크에만 준다. 줄 전체를 올리면 그 아래 깔린
               오버레이 링크(카드 전체)가 가려져, View Details를 눌러도 본문이 열리지 않는다. */}
-          <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-2 pt-7">
+          <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-2 pt-7 md:min-h-[4.75rem] xl:min-h-0">
             <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent">
               View Details
               <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">

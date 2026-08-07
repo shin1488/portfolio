@@ -1,9 +1,8 @@
 ---
-title: Spring Security ID 토큰 타입 식별자 버그 제기
+title: Spring Security ID 토큰 타입 버그 제기
 summary: >-
-  Spring Security의 token exchange는 OidcIdToken을 subject token으로 제출하면 ID 토큰을
-  access token으로 라벨링합니다. 공개 API만으로 재현되는 코드와 함께 이슈로 제기하고,
-  근본 해결은 식별자를 명시하는 API임을 함께 밝혔습니다.
+  Spring Security의 token exchange가 ID 토큰을 access token으로 라벨링하는 문제.
+  공개 API만으로 재현되는 코드와 함께 제기하고, 근본 해결은 식별자를 명시하는 API임을 밝혔습니다.
 period:
   from: "2026.07"
 techStack: [Spring Security, OAuth 2.0, RFC 8693, OpenID Connect]

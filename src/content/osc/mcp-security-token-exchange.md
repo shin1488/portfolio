@@ -1,9 +1,8 @@
 ---
 title: mcp-security token exchange 샘플 기여
 summary: >-
-  Spring 생태계의 MCP 보안 라이브러리에는 gateway 뒤 resource server인 MCP 호스트가 사용자 신원을
-  MCP 서버까지 위임할 경로가 없습니다. ERP 프로젝트에서 RFC 8693 token exchange로 구현한 위임을
-  이슈로 제기하고, 메인테이너와 합의해 샘플 모듈로 제출했습니다.
+  Spring MCP 보안 라이브러리에 resource server인 MCP 호스트의 신원 위임 경로가 없는 문제.
+  ERP 챗봇에서 RFC 8693으로 구현한 위임을 제기하고, 메인테이너와 합의해 샘플 모듈로 제출했습니다.
 period:
   from: "2026.07"
 techStack: [Spring AI 2.0, MCP, Spring Security, RFC 8693, Keycloak, Spring Authorization Server]

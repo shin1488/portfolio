@@ -1,9 +1,8 @@
 ---
-title: Spring Security token exchange 타입 식별자 이슈 제기
+title: Spring Security token exchange 식별자 제안
 summary: >-
-  Spring Security의 token exchange는 RFC 8693이 규정한 세 타입 파라미터를 애플리케이션이 명시할 수
-  없습니다. ERP 프로젝트의 챗봇 권한 위임에서 겪은 문제를 재현 코드와 함께 이슈로 제기하고,
-  식별자를 명시하는 API를 제안했습니다.
+  RFC 8693이 규정한 세 타입 파라미터를 Spring Security에서 명시할 수 없는 문제.
+  ERP 챗봇의 권한 위임에서 겪은 사례를 재현 코드와 함께 제기하고, 명시 API를 제안했습니다.
 period:
   from: "2026.07"
 techStack: [Spring Security, OAuth 2.0, RFC 8693, Keycloak, Spring Authorization Server]
