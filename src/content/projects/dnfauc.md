@@ -9,7 +9,7 @@ period:
 techStack: [Android, Java, Volley, Glide, Google AdMob, Neople Open API]
 highlights:
   - "성과 — 출시 이튿날 던전앤파이터 공식 홈페이지 '오늘의 던파' 소개, 당일 API 5,439건 호출 · 설치 214건"
-  - '홈 화면 위젯 — 앱 프로세스 없이 도는 AppWidgetProvider라 클릭 리스너를 쓸 수 없어, PendingIntent 브로드캐스트를 onReceive에서 받아 시세 요청과 RemoteViews 갱신까지 배선'
+  - '홈 화면 위젯 — 앱 프로세스 없이 동작하는 AppWidgetProvider이므로 클릭 리스너를 쓸 수 없어, PendingIntent 브로드캐스트를 onReceive에서 받아 시세 요청과 RemoteViews 갱신까지 배선'
   - '시세 데이터 흐름 — 검색 결과를 SharedPreferences에 적재하고 위젯은 그 값만 읽게 해, Neople Open API 호출과 갱신 경로를 하나로 고정'
 links:
   - label: GitHub

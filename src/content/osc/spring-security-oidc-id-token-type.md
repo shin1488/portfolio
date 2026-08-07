@@ -8,7 +8,7 @@ period:
   from: "2026.07"
 techStack: [Spring Security, OAuth 2.0, RFC 8693, OpenID Connect]
 highlights:
-  - '문제 — OidcIdToken과 Jwt가 형제 클래스라 instanceof Jwt가 거짓이 되어, ID 토큰이 access token 식별자로 전송됨'
+  - '문제 — OidcIdToken과 Jwt가 형제 클래스이므로 instanceof Jwt가 거짓이 되어, ID 토큰이 access token 식별자로 전송됨'
   - '해결 — 상속으로는 고칠 수 없는 모듈 의존 방향까지 짚어 공개 API만으로 재현되는 코드와 함께 제기하고, 근본 해결은 식별자를 명시하는 API임을 함께 밝힘'
   - '결과 — 현재 매핑을 옳은 것으로 전제한 제3자 수정 PR과 클래스 계층을 잘못 읽은 제안에 클래스 선언·모듈 의존 방향을 들어 반박'
 links:
@@ -26,7 +26,7 @@ order: 1
 
 - **문제** — token exchange 요청의 `subject_token_type`을 정하는 매핑이 `OidcIdToken`을 `...:access_token`으로 라벨링합니다. ID 토큰에 이 식별자가 맞는 경우는 없습니다.
 - **해결** — `OidcIdToken`과 `Jwt`가 형제 클래스이며 모듈 의존 방향 때문에 상속으로는 고칠 수 없다는 점까지 확인해, 공개 API만으로 재현되는 코드와 함께 이슈로 제기했습니다.
-- **결과** — 이 값이 틀렸다는 사실은 따로 재현되므로 [앞서 올린 token exchange 이슈](/osc/spring-security-token-exchange)에서 갈라 냈습니다. 다만 근본 해결은 식별자를 명시할 수 있게 하는 것이며, 매핑을 손봐 이 값만 바로잡는 것으로는 끝나지 않는다는 점을 이슈와 후속 논의에서 계속 밝혔습니다.
+- **결과** — 이 값이 틀렸다는 사실은 따로 재현되므로 [앞서 올린 token exchange 이슈](/osc/spring-security-token-exchange)에서 갈라 냈습니다. 다만 근본 해결은 식별자를 명시할 수 있게 하는 것이며, 매핑을 고쳐 이 값만 바로잡는 것으로는 끝나지 않는다는 점을 이슈와 후속 논의에서 계속 밝혔습니다.
 
 
 # 식별자는 토큰의 역할을 가리킨다
@@ -61,7 +61,7 @@ public class OidcIdToken extends AbstractOAuth2Token implements IdTokenClaimAcce
 public class Jwt        extends AbstractOAuth2Token implements JwtClaimAccessor { ... }
 ```
 
-둘 다 `AbstractOAuth2Token`을 상속하므로 `OidcIdToken`은 `OAuth2Token`이지만 `Jwt`는 아닙니다. 그러므로 `instanceof Jwt`가 거짓이 되고, `Jwt`가 아닌 모든 것이 그렇듯 `...:access_token` 분기로 떨어집니다.
+둘 다 `AbstractOAuth2Token`을 상속하므로 `OidcIdToken`은 `OAuth2Token`이지만 `Jwt`는 아닙니다. 그러므로 `instanceof Jwt`가 거짓이 되고, `Jwt`가 아닌 모든 것이 그렇듯 `...:access_token` 분기가 선택됩니다.
 
 서브클래스를 만들어 고칠 수 있는 실수도 아닙니다. `OidcIdToken`은 `oauth2-core`에, `Jwt`는 `oauth2-core`에 의존하는 `oauth2-jose`에 있습니다. 의존 방향이 그러하므로 `OidcIdToken`이 `Jwt`를 상속하는 것은 성립하지 않습니다. `instanceof Jwt`는 ID 토큰에 대해 참이었던 적이 없고, 앞으로도 참이 될 수 없습니다. ID 토큰이 정의상 JWT임에도 그렇습니다.
 
@@ -94,18 +94,18 @@ ID 토큰을 전달했으나 access token 식별자가 반환됩니다. 이 매�
 
 ---
 
-이 값을 `...:id_token`으로 바꾸면 틀린 값 하나는 사라집니다. 그러나 그것으로 끝나지 않습니다. 식별자를 자바 타입에서 도출한다는 설계가 그대로 남고, 애플리케이션은 여전히 이 메서드가 고른 값을 받을 뿐 자기가 보낼 값을 말할 수 없습니다. 3절의 식별자 어휘는 열려 있고 자바 타입 계층은 닫혀 있으므로, 분기를 하나 더하는 일은 그때그때 자바 타입이 있는 식별자만 닿게 만드는 것입니다. 근본 해결은 [앞선 이슈](/osc/spring-security-token-exchange)가 요청한 것, 곧 식별자를 애플리케이션이 명시할 수 있게 하는 것입니다.
+이 값을 `...:id_token`으로 바꾸면 틀린 값 하나는 사라집니다. 그러나 그것으로 끝나지 않습니다. 식별자를 자바 타입에서 도출한다는 설계가 그대로 남고, 애플리케이션은 여전히 이 메서드가 선택한 값을 받을 뿐 자기가 보낼 값을 지정할 수 없습니다. 3절의 식별자 어휘는 열려 있고 자바 타입 계층은 닫혀 있으므로, 분기를 하나 더하는 일은 그 시점에 자바 타입이 있는 식별자만 사용할 수 있게 만드는 것입니다. 근본 해결은 [앞선 이슈](/osc/spring-security-token-exchange)가 요청한 것, 곧 식별자를 애플리케이션이 명시할 수 있게 하는 것입니다.
 
 이 이슈를 갈라 낸 이유는 해결이 가볍기 때문이 아닙니다. ID 토큰이 access token으로 전송된다는 사실은 공개 API만으로 재현되고 어떤 해석에도 의존하지 않아, 명시 API에 대한 논의와 별개로 확인될 수 있기 때문입니다.
 
 
-# 이 이슈에 붙은 제안들
+# 뒤따른 제안 검토
 
 ---
 
-이슈 아래에 잘못된 전제를 담은 제안이 하나 달렸습니다. `OidcIdToken`이 `Jwt`를 상속하므로 `instanceof` 순서를 바꾸면 된다는 내용이었는데, 두 클래스는 형제라 순서를 어떻게 두어도 결과가 같습니다. 함께 제시된 코드도 인가 서버 쪽 타입을 다루고 있어 이 요청을 만드는 클라이언트 쪽 메서드와는 다른 자리였습니다. 근거가 되는 클래스 선언과 모듈 의존 방향을 들어 바로잡았습니다.
+이슈 아래에 잘못된 전제를 담은 제안이 하나 있었습니다. `OidcIdToken`이 `Jwt`를 상속하므로 `instanceof` 순서를 바꾸면 된다는 내용이었는데, 두 클래스는 형제이므로 순서를 어떻게 두어도 결과가 같습니다. 함께 제시된 코드도 인가 서버 쪽 타입을 다루고 있어 이 요청을 만드는 클라이언트 쪽 메서드와는 다른 자리였습니다. 근거가 되는 클래스 선언과 모듈 의존 방향을 들어 바로잡았습니다.
 
-다른 기여자가 매핑을 고치는 PR도 올렸습니다. 매핑 자체는 이 이슈가 지적한 값과 같았으나, 두 가지를 짚었습니다.
+다른 기여자는 매핑을 수정하는 PR을 제출했습니다. 매핑 자체는 이 이슈가 지적한 값과 같았으나, 두 가지를 짚었습니다.
 
 - PR 설명이 `Jwt`를 `...:jwt`로 보내는 현재 동작을 올바른 것으로 전제합니다. 그 지점이 [앞선 이슈](/osc/spring-security-token-exchange)가 다투는 대목이므로, 이 PR은 그 이슈를 닫지 못합니다.
 - `defaultParameters()`는 `actor_token_type`에도 같은 메서드를 씁니다. 새로 추가된 테스트가 actor 토큰을 `null`로 넘기고 있어, 이 변경이 함께 바꾸는 동작의 절반이 검증되지 않았습니다.

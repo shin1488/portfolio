@@ -78,7 +78,7 @@ order: 3
 
 token exchange 요청은 사용자 토큰을 subject token으로 제출하면서, 그것이 어떤 종류의 토큰인지를 `subject_token_type`으로 함께 알립니다. Keycloak 연동에서 마지막까지 해결되지 않은 것이 이 값이었습니다. Keycloak의 Standard Token Exchange는 이 값으로 `...:access_token`만 받아들이지만, Spring Security가 보낸 값은 `...:jwt`였으므로 교환이 거부되었습니다.
 
-반면 Spring Authorization Server는 `...:access_token`과 `...:jwt`를 모두 수용했습니다. 두 인가 서버가 함께 받아들이는 값은 `...:access_token` 하나였으므로, 더욱 니치하게 접근해 그 값으로 통일해야 했습니다. 하지만 그렇게 하려면 Spring Security가 보내는 값을 바꿀 수단이 필요했습니다. Spring Security는 교환에 사용할 subject token을 애플리케이션이 직접 고르도록 subject token resolver를 제공합니다. 이 resolver에서 `Jwt`와 동일한 토큰 값으로 `OAuth2AccessToken`을 생성해 반환하자 `subject_token_type`이 `...:access_token`으로 전송되어, 두 인가 서버 모두에서 교환이 성립했습니다. 이를 확인하고 프로젝트와 샘플 모두 이 방식을 채택했습니다.
+반면 Spring Authorization Server는 `...:access_token`과 `...:jwt`를 모두 수용했습니다. 두 인가 서버가 함께 받아들이는 값은 `...:access_token` 하나였으므로, 전송하는 값을 그것으로 통일해야 했습니다. 하지만 그렇게 하려면 Spring Security가 보내는 값을 바꿀 수단이 필요했습니다. Spring Security는 교환에 사용할 subject token을 애플리케이션이 직접 선택하도록 subject token resolver를 제공합니다. 이 resolver에서 `Jwt`와 동일한 토큰 값으로 `OAuth2AccessToken`을 생성해 반환하자 `subject_token_type`이 `...:access_token`으로 전송되어, 두 인가 서버 모두에서 교환이 성립했습니다. 이를 확인하고 프로젝트와 샘플 모두 이 방식을 채택했습니다.
 
 다만 이 방식은 요청 파라미터 하나를 위해 토큰의 자바 타입을 바꾸는 것이었습니다. 목적과 수단의 층위가 어긋나 있어, 무엇을 의도했는지가 코드에 드러나지 않았습니다. 게다가 `...:access_token`이 옳은 값이라는 근거도 두 인가 서버가 모두 수용한다는 사실 하나뿐이었습니다.
 
