@@ -28,11 +28,11 @@ export function HomePage() {
       <HatchDivider />
       <IntroductionSection bio={content.profile.bio} />
       <HatchDivider />
+      <SkillsSection categories={content.skillCategories} />
+      <HatchDivider />
       <OscSection contributions={content.contributions} onModalOpenChange={setModalOpen} />
       <HatchDivider />
       <ProjectsSection projects={content.projects} onModalOpenChange={setModalOpen} />
-      <HatchDivider />
-      <SkillsSection categories={content.skillCategories} />
       <HatchDivider />
       <CareersSection categories={content.careers} />
       {!modalOpen && <SectionRail />}

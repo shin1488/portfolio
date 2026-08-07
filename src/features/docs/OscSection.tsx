@@ -16,11 +16,11 @@ export function OscSection({ contributions, onModalOpenChange }: OscSectionProps
   return (
     <Section
       id="osc"
-      index="02"
+      index="03"
       slug="open-source"
       title="Open Source Contributions"
       glow="green"
-      glowSide="right"
+      glowSide="left"
     >
       <DocGrid docs={contributions} basePath="/osc" onModalOpenChange={onModalOpenChange} />
     </Section>

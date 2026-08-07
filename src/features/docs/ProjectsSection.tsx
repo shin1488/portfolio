@@ -14,7 +14,7 @@ interface ProjectsSectionProps {
  */
 export function ProjectsSection({ projects, onModalOpenChange }: ProjectsSectionProps) {
   return (
-    <Section id="projects" index="03" slug="projects" title="Projects" glow="rose" glowSide="left">
+    <Section id="projects" index="04" slug="projects" title="Projects" glow="rose" glowSide="right">
       <DocGrid docs={projects} basePath="/projects" onModalOpenChange={onModalOpenChange} />
     </Section>
   );
