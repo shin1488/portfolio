@@ -7,9 +7,9 @@ period:
   from: "2026.07"
 techStack: [Java 25, Spring Boot 4, Spring AI 2.0, PostgreSQL, React 19, TypeScript 7, OpenLayers, VWorld]
 highlights:
-  - '좌표계 — 지적 성과의 TM 원점좌표를 권위값으로 보존하고, WGS84 경위도는 지도 표시용 파생값으로 분리'
-  - '지도 — VWorld 배경·지적도(WMS) 위에 기준점을 종류별 공식 도식으로 표시하고, 조사 프로젝트별 미조사·조사완료·망실을 구분'
-  - '클러스터링 — 겹치는 기준점을 개수 뱃지로 묶고, 선택한 조사 프로젝트의 조사 비율만큼 뱃지를 채워 표시'
+  - '성과 — 부천시 지적 부서의 실제 기준점 성과와 대상지 서식을 받아 구현, 배포한 서비스로 고객사가 진행 상황을 직접 확인'
+  - '조사 기록 동시성 — 대상 확인·신규 저장·기존 정정을 PostgreSQL 단일 문장으로 합쳐 잠금 없이 경합 구간을 없애고, 복합 외래키로 데이터베이스가 최종 거부'
+  - '기준점 렌더링 — 도식 조합 48개를 스프라이트 아틀라스로 합성해 WebGL 레이어로 전환, 2천 점 이동·확대에서 프레임당 스타일 계산 제거(미지원 환경은 캔버스 폴백)'
 links:
   - label: GitHub
     href: https://github.com/Bucheon-Cadastral-System

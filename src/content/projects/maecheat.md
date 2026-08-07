@@ -8,10 +8,9 @@ period:
   to: "2026.05"
 techStack: [Java 25, Spring Boot 4, Spring AI 2.0, MySQL, React 19, Docker, Caddy, AWS EC2]
 highlights:
-  - '성과 — 오픈 이틀 만에 누적 방문 약 1만 · 페이지뷰 약 8.5만 · 이탈률 7%, 실사용자 트래픽 확보'
-  - 'AI 한 줄 요약 — Spring AI 2.0(Gemini) 비동기 생성, @Async + ConcurrentHashMap으로 중복 생성 차단·마지막 요청 재실행 예약 반영'
-  - '스크래퍼 설계 — 인터페이스 + Resolver 추상화(전략 패턴·DIP)로 커뮤니티 사이트 추가 시 구현체만 확장'
-  - '인프라 — AWS EC2 Docker Compose(App·MySQL·Caddy) + GitHub Actions 무중단 CI/CD, Caddy 자동 HTTPS'
+  - '성과 — 오픈 이틀 만에 누적 방문 약 1만 · 페이지뷰 약 8.5만 · 이탈률 7%'
+  - 'AI 요약 동시성 — @Async + ConcurrentHashMap으로 실행 중 작업과 대기 중 재실행을 나눠 캐릭터당 하나만 생성하고, 긴 LLM 호출은 트랜잭션 밖으로 빼 DB 커넥션 점유 제거'
+  - '스크래퍼 — 스크래핑을 CommunityScraper 인터페이스와 URL 기반 Resolver로 추상화(전략 패턴·DIP), 커뮤니티 추가 시 기존 코드를 건드리지 않고 구현체만 확장'
 links:
   - label: GitHub
     href: https://github.com/MaeCheat

@@ -8,9 +8,9 @@ period:
   from: "2026.07"
 techStack: [Spring AI 2.0, MCP, Spring Security, RFC 8693, Keycloak, Spring Authorization Server]
 highlights:
-  - 'resource server인 MCP 호스트가 사용자 신원을 위임할 경로가 없다는 라이브러리 공백을 이슈로 제기'
-  - '메인테이너와 샘플 방향으로 합의한 뒤 customizer · 통합 테스트 · README를 PR로 제출'
-  - 'subject_token_type을 요청에 명시해 인가 서버에 종속되지 않는 샘플로 정리'
+  - '문제 — gateway 뒤 resource server인 MCP 호스트에는 받은 access token을 MCP 서버까지 위임할 경로가 라이브러리에 없음'
+  - '해결 — subject_token_type을 요청에 명시해 인가 서버 구현에 종속되지 않는 샘플 모듈을 customizer · 통합 테스트 · README와 함께 구성'
+  - '결과 — 공백을 이슈로 제기해 메인테이너와 샘플 방향을 합의, PR 제출 후 리뷰 진행 중'
 links:
   - label: 'Issues #88'
     href: https://github.com/spring-ai-community/mcp-security/issues/88
@@ -19,7 +19,7 @@ links:
 organization: spring-ai-community
 repo: mcp-security
 status: in-review
-order: 2
+order: 3
 ---
 
 # 개요

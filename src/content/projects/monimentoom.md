@@ -9,9 +9,8 @@ period:
 techStack: [React 19, TypeScript, Vite, Tailwind CSS 4, Redux Toolkit, TanStack Query, Framer Motion, AWS S3]
 highlights:
   - '성과 — 웹 어플리케이션 개발 프로젝트 우수상'
-  - '선반 편집 UX — 굿즈를 4×4 그리드에 배치, 데스크톱 마우스와 모바일 터치를 한 인터랙션으로 통합'
-  - '지연 반영 — 편집은 로컬(Redux)에서 즉시, 저장 시점에만 서버와 위치 diff 동기화'
-  - '역할 — 3인 팀 프론트엔드 단독 담당, 전 페이지·상태 관리·S3/카카오 연동·Vercel 배포'
+  - '토큰 이원화 — 수명이 짧은 access는 localStorage, 긴 refresh는 HttpOnly 쿠키로 나눠 스크립트 탈취면을 줄이고, 만료 시 인터셉터의 사일런트 재발급으로 원 요청을 재시도'
+  - '지연 반영 — 편집 중에는 Redux를 단일 소스로 로컬에만 반영하고, 저장 시점에 서버 스냅샷과 diff해 변경분만 동기화'
 links:
   - label: GitHub
     href: https://github.com/AES-2nd-Project

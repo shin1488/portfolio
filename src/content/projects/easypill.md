@@ -9,8 +9,8 @@ period:
 techStack: [Flutter, Dart, Firebase Auth, SQLite, Django REST]
 highlights:
   - '성과 — 교내 두드림학기제 공모전 장려상'
-  - '장바구니 — 수량 +/−에 따라 총 결제액을 setState로 실시간 재계산, Django REST 서버 http 연동'
-  - '결제 — Navigator로 전달받은 주문 목록·배송지 폼·결제수단 선택 UI'
+  - '장바구니 — 목록은 Django REST 서버에서 최초 1회만 조회하고, 수량 증감·선택 변경은 setState 안에서 총 결제액을 재계산해 서버 왕복 없이 즉시 반영'
+  - '결제 — 체크된 상품만 걸러 Navigator로 넘기고 결제 화면에서 주문 목록·금액을 재구성해, 해제한 상품이 주문에 섞이지 않게 함'
 links:
   - label: GitHub
     href: https://github.com/petabyte-studio

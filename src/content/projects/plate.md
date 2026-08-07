@@ -9,9 +9,8 @@ period:
 techStack: [Android, Java, Firebase, Google Maps, Lottie, Picasso]
 highlights:
   - "성과 — 교내 '사용자인터페이스및실습' 과목 유일한 최고 점수"
-  - '다이닝 등록 — Daum/Kakao 우편번호 검색을 WebView + JavascriptInterface로 연동, Geocoder 좌표화 후 Firebase 저장'
-  - '상세 화면 — Firebase Realtime Database·Storage 연동, Google Maps에 다이닝 위치를 Marker로 표시'
-  - '찜 목록 — RecyclerView + SwipeRefreshLayout, Lottie 스켈레톤 로딩'
+  - '다이닝 등록 — 우편번호 위젯을 WebView에 올려 @JavascriptInterface로 선택 결과를 되받고 Geocoder로 좌표화해, 상세 화면 지도가 같은 좌표를 그대로 사용'
+  - '찜 목록 — 로딩과 빈 목록이 구분되지 않던 것을 RecyclerView 위 Lottie 스켈레톤으로 갈라, SwipeRefreshLayout 동안만 노출하고 일정 관리 화면에도 재사용'
 links:
   - label: GitHub
     href: https://github.com/devappmin/Plate

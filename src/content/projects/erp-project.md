@@ -8,10 +8,9 @@ period:
   to: "2026.06"
 techStack: [Java 25, Spring Boot 4, Spring AI 2.0, MCP, PostgreSQL, Keycloak, Docker, AWS ECS]
 highlights:
-  - 'Spring AI 2.0 + MCP 챗봇 — RFC 8693 token exchange(OBO)로 사용자 권한 위임, 쓰기는 딥링크+prefill 핸드오프'
-  - '재고 정확성 3종 — 조건부 원자적 UPDATE(동시성), Idempotency-Key 2겹 방어(멱등성), REPEATABLE READ 원장 재생 검증(정합성)'
-  - '인프라 — Docker Compose 12컨테이너 오케스트레이션, AWS ECS Fargate 배포, Keycloak 인증'
-  - 'PM — 에러 응답(RFC 9457)·멱등키·API 응답 등 팀 컨벤션 표준 주도'
+  - '성과 — 챗봇의 권한 위임 해법을 Spring 생태계 MCP 보안 라이브러리에 샘플로 기여, 결함은 Spring Security에 제기'
+  - '재고 정확성 — 조건부 원자적 UPDATE(동시성) · Idempotency-Key 2겹 방어(멱등성) · REPEATABLE READ 원장 재생 검증(정합성)으로 TOCTOU·이중 반영 차단'
+  - '챗봇 가드레일 — 쓰기 도구는 노출하지 않고 딥링크+prefill로 화면에 안내, 조회 도구 호출에는 RFC 8693 token exchange로 사용자 권한을 위임해 REST와 같은 인가 규칙 적용'
 links:
   - label: GitLab
     href: https://gitlab.com/shin1488-group

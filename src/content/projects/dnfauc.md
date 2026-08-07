@@ -8,10 +8,9 @@ period:
   to: "2023.06"
 techStack: [Android, Java, Volley, Glide, Google AdMob, Neople Open API]
 highlights:
-  - "성과 — 출시 이튿날 던전앤파이터 공식 홈페이지 '오늘의 던파' 소개 · 커뮤니티 추천 1위 · 소개 당일 API 5,439건 호출 · 이틀간 설치 214건"
-  - '홈 화면 위젯 — 게임 접속 없이 경매장 최저가·평균가 확인, AppWidgetProvider + PendingIntent 브로드캐스트 갱신'
-  - '데이터 흐름 — 검색(RecyclerView) → SharedPreferences → 위젯 조회 단일 경로, Neople Open API 시세 연동'
-  - '1인 개발 — 기획·개발·배포 전 과정, 개인정보처리방침 작성부터 Google Play 등록까지'
+  - "성과 — 출시 이튿날 던전앤파이터 공식 홈페이지 '오늘의 던파' 소개, 당일 API 5,439건 호출 · 설치 214건"
+  - '홈 화면 위젯 — 앱 프로세스 없이 도는 AppWidgetProvider라 클릭 리스너를 쓸 수 없어, PendingIntent 브로드캐스트를 onReceive에서 받아 시세 요청과 RemoteViews 갱신까지 배선'
+  - '시세 데이터 흐름 — 검색 결과를 SharedPreferences에 적재하고 위젯은 그 값만 읽게 해, Neople Open API 호출과 갱신 경로를 하나로 고정'
 links:
   - label: GitHub
     href: https://github.com/shin1488/DNFAuctionWidget
