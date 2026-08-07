@@ -107,6 +107,10 @@ export function DocGrid({ docs, basePath, onModalOpenChange }: DocGridProps) {
               onPrefetch={prefetch}
             />
           ))}
+          {/* 칸이 홀수면 마지막 행의 오른쪽이 비고, 그 자리를 지나야 할 가로선까지 함께 사라진다.
+              가로선은 각 칸의 위 테두리로 그리므로 칸이 없으면 선도 없다. 빈 칸을 하나 두어 선만
+              잇는다. 한 줄로 접히는 좁은 화면에서는 빈 행이 되므로 감춘다. */}
+          {n % 2 === 1 && <div aria-hidden="true" className="hidden md:block" />}
         </div>
       </div>
 
