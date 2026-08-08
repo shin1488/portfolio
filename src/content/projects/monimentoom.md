@@ -92,6 +92,123 @@ QR 코드로 내 방을 외부에 공유하고, 카카오 OAuth로 로그인합�
 배포는 GitLab CI/CD가 빌드 후 트리거를 보내면, 배포 스크립트가 새 서버(Green)를 먼저 기동해 정상 여부를 확인한 뒤 트래픽을 전환하고 기존 서버(Blue)를 종료하는 blue-green 무중단 방식입니다. 백엔드 인프라와 배포 파이프라인은 팀(백엔드 2인) 담당 영역이었습니다.
 
 
+# 토큰 이원화 — 어디에 저장하느냐의 문제
+
+---
+
+- **문제** — 백엔드가 access + refresh 토큰으로 인증을 관리해, 두 토큰을 프론트 어디에 보관할지 정해야 했습니다. XSS 탈취 위험과 매 요청 헤더에 담아 보내야 하는 사용성이 충돌하는 지점입니다.
+- **해결** — 수명이 짧은 access 토큰은 `localStorage`에, 수명이 긴 refresh 토큰은 JS 접근이 차단된 HttpOnly 쿠키에 나눠 저장하고, 만료 시에는 인터셉터의 사일런트 재발급으로 원 요청을 재시도하도록 했습니다.
+- **결과** — 탈취 피해가 큰 refresh 토큰은 스크립트로 읽을 수 없고, 사용자가 만료를 인지하지 못하는 사이 세션이 이어집니다.
+
+두 토큰은 수명과 쓰임이 달라, 저장 위치도 다르게 정했습니다.
+
+- **Access token → `localStorage`.** 수명이 짧아(1시간) 탈취되어도 피해가 제한적이고, 매 API 요청 헤더에 담아 보내야 하므로 JS에서 읽을 수 있어야 합니다. 따라서 JS 접근이 차단된 HttpOnly 쿠키는 저장 위치 후보에서 제외했습니다.
+- **Refresh token → HttpOnly 쿠키.** 수명이 길어(7일) 탈취에 취약한 만큼 JS 접근을 차단하고, `/auth/refresh` 한 곳에만 쓰이니 요청 시 쿠키가 자동으로 따라붙는 편이 자연스럽습니다.
+
+## 만료는 조용히 — 사일런트 재발급
+
+access 토큰이 만료되어 401이 발생하면, 사용자가 눈치채기 전에 재발급받아 원래 요청을 다시 보냅니다. 관건은 **동시에 발생한 여러 401**입니다. 요청마다 각자 재발급을 요청하면 서버가 여러 번 호출되므로, 모듈 레벨 `refreshPromise` 하나로 묶어 **재발급은 한 번만** 수행하고, 나머지는 그 프라미스를 함께 기다리게 했습니다. 재발급까지 실패하면 저장소·Redux를 비우고 홈으로 강제 로그아웃합니다.
+
+```ts
+let refreshPromise: Promise<string> | null = null;
+
+// 동시 401은 in-flight refresh 하나를 공유 → 서버는 한 번만 호출
+const getNewAccessToken = () =>
+  (refreshPromise ??= axios
+    .post(`${BASE_URL}/auth/refresh`, null, { withCredentials: true }) // 쿠키의 refresh 토큰
+    .then((res) => res.data.token)
+    .then((token) => {
+      localStorage.setItem('accessToken', token);
+      return token;
+    })
+    .finally(() => {
+      refreshPromise = null;
+    }));
+
+// 응답 인터셉터 — 401이면 재발급 후 원 요청 재시도, 실패 시 강제 로그아웃
+if (status === 401 && !isAuthFlow && !original._retry) {
+  original._retry = true;
+  try {
+    const token = await getNewAccessToken();
+    original.headers.Authorization = `Bearer ${token}`;
+    return axiosInstance(original);
+  } catch {
+    forceLogout(); // 저장소·Redux 정리 후 window.location.href = '/'
+    return Promise.reject(error);
+  }
+}
+```
+
+요청 인터셉터에서는 access 토큰을 헤더에 붙이되, 업로드처럼 `FormData`를 보낼 때는 `Content-Type`을 지워 브라우저가 multipart 경계를 직접 잡게 했습니다.
+
+
+# 지연 반영 — 편집은 즉시, 저장은 한 번에
+
+---
+
+- **문제** — 방에서는 액자 · 이젤 · 굿즈 등록 · 선반 배치처럼 편집 이벤트가 끊임없이 일어나는데, 이벤트마다 서버와 통신하면 특히 이미지 전송 같은 무거운 작업이 끼는 순간 편집이 눈에 띄게 끊겼습니다.
+- **해결** — 편집 중에는 **Redux를 단일 소스로 삼아 로컬에서만 반영**하고, 저장 버튼을 누르는 순간 서버 스냅샷과 diff해 변경분만 한꺼번에 동기화했습니다.
+- **결과** — 편집 중에는 네트워크 왕복이 없어 조작이 끊기지 않고, 서버에는 변경분만 정확히 반영됩니다.
+
+이 로직은 `RoomContainer`에 모여 있습니다. 컨테이너는 방 데이터를 불러와 서버 위치(position)를 Redux 아이템으로 매핑합니다. 편집 모드가 끝나면 Redux 상태와 서버 스냅샷을 **diff** 해, 새로 생긴 위치는 create, 옮겨진 위치는 update, 사라진 위치는 delete를 한 번에 실행합니다. 화면을 그리는 `RoomScene`은 여기서 완전히 분리되어 JSX와 스케일 계산만 담당합니다.
+
+```tsx
+// 편집 종료 시 실행 — Redux 상태(items)와 서버 스냅샷(serverPositionsRef)을 diff
+const syncPositions = useCallback(async (wallSide: WallSide, items: Item[]) => {
+  const serverSide = serverPositionsRef.current.filter(p => p.wallSide === wallSide);
+  const serverIds = new Set(serverSide.map(p => p.id));
+  const currentIds = new Set(items.filter(i => i.positionId != null).map(i => i.positionId!));
+
+  // DELETE — 서버에 있었지만 편집 후 사라진 위치
+  const deletePromises = [...serverIds]
+    .filter(id => !currentIds.has(id))
+    .map(id => deletePosition(id));
+
+  // PATCH — 좌표나 크기가 서버 원본과 달라진 위치만 갱신
+  const updatePromises = items
+    .filter(i => i.positionId != null && serverIds.has(i.positionId))
+    .map(i => {
+      const original = serverSide.find(p => p.id === i.positionId);
+      const moved = original && (original.x !== i.r1 || original.y !== i.c1
+        || original.widthUnit !== i.c2 - i.c1 + 1 || original.heightUnit !== i.r2 - i.r1 + 1);
+      return moved
+        ? updatePosition(i.positionId!, { goodsId: i.goodsId!, roomId, wallSide, ... })
+        : Promise.resolve();
+    });
+
+  // POST — positionId가 없는 새 배치. 응답의 positionId는 Redux 아이템에 반영
+  const createPromises = items
+    .filter(i => i.positionId == null)
+    .map(i => createPosition({ goodsId: i.goodsId!, roomId, wallSide, ... }));
+
+  await Promise.all([...deletePromises, ...updatePromises, ...createPromises]);
+}, [roomId, dispatch]);
+```
+
+> **Container / Component 분리** — 안드로이드에서 익힌 UI와 비즈니스 로직의 관심사 분리를, 기존 "컴포넌트 + 페이지" 구조에 중간 단계로 들여왔습니다. 컴포넌트는 UI 표시만, 컨테이너는 그것들을 모아 비즈니스 로직을 결합합니다.
+
+
+# 굿즈 이미지 — S3 프리사인드 업로드
+
+---
+
+- **문제** — 이미지가 백엔드를 경유하면 무거운 I/O가 서버에 쌓이고, 파일을 선택했다가 등록을 취소하면 사용되지 않는 파일이 스토리지에 남습니다.
+- **해결** — 파일 선택 시에는 프리사인드 URL만 발급받아 두고, 등록 버튼을 눌러 확정할 때에만 **브라우저에서 S3로 직접 PUT**하도록 두 단계를 분리했습니다.
+- **결과** — 서버는 이미지 I/O에서 벗어나고, 취소된 업로드는 S3에 파일을 남기지 않아 불필요한 용량이 쌓이지 않습니다.
+
+파일명은 한글·특수문자 문제를 피하려 UUID로 정규화하고, 프리사인드 URL 자체가 인증을 대신하므로 업로드 요청에는 JWT를 붙이지 않습니다.
+
+```ts
+// 1) 파일 선택 시: 프리사인드 URL만 발급 (아직 업로드 X)
+const { presignedUrl, imageUrl, contentType } =
+  await getGoodsPresignedUrl(sanitizeFileName(file.name)); // 파일명 = crypto.randomUUID()
+
+// 2) 등록 확정 시: S3로 직접 PUT 후, 반환된 URL만 DB에 저장
+await uploadToS3(presignedUrl, file, contentType); // 프리사인드 URL 자체 인증 → JWT 불필요
+await createGoods({ name, description, imageUrl });
+```
+
+
 # 선반 — 네 겹의 레이어와 3D 눈속임
 
 ---
@@ -168,123 +285,6 @@ onDragStart={(e) => {
 onClick={() =>
   document.dispatchEvent(new CustomEvent('goods-tap-place', { detail: { goodsId, imageUrl } }))
 }
-```
-
-
-# 지연 반영 — 편집은 즉시, 저장은 한 번에
-
----
-
-- **문제** — 방에서는 액자 · 이젤 · 굿즈 등록 · 선반 배치처럼 편집 이벤트가 끊임없이 일어나는데, 이벤트마다 서버와 통신하면 특히 이미지 전송 같은 무거운 작업이 끼는 순간 편집이 눈에 띄게 끊겼습니다.
-- **해결** — 편집 중에는 **Redux를 단일 소스로 삼아 로컬에서만 반영**하고, 저장 버튼을 누르는 순간 서버 스냅샷과 diff해 변경분만 한꺼번에 동기화했습니다.
-- **결과** — 편집 중에는 네트워크 왕복이 없어 조작이 끊기지 않고, 서버에는 변경분만 정확히 반영됩니다.
-
-이 로직은 `RoomContainer`에 모여 있습니다. 컨테이너는 방 데이터를 불러와 서버 위치(position)를 Redux 아이템으로 매핑합니다. 편집 모드가 끝나면 Redux 상태와 서버 스냅샷을 **diff** 해, 새로 생긴 위치는 create, 옮겨진 위치는 update, 사라진 위치는 delete를 한 번에 실행합니다. 화면을 그리는 `RoomScene`은 여기서 완전히 분리되어 JSX와 스케일 계산만 담당합니다.
-
-```tsx
-// 편집 종료 시 실행 — Redux 상태(items)와 서버 스냅샷(serverPositionsRef)을 diff
-const syncPositions = useCallback(async (wallSide: WallSide, items: Item[]) => {
-  const serverSide = serverPositionsRef.current.filter(p => p.wallSide === wallSide);
-  const serverIds = new Set(serverSide.map(p => p.id));
-  const currentIds = new Set(items.filter(i => i.positionId != null).map(i => i.positionId!));
-
-  // DELETE — 서버에 있었지만 편집 후 사라진 위치
-  const deletePromises = [...serverIds]
-    .filter(id => !currentIds.has(id))
-    .map(id => deletePosition(id));
-
-  // PATCH — 좌표나 크기가 서버 원본과 달라진 위치만 갱신
-  const updatePromises = items
-    .filter(i => i.positionId != null && serverIds.has(i.positionId))
-    .map(i => {
-      const original = serverSide.find(p => p.id === i.positionId);
-      const moved = original && (original.x !== i.r1 || original.y !== i.c1
-        || original.widthUnit !== i.c2 - i.c1 + 1 || original.heightUnit !== i.r2 - i.r1 + 1);
-      return moved
-        ? updatePosition(i.positionId!, { goodsId: i.goodsId!, roomId, wallSide, ... })
-        : Promise.resolve();
-    });
-
-  // POST — positionId가 없는 새 배치. 응답의 positionId는 Redux 아이템에 반영
-  const createPromises = items
-    .filter(i => i.positionId == null)
-    .map(i => createPosition({ goodsId: i.goodsId!, roomId, wallSide, ... }));
-
-  await Promise.all([...deletePromises, ...updatePromises, ...createPromises]);
-}, [roomId, dispatch]);
-```
-
-> **Container / Component 분리** — 안드로이드에서 익힌 UI와 비즈니스 로직의 관심사 분리를, 기존 "컴포넌트 + 페이지" 구조에 중간 단계로 들여왔습니다. 컴포넌트는 UI 표시만, 컨테이너는 그것들을 모아 비즈니스 로직을 결합합니다.
-
-
-# 토큰 이원화 — 어디에 저장하느냐의 문제
-
----
-
-- **문제** — 백엔드가 access + refresh 토큰으로 인증을 관리해, 두 토큰을 프론트 어디에 보관할지 정해야 했습니다. XSS 탈취 위험과 매 요청 헤더에 담아 보내야 하는 사용성이 충돌하는 지점입니다.
-- **해결** — 수명이 짧은 access 토큰은 `localStorage`에, 수명이 긴 refresh 토큰은 JS 접근이 차단된 HttpOnly 쿠키에 나눠 저장하고, 만료 시에는 인터셉터의 사일런트 재발급으로 원 요청을 재시도하도록 했습니다.
-- **결과** — 탈취 피해가 큰 refresh 토큰은 스크립트로 읽을 수 없고, 사용자가 만료를 인지하지 못하는 사이 세션이 이어집니다.
-
-두 토큰은 수명과 쓰임이 달라, 저장 위치도 다르게 정했습니다.
-
-- **Access token → `localStorage`.** 수명이 짧아(1시간) 탈취되어도 피해가 제한적이고, 매 API 요청 헤더에 담아 보내야 하므로 JS에서 읽을 수 있어야 합니다. 따라서 JS 접근이 차단된 HttpOnly 쿠키는 저장 위치 후보에서 제외했습니다.
-- **Refresh token → HttpOnly 쿠키.** 수명이 길어(7일) 탈취에 취약한 만큼 JS 접근을 차단하고, `/auth/refresh` 한 곳에만 쓰이니 요청 시 쿠키가 자동으로 따라붙는 편이 자연스럽습니다.
-
-## 만료는 조용히 — 사일런트 재발급
-
-access 토큰이 만료되어 401이 발생하면, 사용자가 눈치채기 전에 재발급받아 원래 요청을 다시 보냅니다. 관건은 **동시에 발생한 여러 401**입니다. 요청마다 각자 재발급을 요청하면 서버가 여러 번 호출되므로, 모듈 레벨 `refreshPromise` 하나로 묶어 **재발급은 한 번만** 수행하고, 나머지는 그 프라미스를 함께 기다리게 했습니다. 재발급까지 실패하면 저장소·Redux를 비우고 홈으로 강제 로그아웃합니다.
-
-```ts
-let refreshPromise: Promise<string> | null = null;
-
-// 동시 401은 in-flight refresh 하나를 공유 → 서버는 한 번만 호출
-const getNewAccessToken = () =>
-  (refreshPromise ??= axios
-    .post(`${BASE_URL}/auth/refresh`, null, { withCredentials: true }) // 쿠키의 refresh 토큰
-    .then((res) => res.data.token)
-    .then((token) => {
-      localStorage.setItem('accessToken', token);
-      return token;
-    })
-    .finally(() => {
-      refreshPromise = null;
-    }));
-
-// 응답 인터셉터 — 401이면 재발급 후 원 요청 재시도, 실패 시 강제 로그아웃
-if (status === 401 && !isAuthFlow && !original._retry) {
-  original._retry = true;
-  try {
-    const token = await getNewAccessToken();
-    original.headers.Authorization = `Bearer ${token}`;
-    return axiosInstance(original);
-  } catch {
-    forceLogout(); // 저장소·Redux 정리 후 window.location.href = '/'
-    return Promise.reject(error);
-  }
-}
-```
-
-요청 인터셉터에서는 access 토큰을 헤더에 붙이되, 업로드처럼 `FormData`를 보낼 때는 `Content-Type`을 지워 브라우저가 multipart 경계를 직접 잡게 했습니다.
-
-
-# 굿즈 이미지 — S3 프리사인드 업로드
-
----
-
-- **문제** — 이미지가 백엔드를 경유하면 무거운 I/O가 서버에 쌓이고, 파일을 선택했다가 등록을 취소하면 사용되지 않는 파일이 스토리지에 남습니다.
-- **해결** — 파일 선택 시에는 프리사인드 URL만 발급받아 두고, 등록 버튼을 눌러 확정할 때에만 **브라우저에서 S3로 직접 PUT**하도록 두 단계를 분리했습니다.
-- **결과** — 서버는 이미지 I/O에서 벗어나고, 취소된 업로드는 S3에 파일을 남기지 않아 불필요한 용량이 쌓이지 않습니다.
-
-파일명은 한글·특수문자 문제를 피하려 UUID로 정규화하고, 프리사인드 URL 자체가 인증을 대신하므로 업로드 요청에는 JWT를 붙이지 않습니다.
-
-```ts
-// 1) 파일 선택 시: 프리사인드 URL만 발급 (아직 업로드 X)
-const { presignedUrl, imageUrl, contentType } =
-  await getGoodsPresignedUrl(sanitizeFileName(file.name)); // 파일명 = crypto.randomUUID()
-
-// 2) 등록 확정 시: S3로 직접 PUT 후, 반환된 URL만 DB에 저장
-await uploadToS3(presignedUrl, file, contentType); // 프리사인드 URL 자체 인증 → JWT 불필요
-await createGoods({ name, description, imageUrl });
 ```
 
 

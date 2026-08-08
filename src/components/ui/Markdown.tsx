@@ -357,6 +357,15 @@ export const Markdown = memo(function Markdown({ children }: MarkdownProps) {
             if (node?.properties && 'dataPsr' in node.properties) return <PsrFlow>{children}</PsrFlow>;
             return <div {...props}>{children}</div>;
           },
+          // 표는 짧은 열이 접히지 않도록 자기 내용 폭을 지킨다(index.css). 그래서 좁은 화면에서는
+          // 문서 폭을 넘길 수 있으므로, 문단을 밀어내는 대신 표만 가로로 스크롤되게 감싼다.
+          table({ node: _node, children, ...props }) {
+            return (
+              <div className="overflow-x-auto">
+                <table {...props}>{children}</table>
+              </div>
+            );
+          },
     }),
     [],
   );
