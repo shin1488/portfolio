@@ -18,8 +18,7 @@
 
 ## 구조
 
-Feature-Sliced Design을 이 규모에 맞게 줄여 적용했습니다. 레이어는 여덟이며, 의존 방향은
-ESLint(`boundaries/dependencies`)가 강제합니다.
+Feature-Sliced Design을 이 규모에 맞게 줄여 적용했습니다. 레이어는 여덟이며, 의존 방향은 ESLint(`boundaries/dependencies`)가 강제합니다.
 
 ```
 src/
@@ -37,5 +36,4 @@ src/
 
 - **단방향 참조** — `app → feature → layout → ui → lib → types` 순으로만 참조합니다.
   `data`는 `content` · `lib` · `types`를, `ui`는 `lib` · `types`를 참조합니다.
-- **슬라이스 독립** — feature끼리는 서로 import하지 않습니다. 두 feature가 같은 모듈을 필요로 하면
-  아래 레이어로 옮기거나 한 슬라이스로 합칩니다.
+- **슬라이스 독립** — feature끼리는 서로 import하지 않습니다. 두 feature가 같은 모듈을 필요로 하면 아래 레이어로 옮기거나 한 슬라이스로 합칩니다.
