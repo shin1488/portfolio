@@ -6,7 +6,7 @@
 
 ## 기술
 
-| | |
+| 구분 | 사용 기술 |
 |---|---|
 | Core | React 19 · TypeScript 7 · Vite 8 |
 | Routing | React Router 8 (declarative) |
