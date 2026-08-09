@@ -18,4 +18,5 @@ npm-debug.log*
 .DS_Store
 *.local
 
-CLAUDE.md_to_delete/
+CLAUDE.md
+_to_delete/
